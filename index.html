@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>중등부 겨울수련회 성경 퀴즈</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;900&display=swap');
+        
+        body { font-family: 'Noto Sans KR', sans-serif; background: #0f172a; color: white; overflow: hidden; }
+        .font-title { font-family: 'Black Han Sans', sans-serif; }
+        
+        /* 모양 스타일 */
+        .shape-rounded-square { border-radius: 12px; }
+        .shape-diamond { clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+        .shape-hexagon { clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); }
+        .shape-triangle { clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
+        .shape-star { clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
+
+        /* 4:3 비율 및 빔프로젝터 최적화 버튼 */
+        .quiz-btn {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            aspect-ratio: 1 / 1;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        .quiz-btn:hover { transform: scale(1.1); z-index: 10; filter: brightness(1.2); border-color: white; }
+        .quiz-btn.solved { opacity: 0.15; filter: grayscale(1); transform: scale(0.9); pointer-events: none; }
+
+        .page { display: none; height: 100vh; width: 100vw; padding: 1rem; overflow: hidden; }
+        .page.active { display: flex; flex-direction: column; align-items: center; animation: fadeIn 0.3s ease-out; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* 초성 및 빈칸 박스 스타일 */
+        .initial-box {
+            display: inline-flex; min-width: 1.2em; height: 1.4em; vertical-align: middle;
+            border: 3px solid #6366f1; background: rgba(99, 102, 241, 0.1);
+            border-radius: 8px; margin: 0 4px; justify-content: center; align-items: center;
+            color: #818cf8; transition: all 0.4s ease;
+            padding: 0 10px; font-weight: 800; letter-spacing: 0.1em;
+        }
+        .blank-box {
+            display: inline-flex; min-width: 80px; height: 1.3em; vertical-align: middle;
+            border: 3px dashed rgba(255, 255, 255, 0.2); background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px; margin: 0 4px; color: transparent;
+        }
+        .initial-box.revealed, .blank-box.revealed { 
+            border: none; background: #f59e0b; color: #0f172a; padding: 0 15px; 
+            font-weight: 900; transform: scale(1.05); letter-spacing: normal;
+        }
+
+        .answer-box { opacity: 0; transform: translateY(10px); transition: all 0.4s ease; }
+        .answer-box.visible { opacity: 1; transform: translateY(0); }
+
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        
+        /* 40개 버튼을 위한 그리드 최적화 (8열 5행) */
+        #grid-container {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 12px;
+            width: 100%;
+            max-width: 950px; /* 4:3 비율 화면 가로 너비 고려 */
+            margin: auto;
+        }
+
+        @media (max-aspect-ratio: 1/1) {
+            #grid-container { grid-template-columns: repeat(5, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- [MAIN BOARD] -->
+    <div id="page-main" class="page active">
+        <header class="w-full max-w-5xl flex justify-between items-center mb-4 px-2">
+            <div class="flex gap-2">
+                <button onclick="openCsvModal()" class="text-slate-500 hover:text-white text-xs transition">
+                    <i class="fa-solid fa-gear"></i> 데이터 설정
+                </button>
+            </div>
+            <h1 class="text-3xl font-title text-indigo-400 tracking-tighter">BIBLE QUIZ MASTER 2026</h1>
+            <button onclick="resetSolved()" class="text-slate-500 hover:text-red-400 text-xs transition">초기화</button>
+        </header>
+
+        <div id="grid-container"></div>
+
+        <footer class="mt-6 w-full max-w-4xl bg-slate-900/50 p-3 rounded-xl flex justify-around text-[11px] font-bold border border-white/5 uppercase">
+            <div class="flex items-center gap-2"><span class="w-3 h-3 bg-red-500 rounded-full"></span> 상(3점)</div>
+            <div class="flex items-center gap-2"><span class="w-3 h-3 bg-amber-500 rounded-full"></span> 중(2점)</div>
+            <div class="flex items-center gap-2"><span class="w-3 h-3 bg-emerald-500 rounded-full"></span> 하(1점)</div>
+            <div class="flex items-center gap-3 ml-4 border-l border-white/10 pl-4">
+                <div class="flex items-center gap-1.5"><i class="fa-solid fa-square text-indigo-400"></i> 객관식</div>
+                <div class="flex items-center gap-1.5"><i class="fa-solid fa-play rotate-90 text-indigo-400" style="font-size: 8px;"></i> 초성</div>
+                <div class="flex items-center gap-1.5"><i class="fa-solid fa-diamond text-indigo-400"></i> 빈칸</div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- [QUESTION PAGE] -->
+    <div id="page-question" class="page bg-slate-950">
+        <div class="w-full max-w-5xl flex justify-between items-center mb-6 bg-slate-900/50 p-3 rounded-2xl border border-white/5">
+            <div id="q-category-mini" class="px-4 py-2 rounded-full text-xs font-black tracking-widest uppercase border border-white/10"></div>
+            <div class="flex gap-2">
+                <button onclick="goHome()" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition flex items-center gap-2">
+                    <i class="fa-solid fa-house"></i>
+                </button>
+                <button id="btn-show-answer" onclick="showAnswer()" class="bg-indigo-500 hover:bg-indigo-400 text-white px-6 py-2 rounded-xl font-black shadow-lg transition flex items-center gap-2">
+                    정답 확인
+                </button>
+            </div>
+        </div>
+
+        <div class="max-w-5xl w-full flex flex-col flex-1 justify-center space-y-6">
+            <div class="space-y-6">
+                <div id="q-text" class="text-3xl md:text-5xl font-bold px-4 text-slate-100 text-center leading-tight"></div>
+                <div id="q-options" class="grid gap-3 max-w-3xl mx-auto hidden"></div>
+            </div>
+
+            <div id="answer-section" class="answer-box space-y-2 bg-indigo-950/40 p-6 rounded-[24px] border border-indigo-500/20 text-center">
+                <div id="a-text" class="text-4xl md:text-6xl font-black text-white"></div>
+                <p id="a-verse" class="text-lg text-indigo-300/80 italic"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- [CSV MODAL] -->
+    <div id="modal-csv" class="modal">
+        <div class="bg-slate-800 w-full max-w-3xl h-[70vh] rounded-3xl overflow-hidden flex flex-col p-6 shadow-2xl">
+             <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-indigo-300">데이터 관리 (40문제)</h3>
+                <button onclick="closeCsvModal()" class="text-white hover:text-red-400 text-2xl">×</button>
+             </div>
+             <textarea id="csv-input" class="flex-1 w-full bg-slate-950 text-indigo-400 font-mono text-xs p-4 rounded-xl border border-white/5" placeholder="ID	유형	난이도	문제	정답	구절"></textarea>
+             <button onclick="importCsv()" class="bg-indigo-500 py-3 mt-4 rounded-xl font-bold transition">데이터 적용</button>
+        </div>
+    </div>
+
+    <script>
+        let quizData = JSON.parse(localStorage.getItem('bible_quiz_v12')) || [];
+        let solvedSet = new Set(JSON.parse(localStorage.getItem('bible_solved_v12')) || []);
+        let currentQuestion = null;
+
+        function initGrid() {
+            const container = document.getElementById('grid-container');
+            container.innerHTML = '';
+            
+            // 데이터가 없으면 40개 샘플 생성
+            if (quizData.length === 0) generate40SampleData();
+            
+            // 40개 데이터 렌더링
+            quizData.forEach(q => {
+                const btn = document.createElement('div');
+                const isSolved = solvedSet.has(q.id);
+                btn.className = `quiz-btn ${getDiffColor(q.difficulty)} ${getShapeClass(q.type)} ${isSolved ? 'solved' : ''}`;
+                btn.innerHTML = `<span class="text-white text-xl font-black">${q.id}</span>`;
+                btn.onclick = () => openQuestion(q);
+                container.appendChild(btn);
+            });
+        }
+
+        function openQuestion(q) {
+            currentQuestion = q;
+            document.getElementById('page-main').classList.remove('active');
+            document.getElementById('page-question').classList.add('active');
+            document.getElementById('answer-section').classList.remove('visible');
+            document.getElementById('btn-show-answer').style.display = 'flex';
+
+            const catEl = document.getElementById('q-category-mini');
+            catEl.innerText = `${q.type} • ${q.difficulty}`;
+            catEl.className = `px-4 py-2 rounded-full text-xs font-black tracking-widest uppercase border border-white/10 ${getDiffColor(q.difficulty)}`;
+
+            const qTextEl = document.getElementById('q-text');
+            const qOptionsEl = document.getElementById('q-options');
+            qOptionsEl.innerHTML = '';
+            qOptionsEl.classList.add('hidden');
+
+            if (q.type === "OX 퀴즈") {
+                qTextEl.innerText = q.question.replace("(O/X)", "").trim();
+                qOptionsEl.className = "grid grid-cols-2 gap-6 max-w-md mx-auto mt-4";
+                qOptionsEl.innerHTML = `
+                    <div id="opt-O" class="option-card p-6 text-4xl font-black border-4 border-emerald-500 rounded-2xl flex justify-center items-center">O</div>
+                    <div id="opt-X" class="option-card p-6 text-4xl font-black border-4 border-red-500 rounded-2xl flex justify-center items-center">X</div>
+                `;
+                qOptionsEl.classList.remove('hidden');
+            } else if (q.type === "객관식") {
+                const pattern = /\d+\s*\)/g;
+                const firstIdx = q.question.search(pattern);
+                qTextEl.innerText = firstIdx !== -1 ? q.question.substring(0, firstIdx).trim() : q.question;
+                const options = q.question.substring(firstIdx).split(pattern).filter(t => t.trim());
+                qOptionsEl.className = "grid grid-cols-2 gap-3 max-w-2xl mx-auto mt-4";
+                options.slice(0,4).forEach((opt, i) => {
+                    qOptionsEl.innerHTML += `
+                        <div id="opt-${i+1}" class="option-card flex items-center gap-3 p-3 bg-slate-800 rounded-xl border border-white/10">
+                            <div class="w-8 h-8 bg-indigo-500 rounded-full flex-shrink-0 flex items-center justify-center font-black text-sm">${i+1}</div>
+                            <div class="text-lg font-bold">${opt.trim()}</div>
+                        </div>
+                    `;
+                });
+                qOptionsEl.classList.remove('hidden');
+            } else if (q.type === "빈칸 채우기") {
+                qTextEl.innerHTML = q.question.replace(/\(\s*\)/g, '<span class="blank-box"></span>');
+            } else if (q.type === "초성 퀴즈") {
+                qTextEl.innerHTML = q.question.replace(/\(([^)]+)\)/g, (m, p1) => `<span class="initial-box">${p1}</span>`);
+            } else {
+                qTextEl.innerText = q.question;
+            }
+
+            document.getElementById('a-text').innerText = q.answer;
+            document.getElementById('a-verse').innerText = q.verse;
+
+            solvedSet.add(q.id);
+            localStorage.setItem('bible_solved_v12', JSON.stringify([...solvedSet]));
+        }
+
+        function showAnswer() {
+            document.getElementById('answer-section').classList.add('visible');
+            document.getElementById('btn-show-answer').style.display = 'none';
+
+            if (currentQuestion.type === "OX 퀴즈") {
+                const isO = currentQuestion.answer.toUpperCase().includes("O");
+                document.getElementById('opt-O').style.opacity = isO ? '1' : '0.2';
+                document.getElementById('opt-X').style.opacity = !isO ? '1' : '0.2';
+            } else if (currentQuestion.type === "객관식") {
+                const ansNum = currentQuestion.answer.match(/\d/)?.[0];
+                for(let i=1; i<=4; i++) {
+                    const el = document.getElementById(`opt-${i}`);
+                    if(el) {
+                        if(i == ansNum) el.classList.add('bg-emerald-600', 'border-emerald-400');
+                        else el.style.opacity = '0.2';
+                    }
+                }
+            } else {
+                const boxes = document.querySelectorAll('.blank-box, .initial-box');
+                const answers = currentQuestion.answer.split(',').map(s => s.trim());
+                boxes.forEach((box, i) => {
+                    box.innerText = answers[i] || answers[0];
+                    box.classList.add('revealed');
+                });
+            }
+        }
+
+        function goHome() {
+            document.getElementById('page-question').classList.remove('active');
+            document.getElementById('page-main').classList.add('active');
+            initGrid();
+        }
+
+        function getShapeClass(type) {
+            switch(type?.trim()) {
+                case "객관식": return "shape-rounded-square";
+                case "빈칸 채우기": return "shape-diamond";
+                case "초성 퀴즈": return "shape-triangle";
+                case "주관식": return "shape-hexagon";
+                case "OX 퀴즈": return "shape-star";
+                default: return "shape-rounded-square";
+            }
+        }
+
+        function getDiffColor(diff) {
+            switch(diff?.trim()) {
+                case "상": return "bg-red-500";
+                case "중": return "bg-amber-500";
+                case "하": return "bg-emerald-500";
+                default: return "bg-slate-500";
+            }
+        }
+
+        function openCsvModal() {
+            document.getElementById('csv-input').value = quizData.map(q => `${q.id}\t${q.type}\t${q.difficulty}\t${q.question}\t${q.answer}\t${q.verse}`).join('\n');
+            document.getElementById('modal-csv').classList.add('active');
+        }
+        function closeCsvModal() { document.getElementById('modal-csv').classList.remove('active'); }
+        function importCsv() {
+            const lines = document.getElementById('csv-input').value.trim().split('\n');
+            quizData = lines.map(l => {
+                const p = l.split('\t');
+                if (p.length < 5) return null;
+                return { id: parseInt(p[0]), type: p[1], difficulty: p[2], question: p[3], answer: p[4], verse: p[5] || "" };
+            }).filter(q => q && q.id);
+            localStorage.setItem('bible_quiz_v12', JSON.stringify(quizData));
+            initGrid(); closeCsvModal();
+        }
+
+        function resetSolved() {
+            if(confirm("기록을 초기화합니까?")) {
+                solvedSet.clear();
+                localStorage.setItem('bible_solved_v12', "[]");
+                initGrid();
+            }
+        }
+
+        function generate40SampleData() {
+            quizData = [];
+            const types = ["객관식", "초성 퀴즈", "빈칸 채우기", "OX 퀴즈", "주관식"];
+            const diffs = ["하", "중", "상"];
+            for(let i=1; i<=40; i++) {
+                const type = types[i % 5];
+                const diff = diffs[i % 3];
+                let question = `문제 ${i}의 내용입니다.`;
+                let answer = "정답";
+                
+                if(type === "초성 퀴즈") question = `이 단어의 초성은? (ㅅㄱ)`;
+                if(type === "빈칸 채우기") question = `하나님은 ( )이시니 예배하는 자가 신령과 진정으로...`;
+                if(type === "OX 퀴즈") question = `예수님은 베들레헴에서 태어나셨다 (O/X)`;
+                if(type === "객관식") question = `다음 중 인물이 아닌 것은? 1) 모세 2) 아브라함 3) 다윗 4) 예루살렘`;
+
+                quizData.push({ id: i, type: type, difficulty: diff, question: question, answer: answer, verse: "구절 정보" });
+            }
+            localStorage.setItem('bible_quiz_v12', JSON.stringify(quizData));
+        }
+
+        window.onload = initGrid;
+    </script>
+</body>
+</html>
