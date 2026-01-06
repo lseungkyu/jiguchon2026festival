@@ -65,7 +65,7 @@
             grid-template-columns: repeat(8, 1fr);
             gap: 12px;
             width: 100%;
-            max-width: 950px; /* 4:3 비율 화면 가로 너비 고려 */
+            max-width: 950px; 
             margin: auto;
         }
 
@@ -80,8 +80,11 @@
     <div id="page-main" class="page active">
         <header class="w-full max-w-5xl flex justify-between items-center mb-4 px-2">
             <div class="flex gap-2">
+                <button onclick="loadExternalData()" class="text-slate-500 hover:text-white text-xs transition">
+                    <i class="fa-solid fa-rotate"></i> 데이터 새로고침
+                </button>
                 <button onclick="openCsvModal()" class="text-slate-500 hover:text-white text-xs transition">
-                    <i class="fa-solid fa-gear"></i> 데이터 설정
+                    <i class="fa-solid fa-gear"></i> 수동 설정
                 </button>
             </div>
             <h1 class="text-3xl font-title text-indigo-400 tracking-tighter">BIBLE QUIZ MASTER 2026</h1>
@@ -133,7 +136,7 @@
     <div id="modal-csv" class="modal">
         <div class="bg-slate-800 w-full max-w-3xl h-[70vh] rounded-3xl overflow-hidden flex flex-col p-6 shadow-2xl">
              <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold text-indigo-300">데이터 관리 (40문제)</h3>
+                <h3 class="text-xl font-bold text-indigo-300">데이터 관리</h3>
                 <button onclick="closeCsvModal()" class="text-white hover:text-red-400 text-2xl">×</button>
              </div>
              <textarea id="csv-input" class="flex-1 w-full bg-slate-950 text-indigo-400 font-mono text-xs p-4 rounded-xl border border-white/5" placeholder="ID	유형	난이도	문제	정답	구절"></textarea>
@@ -142,18 +145,57 @@
     </div>
 
     <script>
-        let quizData = JSON.parse(localStorage.getItem('bible_quiz_v12')) || [];
+        // 기본 설정: GitHub에 올릴 파일 이름 (같은 경로에 있다고 가정)
+        const DATA_FILE_URL = 'data.csv'; 
+
+        let quizData = [];
         let solvedSet = new Set(JSON.parse(localStorage.getItem('bible_solved_v12')) || []);
         let currentQuestion = null;
+
+        // 외부 데이터(CSV) 로드 함수
+        async function loadExternalData() {
+            try {
+                const response = await fetch(DATA_FILE_URL);
+                if (!response.ok) throw new Error('데이터 파일을 찾을 수 없습니다.');
+                const text = await response.text();
+                parseData(text);
+                initGrid();
+            } catch (err) {
+                console.error(err);
+                // 파일이 없을 경우 로컬 데이터 시도
+                const saved = localStorage.getItem('bible_quiz_v12');
+                if (saved) {
+                    quizData = JSON.parse(saved);
+                    initGrid();
+                } else {
+                    generate40SampleData();
+                    initGrid();
+                }
+            }
+        }
+
+        function parseData(text) {
+            const lines = text.trim().split('\n');
+            quizData = lines.map((line, index) => {
+                // 탭(\t)으로 구분된 데이터를 우선 처리하고, 없으면 쉼표(,)로 처리
+                const p = line.includes('\t') ? line.split('\t') : line.split(',');
+                if (p.length < 5) return null;
+                return {
+                    id: parseInt(p[0]) || (index + 1),
+                    type: p[1].trim(),
+                    difficulty: p[2].trim(),
+                    question: p[3].trim(),
+                    answer: p[4].trim(),
+                    verse: p[5] ? p[5].trim() : ""
+                };
+            }).filter(q => q !== null);
+            localStorage.setItem('bible_quiz_v12', JSON.stringify(quizData));
+        }
 
         function initGrid() {
             const container = document.getElementById('grid-container');
             container.innerHTML = '';
             
-            // 데이터가 없으면 40개 샘플 생성
-            if (quizData.length === 0) generate40SampleData();
-            
-            // 40개 데이터 렌더링
             quizData.forEach(q => {
                 const btn = document.createElement('div');
                 const isSolved = solvedSet.has(q.id);
@@ -278,13 +320,9 @@
         function closeCsvModal() { document.getElementById('modal-csv').classList.remove('active'); }
         function importCsv() {
             const lines = document.getElementById('csv-input').value.trim().split('\n');
-            quizData = lines.map(l => {
-                const p = l.split('\t');
-                if (p.length < 5) return null;
-                return { id: parseInt(p[0]), type: p[1], difficulty: p[2], question: p[3], answer: p[4], verse: p[5] || "" };
-            }).filter(q => q && q.id);
-            localStorage.setItem('bible_quiz_v12', JSON.stringify(quizData));
-            initGrid(); closeCsvModal();
+            parseData(document.getElementById('csv-input').value);
+            initGrid(); 
+            closeCsvModal();
         }
 
         function resetSolved() {
@@ -302,20 +340,11 @@
             for(let i=1; i<=40; i++) {
                 const type = types[i % 5];
                 const diff = diffs[i % 3];
-                let question = `문제 ${i}의 내용입니다.`;
-                let answer = "정답";
-                
-                if(type === "초성 퀴즈") question = `이 단어의 초성은? (ㅅㄱ)`;
-                if(type === "빈칸 채우기") question = `하나님은 ( )이시니 예배하는 자가 신령과 진정으로...`;
-                if(type === "OX 퀴즈") question = `예수님은 베들레헴에서 태어나셨다 (O/X)`;
-                if(type === "객관식") question = `다음 중 인물이 아닌 것은? 1) 모세 2) 아브라함 3) 다윗 4) 예루살렘`;
-
-                quizData.push({ id: i, type: type, difficulty: diff, question: question, answer: answer, verse: "구절 정보" });
+                quizData.push({ id: i, type: type, difficulty: diff, question: `샘플 문제 ${i}`, answer: "정답", verse: "" });
             }
-            localStorage.setItem('bible_quiz_v12', JSON.stringify(quizData));
         }
 
-        window.onload = initGrid;
+        window.onload = loadExternalData;
     </script>
 </body>
 </html>
