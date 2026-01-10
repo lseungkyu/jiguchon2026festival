@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>성경 퀴즈 클라우드 시스템</title>
+    <title>성경 퀴즈 클라우드 시스템 V2</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -24,15 +24,20 @@
             position: relative;
             overflow: hidden;
         }
-        .quiz-card:hover { transform: translateY(-5px) scale(1.05); z-index: 10; }
-        .quiz-card.solved { opacity: 0.2; filter: grayscale(1); pointer-events: none; }
+        .quiz-card:hover:not(.solved) { transform: translateY(-5px) scale(1.05); z-index: 10; border-color: var(--primary); }
+        .quiz-card.solved { opacity: 0.3; filter: grayscale(1); cursor: default; }
+        .quiz-card.active-q { border: 4px solid #fbbf24; animation: pulse 2s infinite; }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0px rgba(251, 191, 36, 0.7); }
+            100% { box-shadow: 0 0 0 20px rgba(251, 191, 36, 0); }
+        }
         
-        .view-section { display: none; min-height: 100vh; padding: 2rem; }
+        .view-section { display: none; min-height: 100vh; padding: 1.5rem; }
         .view-section.active { display: flex; flex-direction: column; animation: fadeIn 0.5s ease; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Firestore 기반 실시간 상태 배지 */
         .status-badge {
             position: fixed; top: 1rem; right: 1rem; padding: 0.5rem 1rem;
             border-radius: 99px; font-size: 0.75rem; font-weight: bold;
@@ -40,8 +45,12 @@
             z-index: 1000;
         }
 
-        /* 타이머 애니메이션 */
-        .timer-bar { height: 6px; background: #ef4444; width: 100%; transition: width 1s linear; }
+        .timer-bar { height: 8px; background: #ef4444; width: 100%; transition: width 1s linear; }
+        
+        /* 스크롤바 커스텀 */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
     </style>
 </head>
 <body>
@@ -52,47 +61,89 @@
 
     <!-- [1. MODE SELECTOR] -->
     <div id="view-mode-selector" class="view-section active items-center justify-center space-y-8">
-        <h1 class="text-5xl font-title text-center text-indigo-400">BIBLE QUIZ CLOUD<br><span class="text-2xl text-slate-400">시스템 모드를 선택하세요</span></h1>
-        <div class="flex gap-6">
+        <h1 class="text-5xl font-title text-center text-indigo-400">BIBLE QUIZ CLOUD V2<br><span class="text-2xl text-slate-400">시스템 모드를 선택하세요</span></h1>
+        <div class="flex flex-wrap justify-center gap-6">
             <button onclick="setMode('admin')" class="bg-indigo-600 hover:bg-indigo-500 p-8 rounded-3xl w-64 text-center transition group">
                 <i class="fa-solid fa-user-shield text-4xl mb-4 group-hover:scale-110 transition"></i>
                 <div class="text-xl font-bold">관리자 모드</div>
-                <p class="text-xs text-indigo-200 mt-2">문제 선택 및 점수 제어</p>
+                <p class="text-xs text-indigo-200 mt-2">상세 기록 및 제어</p>
             </button>
             <button onclick="setMode('viewer')" class="bg-slate-800 hover:bg-slate-700 p-8 rounded-3xl w-64 text-center transition group">
                 <i class="fa-solid fa-desktop text-4xl mb-4 group-hover:scale-110 transition"></i>
                 <div class="text-xl font-bold">학생용 화면</div>
-                <p class="text-xs text-slate-400 mt-2">스크린 투사 전용</p>
+                <p class="text-xs text-slate-400 mt-2">실시간 문제 보드</p>
             </button>
         </div>
     </div>
 
     <!-- [2. ADMIN DASHBOARD] -->
-    <div id="view-admin" class="view-section">
-        <header class="flex justify-between items-center mb-8">
+    <div id="view-admin" class="view-section bg-slate-950">
+        <header class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold flex items-center gap-3">
-                <i class="fa-solid fa-gears text-indigo-500"></i> 관리자 대시보드
+                <i class="fa-solid fa-screwdriver-wrench text-indigo-500"></i> 진행 관리 시스템
             </h2>
             <div class="flex gap-3">
-                <button onclick="resetCloudData()" class="bg-red-900/30 text-red-400 px-4 py-2 rounded-lg text-sm border border-red-500/30">전체 초기화</button>
-                <button onclick="location.reload()" class="bg-slate-800 px-4 py-2 rounded-lg text-sm">모드 변경</button>
+                <button onclick="resetCloudData()" class="bg-red-900/40 text-red-400 px-4 py-2 rounded-xl text-sm border border-red-500/30 hover:bg-red-800/50">데이터 초기화</button>
+                <button onclick="location.reload()" class="bg-slate-800 px-4 py-2 rounded-xl text-sm">모드 변경</button>
             </div>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- 점수 관리 -->
-            <div class="lg:col-span-1 bg-slate-900/50 p-6 rounded-3xl border border-white/5">
-                <h3 class="font-bold mb-4 text-indigo-300">조별 실시간 점수</h3>
-                <div id="admin-score-list" class="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
-                    <!-- JS generated -->
+        <div class="grid grid-cols-1 xl:grid-cols-4 gap-6 flex-1">
+            <!-- Left: Scoreboard -->
+            <div class="xl:col-span-1 space-y-6">
+                <div class="bg-slate-900/80 p-5 rounded-3xl border border-white/5">
+                    <h3 class="font-bold mb-4 text-indigo-300 flex items-center gap-2">
+                        <i class="fa-solid fa-trophy"></i> 실시간 점수
+                    </h3>
+                    <div id="admin-score-list" class="grid grid-cols-2 gap-2">
+                        <!-- JS generated -->
+                    </div>
                 </div>
             </div>
             
-            <!-- 문제 선택 -->
-            <div class="lg:col-span-2 bg-slate-900/50 p-6 rounded-3xl border border-white/5">
-                <h3 class="font-bold mb-4 text-indigo-300">문제 진행 상태</h3>
-                <div id="admin-quiz-grid" class="grid grid-cols-5 md:grid-cols-8 gap-3">
-                    <!-- JS generated -->
+            <!-- Right: Question Detail Control -->
+            <div class="xl:col-span-3 space-y-6">
+                <!-- 문제 보드 -->
+                <div class="bg-slate-900/80 p-6 rounded-3xl border border-white/5">
+                    <h3 class="font-bold mb-4 text-indigo-300">문제 선택 및 진행 상태</h3>
+                    <div id="admin-quiz-grid" class="grid grid-cols-5 md:grid-cols-10 gap-2">
+                        <!-- JS generated -->
+                    </div>
+                </div>
+
+                <!-- 현재 활성화된 문제 기록지 -->
+                <div id="admin-detail-panel" class="hidden bg-indigo-900/20 p-8 rounded-3xl border border-indigo-500/30 animate-in fade-in slide-in-from-bottom-4">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <span id="admin-detail-q-num" class="text-indigo-400 font-black text-4xl block mb-2">#01</span>
+                            <h3 id="admin-detail-q-text" class="text-xl font-bold text-slate-100">문제 내용을 로딩 중입니다...</h3>
+                        </div>
+                        <button onclick="toggleQuestion(gameState.activeQuestion)" class="text-slate-400 hover:text-white">
+                            <i class="fa-solid fa-xmark text-2xl"></i>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- 정답 처리 -->
+                        <div>
+                            <p class="text-sm font-bold text-slate-400 mb-4">정답 조 선택 (즉시 점수 반영)</p>
+                            <div id="admin-answer-grid" class="grid grid-cols-4 gap-2">
+                                <!-- JS generated -->
+                            </div>
+                        </div>
+                        <!-- 아이템 및 액션 -->
+                        <div class="space-y-4">
+                            <p class="text-sm font-bold text-slate-400 mb-4">특수 액션</p>
+                            <div class="grid grid-cols-2 gap-3">
+                                <button onclick="revealAnswer()" class="bg-emerald-600 hover:bg-emerald-500 p-4 rounded-2xl font-bold transition">정답 공개</button>
+                                <button onclick="triggerItem()" class="bg-amber-600 hover:bg-amber-500 p-4 rounded-2xl font-bold transition">아이템 사용 기록</button>
+                            </div>
+                            <div class="bg-slate-800/50 p-4 rounded-2xl border border-white/5">
+                                <p class="text-xs text-slate-500 mb-2 font-bold uppercase">Question Log</p>
+                                <div id="admin-q-log" class="text-sm text-indigo-200 italic">현재 문제에 대한 기록이 없습니다.</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -100,14 +151,20 @@
 
     <!-- [3. VIEWER SCREEN] -->
     <div id="view-viewer" class="view-section">
-        <!-- Main Board View -->
         <div id="viewer-board" class="flex flex-col items-center justify-center flex-1">
-            <h1 class="text-6xl font-title text-indigo-500 mb-12 tracking-tighter shadow-indigo-500/20 drop-shadow-2xl">BIBLE QUIZ MASTER</h1>
-            <div id="viewer-quiz-grid" class="grid grid-cols-5 md:grid-cols-8 gap-4 w-full max-w-5xl">
+            <div class="text-center mb-10">
+                <p class="text-indigo-400 tracking-[0.5em] font-bold text-sm mb-2">GENESIS BIBLE QUIZ</p>
+                <h1 class="text-7xl font-title text-white tracking-tighter drop-shadow-[0_10px_10px_rgba(99,102,241,0.3)]">성경 읽기 퀴즈</h1>
+            </div>
+            
+            <div id="viewer-quiz-grid" class="grid grid-cols-5 md:grid-cols-8 gap-4 w-full max-w-6xl">
                 <!-- JS generated -->
             </div>
-            <div id="viewer-scores" class="mt-16 w-full max-w-6xl grid grid-cols-6 md:grid-cols-12 gap-3">
-                <!-- JS generated -->
+
+            <div class="mt-12 w-full max-w-6xl bg-slate-900/50 p-6 rounded-[40px] border border-white/5">
+                <div id="viewer-scores" class="grid grid-cols-4 md:grid-cols-12 gap-3">
+                    <!-- JS generated -->
+                </div>
             </div>
         </div>
 
@@ -115,15 +172,17 @@
         <div id="viewer-question" class="hidden fixed inset-0 bg-slate-950 p-12 flex flex-col z-50">
             <div id="q-timer" class="timer-bar fixed top-0 left-0"></div>
             <div class="flex justify-between items-center mb-12">
-                <div id="q-meta" class="bg-indigo-600 px-6 py-2 rounded-full font-black text-sm uppercase tracking-widest"></div>
-                <div id="q-timer-text" class="text-3xl font-mono font-bold text-indigo-400">00:30</div>
+                <div id="q-meta" class="bg-indigo-600 px-8 py-3 rounded-full font-black text-lg uppercase tracking-widest shadow-lg shadow-indigo-600/30"></div>
+                <div id="q-timer-text" class="text-5xl font-mono font-bold text-indigo-400">00:30</div>
             </div>
             <div class="flex-1 flex flex-col justify-center items-center text-center space-y-12">
-                <h2 id="q-text" class="text-5xl md:text-7xl font-bold leading-tight max-w-5xl"></h2>
-                <div id="q-options" class="grid grid-cols-2 gap-6 w-full max-w-4xl"></div>
-                <div id="a-box" class="hidden bg-emerald-500 text-slate-950 p-8 rounded-[40px] w-full max-w-3xl">
-                    <div id="a-text" class="text-6xl font-black mb-2"></div>
-                    <div id="a-verse" class="text-xl font-bold opacity-80"></div>
+                <h2 id="q-text" class="text-5xl md:text-8xl font-bold leading-tight max-w-6xl drop-shadow-lg"></h2>
+                
+                <!-- Answer Box -->
+                <div id="a-box" class="hidden opacity-0 transform translate-y-10 transition-all duration-700 bg-emerald-500 text-slate-950 p-10 rounded-[50px] w-full max-w-4xl shadow-2xl shadow-emerald-500/20">
+                    <div class="text-2xl font-bold opacity-60 mb-2 uppercase tracking-tighter">Correct Answer</div>
+                    <div id="a-text" class="text-7xl font-black mb-4"></div>
+                    <div id="a-verse" class="text-2xl font-bold opacity-80"></div>
                 </div>
             </div>
         </div>
@@ -132,55 +191,68 @@
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-        import { getFirestore, doc, onSnapshot, updateDoc, setDoc, collection, getDocs, query } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+        import { getFirestore, doc, onSnapshot, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
 
         // 1. Firebase Configuration
-        const firebaseConfig = JSON.parse(__firebase_config);
+        // const firebaseConfig = JSON.parse(__firebase_config);
+        const firebaseConfig = {
+            apiKey: "AIzaSyCxCOVwf1cY7dx1B9Bk0pTIsxww_Bc8qTQ",
+            authDomain: "biblequizcloud.firebaseapp.com",
+            projectId: "biblequizcloud",
+            storageBucket: "biblequizcloud.firebasestorage.app",
+            messagingSenderId: "794279182240",
+            appId: "1:794279182240:web:63f70343a050513d902ec5"
+        };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'bible-quiz-default';
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'bible-quiz-v2-default';
 
-        // 2. State
-        let currentMode = 'select';
+        // 2. Mock Data (실제 CSV 파싱 대신 내부 데이터 구조로 관리)
+        const quizData = Array.from({length: 40}, (_, i) => ({
+            id: i + 1,
+            text: `창세기 6-22장 성경 관련 ${i + 1}번 문제입니다.`,
+            answer: `정답 ${i + 1}`,
+            verse: `창세기 ${Math.floor(Math.random()*15)+6}:${Math.floor(Math.random()*30)+1}`,
+            point: (i % 3) + 1,
+            type: i % 2 === 0 ? "주관식" : "OX퀴즈"
+        }));
+
+        // 3. Game State
         let gameState = {
             scores: Array(12).fill(0),
-            solved: [],
-            activeQuestion: null, // ID of question currently being shown
+            solved: [], // {qId, teamIdx, itemUsed}
+            activeQuestion: null,
             showAnswer: false,
-            timer: 0
+            timer: 30
         };
 
-        // 3. UI Helper functions
+        // 4. Initialization
         window.setMode = async (mode) => {
             currentMode = mode;
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
             document.getElementById(`view-${mode}`).classList.add('active');
-            
-            // Authentication
             await signInAnonymously(auth);
         };
 
-        // 4. Firestore Sync
+        let currentMode = 'select';
+
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 const gameDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'game_state');
-                
-                // Real-time listener
                 onSnapshot(gameDocRef, (doc) => {
                     if (doc.exists()) {
                         gameState = doc.data();
                         renderUI();
                     } else {
-                        // Initial Setup
-                        resetCloudData();
+                        resetCloudData(true);
                     }
-                }, (err) => console.error("Firestore Error:", err));
+                });
             }
         });
 
-        // 5. Database Actions
+        // 5. Actions
         window.updateScore = async (idx, delta) => {
             const newScores = [...gameState.scores];
             newScores[idx] += delta;
@@ -191,19 +263,31 @@
         window.toggleQuestion = async (qId) => {
             const ref = doc(db, 'artifacts', appId, 'public', 'data', 'game_state');
             if (gameState.activeQuestion === qId) {
-                // Close question
                 await updateDoc(ref, { activeQuestion: null, showAnswer: false });
             } else {
-                // Open question
-                const newSolved = [...(gameState.solved || [])];
-                if (!newSolved.includes(qId)) newSolved.push(qId);
-                await updateDoc(ref, { 
-                    activeQuestion: qId, 
-                    solved: newSolved, 
-                    showAnswer: false,
-                    timer: 30 
-                });
+                await updateDoc(ref, { activeQuestion: qId, showAnswer: false, timer: 30 });
             }
+        };
+
+        window.submitAnswer = async (teamIdx) => {
+            const qId = gameState.activeQuestion;
+            if (!qId) return;
+
+            const q = quizData.find(item => item.id === qId);
+            const alreadySolved = gameState.solved.find(s => s.qId === qId);
+            
+            if (alreadySolved) {
+                if(!confirm("이미 해결된 문제입니다. 기록을 수정하시겠습니까?")) return;
+            }
+
+            const newSolved = gameState.solved.filter(s => s.qId !== qId);
+            newSolved.push({ qId, teamIdx, timestamp: Date.now() });
+
+            const newScores = [...gameState.scores];
+            newScores[teamIdx] += q.point;
+
+            const ref = doc(db, 'artifacts', appId, 'public', 'data', 'game_state');
+            await updateDoc(ref, { solved: newSolved, scores: newScores });
         };
 
         window.revealAnswer = async () => {
@@ -211,49 +295,88 @@
             await updateDoc(ref, { showAnswer: true });
         };
 
-        window.resetCloudData = async () => {
-            if(!confirm("모든 클라우드 데이터를 초기화하시겠습니까?")) return;
+        window.triggerItem = async () => {
+            const item = prompt("사용한 아이템 이름을 입력하세요 (예: 금화 추가, 목자 찬스)");
+            if (!item) return;
+            
+            const qId = gameState.activeQuestion;
+            const newSolved = gameState.solved.map(s => {
+                if(s.qId === qId) return {...s, itemUsed: item};
+                return s;
+            });
+
+            const ref = doc(db, 'artifacts', appId, 'public', 'data', 'game_state');
+            await updateDoc(ref, { solved: newSolved });
+        };
+
+        window.resetCloudData = async (silent = false) => {
+            if(!silent && !confirm("모든 데이터를 초기화하시겠습니까?")) return;
             const ref = doc(db, 'artifacts', appId, 'public', 'data', 'game_state');
             await setDoc(ref, {
                 scores: Array(12).fill(0),
                 solved: [],
                 activeQuestion: null,
                 showAnswer: false,
-                timer: 0
+                timer: 30
             });
         };
 
-        // 6. Rendering Logic
+        // 6. Rendering
         function renderUI() {
             if (currentMode === 'admin') renderAdmin();
             if (currentMode === 'viewer') renderViewer();
         }
 
         function renderAdmin() {
-            // Scores
+            // Admin Score List
             const scoreList = document.getElementById('admin-score-list');
             scoreList.innerHTML = gameState.scores.map((s, i) => `
-                <div class="flex items-center justify-between bg-slate-800 p-3 rounded-xl border border-white/5">
-                    <span class="font-bold text-slate-400">${i+1}조</span>
-                    <span class="text-xl font-black text-indigo-400">${s}</span>
-                    <div class="flex gap-2">
-                        <button onclick="updateScore(${i}, -1)" class="w-8 h-8 bg-slate-700 rounded-lg">-</button>
-                        <button onclick="updateScore(${i}, 1)" class="w-8 h-8 bg-indigo-600 rounded-lg">+</button>
+                <div class="bg-slate-800 p-2 rounded-xl flex flex-col items-center border border-white/5">
+                    <span class="text-[10px] text-slate-500 font-bold">${i+1}조</span>
+                    <span class="text-lg font-black ${s > 0 ? 'text-indigo-400' : 'text-slate-600'}">${s}</span>
+                    <div class="flex gap-1 mt-1">
+                        <button onclick="updateScore(${i}, -1)" class="px-2 bg-slate-700 rounded">-</button>
+                        <button onclick="updateScore(${i}, 1)" class="px-2 bg-indigo-600 rounded">+</button>
                     </div>
                 </div>
             `).join('');
 
-            // Grid
+            // Admin Grid
             const grid = document.getElementById('admin-quiz-grid');
             grid.innerHTML = '';
-            for(let i=1; i<=40; i++) {
-                const isSolved = gameState.solved?.includes(i);
-                const isActive = gameState.activeQuestion === i;
+            quizData.forEach(q => {
+                const solveInfo = gameState.solved.find(s => s.qId === q.id);
+                const isActive = gameState.activeQuestion === q.id;
                 const btn = document.createElement('button');
-                btn.className = `p-3 rounded-lg font-bold transition ${isActive ? 'bg-indigo-500 scale-110' : (isSolved ? 'bg-slate-800 text-slate-600' : 'bg-slate-700 hover:bg-slate-600')}`;
-                btn.innerText = i;
-                btn.onclick = () => toggleQuestion(i);
+                btn.className = `p-2 rounded-lg text-xs font-bold transition ${isActive ? 'bg-amber-500 text-slate-950 scale-110 z-10' : (solveInfo ? 'bg-slate-800 text-slate-600' : 'bg-slate-700 hover:bg-slate-600')}`;
+                btn.innerHTML = `${q.id}<br><span class="opacity-50">${q.point}P</span>`;
+                btn.onclick = () => toggleQuestion(q.id);
                 grid.appendChild(btn);
+            });
+
+            // Admin Detail Panel
+            const panel = document.getElementById('admin-detail-panel');
+            if (gameState.activeQuestion) {
+                panel.classList.remove('hidden');
+                const q = quizData.find(item => item.id === gameState.activeQuestion);
+                const solveInfo = gameState.solved.find(s => s.qId === q.id);
+                
+                document.getElementById('admin-detail-q-num').innerText = `#${q.id.toString().padStart(2, '0')}`;
+                document.getElementById('admin-detail-q-text').innerText = q.text;
+                
+                const answerGrid = document.getElementById('admin-answer-grid');
+                answerGrid.innerHTML = Array.from({length: 12}, (_, i) => `
+                    <button onclick="submitAnswer(${i})" class="p-3 rounded-xl font-bold transition ${solveInfo?.teamIdx === i ? 'bg-emerald-500 text-slate-950' : 'bg-slate-800 hover:bg-slate-700'}">
+                        ${i+1}조
+                    </button>
+                `).join('');
+
+                const log = document.getElementById('admin-q-log');
+                log.innerHTML = solveInfo ? 
+                    `<span class="text-emerald-400">${solveInfo.teamIdx+1}조 정답</span> ${solveInfo.itemUsed ? `| 아이템: ${solveInfo.itemUsed}` : ''}` : 
+                    "진행 중...";
+            } else {
+                panel.classList.add('hidden');
             }
         }
 
@@ -261,59 +384,65 @@
             const board = document.getElementById('viewer-board');
             const qView = document.getElementById('viewer-question');
 
-            // 1. Grid & Scores on Board
             if (!gameState.activeQuestion) {
                 board.classList.remove('hidden');
                 qView.classList.add('hidden');
                 
-                // Render Grid
                 const grid = document.getElementById('viewer-quiz-grid');
                 grid.innerHTML = '';
-                for(let i=1; i<=40; i++) {
-                    const isSolved = gameState.solved?.includes(i);
+                quizData.forEach(q => {
+                    const solveInfo = gameState.solved.find(s => s.qId === q.id);
                     const div = document.createElement('div');
-                    div.className = `quiz-card flex items-center justify-center rounded-2xl text-2xl font-black ${isSolved ? 'solved bg-slate-800' : 'bg-indigo-600 shadow-lg shadow-indigo-500/20'}`;
-                    div.innerText = i;
+                    div.className = `quiz-card flex flex-col items-center justify-center rounded-3xl border-2 border-white/5 ${solveInfo ? 'solved bg-slate-900' : 'bg-indigo-600/90 shadow-xl shadow-indigo-500/10'}`;
+                    div.innerHTML = `
+                        <span class="text-sm opacity-60 mb-1">${q.point}PT</span>
+                        <span class="text-4xl font-black">${q.id}</span>
+                    `;
                     grid.appendChild(div);
-                }
+                });
 
-                // Render Scores
                 const scores = document.getElementById('viewer-scores');
                 scores.innerHTML = gameState.scores.map((s, i) => `
-                    <div class="bg-slate-900/80 border border-white/10 p-2 rounded-xl text-center">
-                        <div class="text-[10px] text-slate-500 font-bold uppercase">${i+1}조</div>
-                        <div class="text-xl font-black text-indigo-400">${s}</div>
+                    <div class="bg-slate-950 p-3 rounded-3xl border border-white/5 text-center transition-all ${s > 0 ? 'ring-2 ring-indigo-500/30' : ''}">
+                        <div class="text-[10px] text-slate-500 font-bold uppercase mb-1">${i+1}조</div>
+                        <div class="text-2xl font-black text-indigo-400">${s}</div>
                     </div>
                 `).join('');
-            } 
-            // 2. Active Question Display
-            else {
+            } else {
                 board.classList.add('hidden');
                 qView.classList.remove('hidden');
                 
-                // Sample Data (실제 데이터는 parseData 로직에서 가져옴)
-                const q = { id: gameState.activeQuestion, type: "주관식", diff: "중", text: `성경 퀴즈 ${gameState.activeQuestion}번 문제입니다.`, answer: "정답입니다", verse: "성경구절 1:1" };
-                
-                document.getElementById('q-meta').innerText = `${q.type} • 난이도 ${q.diff}`;
+                const q = quizData.find(item => item.id === gameState.activeQuestion);
+                document.getElementById('q-meta').innerText = `${q.type} • 난이도 ${q.point === 1 ? '하' : q.point === 2 ? '중' : '상'}`;
                 document.getElementById('q-text').innerText = q.text;
                 
                 const aBox = document.getElementById('a-box');
                 if (gameState.showAnswer) {
                     aBox.classList.remove('hidden');
+                    setTimeout(() => { aBox.classList.add('opacity-100', 'translate-y-0'); }, 50);
                     document.getElementById('a-text').innerText = q.answer;
                     document.getElementById('a-verse').innerText = q.verse;
                 } else {
                     aBox.classList.add('hidden');
+                    aBox.classList.remove('opacity-100', 'translate-y-0');
                 }
             }
         }
 
-        // Timer Mock Logic
+        // Real-time Timer Sync (Local but based on game state)
         setInterval(() => {
             if (gameState.activeQuestion && !gameState.showAnswer && gameState.timer > 0) {
                 gameState.timer--;
-                document.getElementById('q-timer-text').innerText = `00:${gameState.timer.toString().padStart(2, '0')}`;
-                document.getElementById('q-timer').style.width = `${(gameState.timer/30)*100}%`;
+                const timerText = document.getElementById('q-timer-text');
+                const timerBar = document.getElementById('q-timer');
+                if(timerText) timerText.innerText = `00:${gameState.timer.toString().padStart(2, '0')}`;
+                if(timerBar) timerBar.style.width = `${(gameState.timer/30)*100}%`;
+                
+                if(gameState.timer < 10 && timerText) {
+                    timerText.classList.add('text-red-500', 'animate-pulse');
+                } else if(timerText) {
+                    timerText.classList.remove('text-red-500', 'animate-pulse');
+                }
             }
         }, 1000);
 
