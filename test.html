@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>성경 퀴즈 클라우드 시스템</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700;900&display=swap');
+        
+        :root {
+            --primary: #6366f1;
+            --bg-dark: #0f172a;
+        }
+
+        body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg-dark); color: white; margin: 0; overflow-x: hidden; }
+        .font-title { font-family: 'Black Han Sans', sans-serif; }
+        
+        .quiz-card {
+            aspect-ratio: 1/1;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .quiz-card:hover { transform: translateY(-5px) scale(1.05); z-index: 10; }
+        .quiz-card.solved { opacity: 0.2; filter: grayscale(1); pointer-events: none; }
+        
+        .view-section { display: none; min-height: 100vh; padding: 2rem; }
+        .view-section.active { display: flex; flex-direction: column; animation: fadeIn 0.5s ease; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Firestore 기반 실시간 상태 배지 */
+        .status-badge {
+            position: fixed; top: 1rem; right: 1rem; padding: 0.5rem 1rem;
+            border-radius: 99px; font-size: 0.75rem; font-weight: bold;
+            background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid #10b981;
+            z-index: 1000;
+        }
+
+        /* 타이머 애니메이션 */
+        .timer-bar { height: 6px; background: #ef4444; width: 100%; transition: width 1s linear; }
+    </style>
+</head>
+<body>
+
+    <div id="connection-status" class="status-badge">
+        <i class="fa-solid fa-circle-dot animate-pulse"></i> Cloud Connected
+    </div>
+
+    <!-- [1. MODE SELECTOR] -->
+    <div id="view-mode-selector" class="view-section active items-center justify-center space-y-8">
+        <h1 class="text-5xl font-title text-center text-indigo-400">BIBLE QUIZ CLOUD<br><span class="text-2xl text-slate-400">시스템 모드를 선택하세요</span></h1>
+        <div class="flex gap-6">
+            <button onclick="setMode('admin')" class="bg-indigo-600 hover:bg-indigo-500 p-8 rounded-3xl w-64 text-center transition group">
+                <i class="fa-solid fa-user-shield text-4xl mb-4 group-hover:scale-110 transition"></i>
+                <div class="text-xl font-bold">관리자 모드</div>
+                <p class="text-xs text-indigo-200 mt-2">문제 선택 및 점수 제어</p>
+            </button>
+            <button onclick="setMode('viewer')" class="bg-slate-800 hover:bg-slate-700 p-8 rounded-3xl w-64 text-center transition group">
+                <i class="fa-solid fa-desktop text-4xl mb-4 group-hover:scale-110 transition"></i>
+                <div class="text-xl font-bold">학생용 화면</div>
+                <p class="text-xs text-slate-400 mt-2">스크린 투사 전용</p>
+            </button>
+        </div>
+    </div>
+
+    <!-- [2. ADMIN DASHBOARD] -->
+    <div id="view-admin" class="view-section">
+        <header class="flex justify-between items-center mb-8">
+            <h2 class="text-2xl font-bold flex items-center gap-3">
+                <i class="fa-solid fa-gears text-indigo-500"></i> 관리자 대시보드
+            </h2>
+            <div class="flex gap-3">
+                <button onclick="resetCloudData()" class="bg-red-900/30 text-red-400 px-4 py-2 rounded-lg text-sm border border-red-500/30">전체 초기화</button>
+                <button onclick="location.reload()" class="bg-slate-800 px-4 py-2 rounded-lg text-sm">모드 변경</button>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- 점수 관리 -->
+            <div class="lg:col-span-1 bg-slate-900/50 p-6 rounded-3xl border border-white/5">
+                <h3 class="font-bold mb-4 text-indigo-300">조별 실시간 점수</h3>
+                <div id="admin-score-list" class="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
+                    <!-- JS generated -->
+                </div>
+            </div>
+            
+            <!-- 문제 선택 -->
+            <div class="lg:col-span-2 bg-slate-900/50 p-6 rounded-3xl border border-white/5">
+                <h3 class="font-bold mb-4 text-indigo-300">문제 진행 상태</h3>
+                <div id="admin-quiz-grid" class="grid grid-cols-5 md:grid-cols-8 gap-3">
+                    <!-- JS generated -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- [3. VIEWER SCREEN] -->
+    <div id="view-viewer" class="view-section">
+        <!-- Main Board View -->
+        <div id="viewer-board" class="flex flex-col items-center justify-center flex-1">
+            <h1 class="text-6xl font-title text-indigo-500 mb-12 tracking-tighter shadow-indigo-500/20 drop-shadow-2xl">BIBLE QUIZ MASTER</h1>
+            <div id="viewer-quiz-grid" class="grid grid-cols-5 md:grid-cols-8 gap-4 w-full max-w-5xl">
+                <!-- JS generated -->
+            </div>
+            <div id="viewer-scores" class="mt-16 w-full max-w-6xl grid grid-cols-6 md:grid-cols-12 gap-3">
+                <!-- JS generated -->
+            </div>
+        </div>
+
+        <!-- Single Question View -->
+        <div id="viewer-question" class="hidden fixed inset-0 bg-slate-950 p-12 flex flex-col z-50">
+            <div id="q-timer" class="timer-bar fixed top-0 left-0"></div>
+            <div class="flex justify-between items-center mb-12">
+                <div id="q-meta" class="bg-indigo-600 px-6 py-2 rounded-full font-black text-sm uppercase tracking-widest"></div>
+                <div id="q-timer-text" class="text-3xl font-mono font-bold text-indigo-400">00:30</div>
+            </div>
+            <div class="flex-1 flex flex-col justify-center items-center text-center space-y-12">
+                <h2 id="q-text" class="text-5xl md:text-7xl font-bold leading-tight max-w-5xl"></h2>
+                <div id="q-options" class="grid grid-cols-2 gap-6 w-full max-w-4xl"></div>
+                <div id="a-box" class="hidden bg-emerald-500 text-slate-950 p-8 rounded-[40px] w-full max-w-3xl">
+                    <div id="a-text" class="text-6xl font-black mb-2"></div>
+                    <div id="a-verse" class="text-xl font-bold opacity-80"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { getFirestore, doc, onSnapshot, updateDoc, setDoc, collection, getDocs, query } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+
+        // 1. Firebase Configuration
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'bible-quiz-default';
+
+        // 2. State
+        let currentMode = 'select';
+        let gameState = {
+            scores: Array(12).fill(0),
+            solved: [],
+            activeQuestion: null, // ID of question currently being shown
+            showAnswer: false,
+            timer: 0
+        };
+
+        // 3. UI Helper functions
+        window.setMode = async (mode) => {
+            currentMode = mode;
+            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(`view-${mode}`).classList.add('active');
+            
+            // Authentication
+            await signInAnonymously(auth);
+        };
+
+        // 4. Firestore Sync
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                const gameDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'game_state');
+                
+                // Real-time listener
+                onSnapshot(gameDocRef, (doc) => {
+                    if (doc.exists()) {
+                        gameState = doc.data();
+                        renderUI();
+                    } else {
+                        // Initial Setup
+                        resetCloudData();
+                    }
+                }, (err) => console.error("Firestore Error:", err));
+            }
+        });
+
+        // 5. Database Actions
+        window.updateScore = async (idx, delta) => {
+            const newScores = [...gameState.scores];
+            newScores[idx] += delta;
+            const ref = doc(db, 'artifacts', appId, 'public', 'data', 'game_state');
+            await updateDoc(ref, { scores: newScores });
+        };
+
+        window.toggleQuestion = async (qId) => {
+            const ref = doc(db, 'artifacts', appId, 'public', 'data', 'game_state');
+            if (gameState.activeQuestion === qId) {
+                // Close question
+                await updateDoc(ref, { activeQuestion: null, showAnswer: false });
+            } else {
+                // Open question
+                const newSolved = [...(gameState.solved || [])];
+                if (!newSolved.includes(qId)) newSolved.push(qId);
+                await updateDoc(ref, { 
+                    activeQuestion: qId, 
+                    solved: newSolved, 
+                    showAnswer: false,
+                    timer: 30 
+                });
+            }
+        };
+
+        window.revealAnswer = async () => {
+            const ref = doc(db, 'artifacts', appId, 'public', 'data', 'game_state');
+            await updateDoc(ref, { showAnswer: true });
+        };
+
+        window.resetCloudData = async () => {
+            if(!confirm("모든 클라우드 데이터를 초기화하시겠습니까?")) return;
+            const ref = doc(db, 'artifacts', appId, 'public', 'data', 'game_state');
+            await setDoc(ref, {
+                scores: Array(12).fill(0),
+                solved: [],
+                activeQuestion: null,
+                showAnswer: false,
+                timer: 0
+            });
+        };
+
+        // 6. Rendering Logic
+        function renderUI() {
+            if (currentMode === 'admin') renderAdmin();
+            if (currentMode === 'viewer') renderViewer();
+        }
+
+        function renderAdmin() {
+            // Scores
+            const scoreList = document.getElementById('admin-score-list');
+            scoreList.innerHTML = gameState.scores.map((s, i) => `
+                <div class="flex items-center justify-between bg-slate-800 p-3 rounded-xl border border-white/5">
+                    <span class="font-bold text-slate-400">${i+1}조</span>
+                    <span class="text-xl font-black text-indigo-400">${s}</span>
+                    <div class="flex gap-2">
+                        <button onclick="updateScore(${i}, -1)" class="w-8 h-8 bg-slate-700 rounded-lg">-</button>
+                        <button onclick="updateScore(${i}, 1)" class="w-8 h-8 bg-indigo-600 rounded-lg">+</button>
+                    </div>
+                </div>
+            `).join('');
+
+            // Grid
+            const grid = document.getElementById('admin-quiz-grid');
+            grid.innerHTML = '';
+            for(let i=1; i<=40; i++) {
+                const isSolved = gameState.solved?.includes(i);
+                const isActive = gameState.activeQuestion === i;
+                const btn = document.createElement('button');
+                btn.className = `p-3 rounded-lg font-bold transition ${isActive ? 'bg-indigo-500 scale-110' : (isSolved ? 'bg-slate-800 text-slate-600' : 'bg-slate-700 hover:bg-slate-600')}`;
+                btn.innerText = i;
+                btn.onclick = () => toggleQuestion(i);
+                grid.appendChild(btn);
+            }
+        }
+
+        function renderViewer() {
+            const board = document.getElementById('viewer-board');
+            const qView = document.getElementById('viewer-question');
+
+            // 1. Grid & Scores on Board
+            if (!gameState.activeQuestion) {
+                board.classList.remove('hidden');
+                qView.classList.add('hidden');
+                
+                // Render Grid
+                const grid = document.getElementById('viewer-quiz-grid');
+                grid.innerHTML = '';
+                for(let i=1; i<=40; i++) {
+                    const isSolved = gameState.solved?.includes(i);
+                    const div = document.createElement('div');
+                    div.className = `quiz-card flex items-center justify-center rounded-2xl text-2xl font-black ${isSolved ? 'solved bg-slate-800' : 'bg-indigo-600 shadow-lg shadow-indigo-500/20'}`;
+                    div.innerText = i;
+                    grid.appendChild(div);
+                }
+
+                // Render Scores
+                const scores = document.getElementById('viewer-scores');
+                scores.innerHTML = gameState.scores.map((s, i) => `
+                    <div class="bg-slate-900/80 border border-white/10 p-2 rounded-xl text-center">
+                        <div class="text-[10px] text-slate-500 font-bold uppercase">${i+1}조</div>
+                        <div class="text-xl font-black text-indigo-400">${s}</div>
+                    </div>
+                `).join('');
+            } 
+            // 2. Active Question Display
+            else {
+                board.classList.add('hidden');
+                qView.classList.remove('hidden');
+                
+                // Sample Data (실제 데이터는 parseData 로직에서 가져옴)
+                const q = { id: gameState.activeQuestion, type: "주관식", diff: "중", text: `성경 퀴즈 ${gameState.activeQuestion}번 문제입니다.`, answer: "정답입니다", verse: "성경구절 1:1" };
+                
+                document.getElementById('q-meta').innerText = `${q.type} • 난이도 ${q.diff}`;
+                document.getElementById('q-text').innerText = q.text;
+                
+                const aBox = document.getElementById('a-box');
+                if (gameState.showAnswer) {
+                    aBox.classList.remove('hidden');
+                    document.getElementById('a-text').innerText = q.answer;
+                    document.getElementById('a-verse').innerText = q.verse;
+                } else {
+                    aBox.classList.add('hidden');
+                }
+            }
+        }
+
+        // Timer Mock Logic
+        setInterval(() => {
+            if (gameState.activeQuestion && !gameState.showAnswer && gameState.timer > 0) {
+                gameState.timer--;
+                document.getElementById('q-timer-text').innerText = `00:${gameState.timer.toString().padStart(2, '0')}`;
+                document.getElementById('q-timer').style.width = `${(gameState.timer/30)*100}%`;
+            }
+        }, 1000);
+
+    </script>
+</body>
+</html>
