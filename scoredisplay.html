@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>조별 점수 현황판</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body { 
             font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; 
             background-color: #f0f2f5; 
-            padding: 15px; 
+            padding: 20px; 
             margin: 0;
             color: #1e293b;
-            /* iframe 내에서 한눈에 보이도록 하기 위한 설정 */
             overflow-x: hidden;
             display: flex;
             flex-direction: column;
@@ -20,78 +20,152 @@
         h1 { 
             text-align: center; 
             color: #0f172a; 
-            margin-bottom: 20px;
-            font-size: 1.8rem;
+            margin-bottom: 30px;
+            font-size: 2rem;
             font-weight: 900;
+            letter-spacing: -0.05em;
         }
         .grid-container {
             display: grid;
-            /* iframe 크기에 맞춰 카드 크기를 유연하게 조절 */
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
         }
         .team-card {
             background: white;
-            border-radius: 20px;
-            padding: 20px;
+            border-radius: 24px;
+            padding: 24px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             text-align: center;
             border: 2px solid #f1f5f9;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
+            overflow: hidden;
         }
-        .team-card.top-rank {
-            background: linear-gradient(to bottom right, #ffffff, #f0f9ff);
-            border-color: #3b82f6;
-            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.1);
-        }
+        
+        /* Rank Styles */
         .rank-badge {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
             background: #64748b;
             color: white;
-            padding: 4px 12px;
+            padding: 6px 16px;
             border-radius: 99px;
-            font-size: 0.75rem;
+            font-size: 0.9rem;
             font-weight: 800;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .top-rank .rank-badge {
-            background: #3b82f6;
+        
+        /* Top 3 Special Styles */
+        .team-card.rank-1 {
+            background: linear-gradient(135deg, #fff, #fff9e6);
+            border-color: #fbbf24;
+            box-shadow: 0 20px 25px -5px rgba(251, 191, 36, 0.15), 0 8px 10px -6px rgba(251, 191, 36, 0.1);
+            transform: scale(1.05);
+            z-index: 10;
         }
+        .team-card.rank-1 .rank-badge {
+            background: linear-gradient(135deg, #fbbf24, #d97706);
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+        }
+        
+        .team-card.rank-2 {
+            background: linear-gradient(135deg, #fff, #f8fafc);
+            border-color: #94a3b8;
+            box-shadow: 0 20px 25px -5px rgba(148, 163, 184, 0.15), 0 8px 10px -6px rgba(148, 163, 184, 0.1);
+            transform: scale(1.02);
+            z-index: 5;
+        }
+        .team-card.rank-2 .rank-badge {
+            background: linear-gradient(135deg, #94a3b8, #64748b);
+            box-shadow: 0 4px 12px rgba(148, 163, 184, 0.4);
+        }
+        
+        .team-card.rank-3 {
+            background: linear-gradient(135deg, #fff, #fff1f2);
+            border-color: #fca5a5;
+            box-shadow: 0 20px 25px -5px rgba(252, 165, 165, 0.15), 0 8px 10px -6px rgba(252, 165, 165, 0.1);
+            transform: scale(1.02);
+            z-index: 5;
+        }
+        .team-card.rank-3 .rank-badge {
+            background: linear-gradient(135deg, #f87171, #b91c1c);
+            box-shadow: 0 4px 12px rgba(248, 113, 113, 0.4);
+        }
+
         .team-name {
-            font-size: 1.25rem;
-            font-weight: 800;
-            margin-bottom: 15px;
+            font-size: 1.5rem;
+            font-weight: 900;
+            margin-bottom: 20px;
             color: #0f172a;
+            letter-spacing: -0.02em;
         }
+        
+        .score-info {
+            background: rgba(241, 245, 249, 0.5);
+            border-radius: 16px;
+            padding: 12px;
+        }
+        
         .score-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid #f1f5f9;
+            padding: 6px 8px;
         }
-        .score-row:last-child { border-bottom: none; }
-        .score-label { font-size: 0.85rem; color: #64748b; font-weight: 500; }
-        .score-value { font-size: 1.1rem; font-weight: 800; color: #0f172a; }
-        .total-score .score-value { color: #3b82f6; font-size: 1.3rem; }
+        
+        .score-row.total-score {
+            margin-top: 8px;
+            padding-top: 12px;
+            border-top: 2px dashed #e2e8f0;
+        }
 
+        .score-label { 
+            font-size: 0.9rem; 
+            color: #64748b; 
+            font-weight: 600; 
+        }
+        .score-value { 
+            font-size: 1.1rem; 
+            font-weight: 800; 
+            color: #334155; 
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .total-score .score-label {
+            color: #0f172a;
+            font-size: 1rem;
+        }
+        
+        .total-score .score-value { 
+            color: #2563eb; 
+            font-size: 1.8rem;
+            line-height: 1;
+        }
+
+        /* Rank Icon Animation */
+        .rank-icon {
+            font-size: 1.1em;
+        }
+        
         .loading-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(240, 242, 245, 0.9);
+            background: rgba(240, 242, 245, 0.95);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 100;
             font-weight: bold;
             color: #64748b;
+            backdrop-filter: blur(5px);
         }
 
-        /* 팝업 내부에서 너무 크게 보일 경우 자동 축소 (반응형 리사이징) */
+        /* Responsive resizing */
         @media screen and (max-height: 800px) {
             body { zoom: 0.9; }
         }
@@ -102,11 +176,16 @@
 </head>
 <body>
 
-    <div id="loading" class="loading-overlay">데이터를 불러오는 중...</div>
+    <div id="loading" class="loading-overlay">
+        <div style="text-align: center;">
+            <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2rem; margin-bottom: 10px; color: #3b82f6;"></i><br>
+            데이터를 불러오는 중...
+        </div>
+    </div>
 
     <h1>🏆 조별 실시간 점수 현황</h1>
     <div class="grid-container" id="score-board">
-        <!-- 자바스크립트로 데이터가 삽입됩니다 -->
+        <!-- Javascript will insert data here -->
     </div>
 
     <script type="module">
@@ -114,7 +193,7 @@
         import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // 원본 코드의 설정값 유지
+        // Keep original config
         const firebaseConfig = {
             apiKey: "AIzaSyCxCOVwf1cY7dx1B9Bk0pTIsxww_Bc8qTQ",
             authDomain: "biblequizcloud.firebaseapp.com",
@@ -134,7 +213,7 @@
         const scoreBoard = document.getElementById('score-board');
         const loading = document.getElementById('loading');
 
-        // 초기 레이아웃 생성
+        // Initial Layout
         const renderPlaceholder = () => {
             scoreBoard.innerHTML = '';
             for (let i = 1; i <= TEAM_COUNT; i++) {
@@ -142,15 +221,20 @@
                 card.className = 'team-card';
                 card.id = `team-card-${i}`;
                 card.innerHTML = `
-                    <div class="rank-badge" id="rank-${i}">-위</div>
-                    <div class="team-name">${i}조</div>
-                    <div class="score-row">
-                        <span class="score-label">기본 점수</span>
-                        <span class="score-value" id="unapplied-${i}">0</span>
+                    <div class="rank-badge" id="rank-badge-${i}">
+                        <span id="rank-icon-${i}"></span>
+                        <span id="rank-text-${i}">-위</span>
                     </div>
-                    <div class="score-row total-score">
-                        <span class="score-label">현재 합계</span>
-                        <span class="score-value" id="applied-${i}">0</span>
+                    <div class="team-name">${i}조</div>
+                    <div class="score-info">
+                        <div class="score-row">
+                            <span class="score-label">기본 점수</span>
+                            <span class="score-value" id="unapplied-${i}">0</span>
+                        </div>
+                        <div class="score-row total-score">
+                            <span class="score-label">합계</span>
+                            <span class="score-value" id="applied-${i}">0</span>
+                        </div>
                     </div>
                 `;
                 scoreBoard.appendChild(card);
@@ -165,7 +249,6 @@
                     await signInAnonymously(auth);
                 }
 
-                // 원본 데이터 경로 복구
                 const finalAppId = typeof window.__app_id !== 'undefined' ? window.__app_id : 'default-app-id';
                 const docRef = doc(db, 'artifacts', finalAppId, 'public', 'data', COLLECTION_NAME, 'current_game');
 
@@ -177,29 +260,43 @@
                     const gameData = docSnap.data();
                     const stats = gameData.stats || [];
 
-                    // 순위 계산
+                    // Calculate Ranks
                     const sortedStats = [...stats].sort((a, b) => b.totalScore - a.totalScore || a.id - b.id);
 
                     stats.forEach((team) => {
                         const teamId = team.id;
+                        // Find rank (1-based), handle ties if needed, but simple index for now
                         const rank = sortedStats.findIndex(t => t.id === teamId) + 1;
 
                         const appliedEl = document.getElementById(`applied-${teamId}`);
                         const unappliedEl = document.getElementById(`unapplied-${teamId}`);
-                        const rankEl = document.getElementById(`rank-${teamId}`);
+                        const rankTextEl = document.getElementById(`rank-text-${teamId}`);
+                        const rankIconEl = document.getElementById(`rank-icon-${teamId}`);
+                        const rankBadgeEl = document.getElementById(`rank-badge-${teamId}`);
                         const cardEl = document.getElementById(`team-card-${teamId}`);
 
                         if (appliedEl) appliedEl.innerText = (team.totalScore || 0).toLocaleString();
                         if (unappliedEl) unappliedEl.innerText = (team.baseScore || 0).toLocaleString();
-                        if (rankEl) rankEl.innerText = `${rank}위`;
+                        
+                        if (rankTextEl) rankTextEl.innerText = `${rank}위`;
 
+                        // Reset Classes
                         if (cardEl) {
-                            if (rank <= 3) cardEl.classList.add('top-rank');
-                            else cardEl.classList.remove('top-rank');
+                            cardEl.classList.remove('rank-1', 'rank-2', 'rank-3');
+                            if (rank <= 3) cardEl.classList.add(`rank-${rank}`);
+                        }
+
+                        // Icon Logic
+                        if (rankIconEl) {
+                            rankIconEl.className = 'rank-icon'; // reset
+                            if (rank === 1) rankIconEl.innerHTML = '<i class="fa-solid fa-trophy"></i>';
+                            else if (rank === 2) rankIconEl.innerHTML = '<i class="fa-solid fa-medal"></i>';
+                            else if (rank === 3) rankIconEl.innerHTML = '<i class="fa-solid fa-medal"></i>';
+                            else rankIconEl.innerHTML = '';
                         }
                     });
                 }, (error) => {
-                    loading.innerText = "데이터 연결 오류";
+                    loading.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i><br>데이터 연결 오류';
                 });
 
             } catch (error) {
