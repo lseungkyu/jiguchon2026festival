@@ -361,8 +361,8 @@
 
                     calculatedStats.forEach((team) => {
                         const teamId = team.id;
-                        // Find rank (1-based), handle ties if needed, but simple index for now
-                        const rank = sortedStats.findIndex(t => t.id === teamId) + 1;
+                        // Find rank (1-based), teams with same score get same rank
+                        const rank = sortedStats.findIndex(t => t.totalScore === team.totalScore) + 1;
 
                         const appliedEl = document.getElementById(`applied-${teamId}`);
                         const unappliedEl = document.getElementById(`unapplied-${teamId}`);
