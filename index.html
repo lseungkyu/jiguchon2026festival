@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,84 +9,230 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;900&display=swap');
-        
-        body { font-family: 'Noto Sans KR', sans-serif; background: #0f172a; color: white; overflow: hidden; }
-        .font-title { font-family: 'Black Han Sans', sans-serif; }
-        
-        /* 모양 스타일 */
-        .shape-rounded-square { border-radius: 12px; }
-        .shape-diamond { clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
-        .shape-hexagon { clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); }
-        .shape-triangle { clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
-        .shape-star { clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
 
-        /* 버튼 및 레이아웃 최적화 */
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: #0f172a;
+            color: white;
+            overflow: hidden;
+            transition: background-color 0.3s;
+        }
+
+        .font-title {
+            font-family: 'Black Han Sans', sans-serif;
+        }
+
+        /* [추가] 타이머 및 깜빡임 효과 */
+        #timer-display {
+            font-family: 'Black Han Sans', sans-serif;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .timer-warning {
+            color: #ff4444;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* 10초 남았을 때 배경 깜빡임 */
+        .flash-bg {
+            animation: flash 1s infinite;
+        }
+
+        @keyframes flash {
+
+            0%,
+            100% {
+                background-color: #0f172a;
+            }
+
+            50% {
+                background-color: #450a0a;
+            }
+        }
+
+        /* 기존 스타일 유지 */
+        .shape-rounded-square {
+            border-radius: 12px;
+        }
+
+        .shape-diamond {
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        }
+
+        .shape-hexagon {
+            clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+        }
+
+        .shape-triangle {
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+
+        .shape-star {
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+        }
+
         .quiz-btn {
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
             box-shadow: 0 4px 10px -2px rgba(0, 0, 0, 0.5);
             aspect-ratio: 1 / 1;
             border: 2px solid rgba(255, 255, 255, 0.15);
         }
-        .quiz-btn:hover { transform: scale(1.1); z-index: 10; filter: brightness(1.2); border-color: white; }
-        .quiz-btn.solved { opacity: 0.1; filter: grayscale(1); transform: scale(0.9); pointer-events: none; }
 
-        .page { display: none; height: 100vh; width: 100vw; padding: 2rem; overflow: hidden; }
-        .page.active { display: flex; flex-direction: column; align-items: center; animation: fadeIn 0.4s ease-out; }
+        .quiz-btn:hover {
+            transform: scale(1.1);
+            z-index: 10;
+            filter: brightness(1.2);
+            border-color: white;
+        }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .quiz-btn.solved {
+            opacity: 0.1;
+            filter: grayscale(1);
+            transform: scale(0.9);
+            pointer-events: none;
+        }
 
-        /* 문제 텍스트 스타일 개선 */
+        .page {
+            display: none;
+            height: 100vh;
+            width: 100vw;
+            padding: 2rem;
+            overflow: hidden;
+        }
+
+        .page.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         #q-text {
             line-height: 1.4;
             letter-spacing: -0.02em;
             word-break: keep-all;
         }
 
-        /* 초성 및 빈칸 박스 스타일 */
         .initial-box {
-            display: inline-flex; min-width: 1.2em; height: 1.4em; vertical-align: middle;
-            border: 4px solid #6366f1; background: rgba(99, 102, 241, 0.1);
-            border-radius: 10px; margin: 0 6px; justify-content: center; align-items: center;
-            color: #818cf8; transition: all 0.4s ease;
-            padding: 0 12px; font-weight: 800;
+            display: inline-flex;
+            min-width: 1.2em;
+            height: 1.4em;
+            vertical-align: middle;
+            border: 4px solid #6366f1;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 10px;
+            margin: 0 6px;
+            justify-content: center;
+            align-items: center;
+            color: #818cf8;
+            transition: all 0.4s ease;
+            padding: 0 12px;
+            font-weight: 800;
         }
+
         .blank-box {
-            display: inline-flex; min-width: 100px; height: 1.3em; vertical-align: middle;
-            border: 4px dashed rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px; margin: 0 6px; color: transparent;
+            display: inline-flex;
+            min-width: 100px;
+            height: 1.3em;
+            vertical-align: middle;
+            border: 4px dashed rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            margin: 0 6px;
+            color: transparent;
         }
-        .initial-box.revealed, .blank-box.revealed { 
-            border: none; background: #f59e0b; color: #0f172a; padding: 0 18px; 
-            font-weight: 900; transform: scale(1.1);
+
+        .initial-box.revealed,
+        .blank-box.revealed {
+            border: none;
+            background: #f59e0b;
+            color: #0f172a;
+            padding: 0 18px;
+            font-weight: 900;
+            transform: scale(1.1);
         }
 
         .option-card {
             transition: all 0.3s ease;
             cursor: pointer;
         }
-        .option-card:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.1); }
 
-        .answer-box { opacity: 0; transform: translateY(20px); transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .answer-box.visible { opacity: 1; transform: translateY(0); }
+        .option-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.1);
+        }
 
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100; align-items: center; justify-content: center; }
-        .modal.active { display: flex; }
-        
+        .answer-box {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .answer-box.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
         #grid-container {
             display: grid;
             grid-template-columns: repeat(8, 1fr);
             gap: 16px;
             width: 100%;
-            max-width: 1000px; 
+            max-width: 1000px;
             margin: auto;
         }
 
         @media (max-aspect-ratio: 1/1) {
-            #grid-container { grid-template-columns: repeat(5, 1fr); }
+            #grid-container {
+                grid-template-columns: repeat(5, 1fr);
+            }
         }
 
-        /* 스코어 팝업 전용 스타일 */
         #modal-score .score-container {
             width: 90%;
             max-width: 1200px;
@@ -97,6 +244,7 @@
             flex-direction: column;
             position: relative;
         }
+
         #score-iframe {
             width: 100%;
             flex: 1;
@@ -104,51 +252,72 @@
         }
     </style>
 </head>
+
 <body>
 
-    <!-- [MAIN BOARD] -->
     <div id="page-main" class="page active">
         <header class="w-full max-w-5xl flex justify-between items-center mb-6 px-4">
             <div class="flex gap-3">
-                <button onclick="loadExternalData()" class="bg-slate-800/50 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2">
+                <button onclick="loadExternalData()"
+                    class="bg-slate-800/50 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2">
                     <i class="fa-solid fa-rotate"></i> 새로고침
                 </button>
-                <button onclick="openCsvModal()" class="bg-slate-800/50 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2">
+                <button onclick="openCsvModal()"
+                    class="bg-slate-800/50 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2">
                     <i class="fa-solid fa-gear"></i> 데이터 설정
                 </button>
-                <!-- 팝업 형식으로 변경된 "현재 점수" 버튼 -->
-                <button onclick="openScoreModal()" class="bg-indigo-600/50 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2">
+                <button onclick="openScoreModal()"
+                    class="bg-indigo-600/50 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2">
                     <i class="fa-solid fa-trophy"></i> 현재 점수
                 </button>
             </div>
             <h1 class="text-4xl font-title text-indigo-400 tracking-tighter">BIBLE QUIZ MASTER 2026</h1>
-            <button onclick="resetSolved()" class="text-slate-500 hover:text-red-400 text-xs font-bold transition">기록 초기화</button>
+            <button onclick="resetSolved()" class="text-slate-500 hover:text-red-400 text-xs font-bold transition">기록
+                초기화</button>
         </header>
 
         <div id="grid-container"></div>
 
-        <footer class="mt-8 w-full max-w-4xl bg-slate-900/80 p-4 rounded-2xl flex justify-around text-[12px] font-bold border border-white/10 uppercase backdrop-blur-md">
-            <div class="flex items-center gap-3"><span class="w-4 h-4 bg-red-500 rounded-full shadow-[0_0_10px_rgba(239,68,68,0.5)]"></span> 상(3점)</div>
-            <div class="flex items-center gap-3"><span class="w-4 h-4 bg-amber-500 rounded-full shadow-[0_0_10px_rgba(245,158,11,0.5)]"></span> 중(2점)</div>
-            <div class="flex items-center gap-3"><span class="w-4 h-4 bg-emerald-500 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]"></span> 하(1점)</div>
+        <footer
+            class="mt-8 w-full max-w-4xl bg-slate-900/80 p-4 rounded-2xl flex justify-around text-[12px] font-bold border border-white/10 uppercase backdrop-blur-md">
+            <div class="flex items-center gap-3"><span
+                    class="w-4 h-4 bg-red-500 rounded-full shadow-[0_0_10px_rgba(239,68,68,0.5)]"></span> 상(3점)</div>
+            <div class="flex items-center gap-3"><span
+                    class="w-4 h-4 bg-amber-500 rounded-full shadow-[0_0_10px_rgba(245,158,11,0.5)]"></span> 중(2점)</div>
+            <div class="flex items-center gap-3"><span
+                    class="w-4 h-4 bg-emerald-500 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]"></span> 하(1점)
+            </div>
             <div class="flex items-center gap-4 ml-6 border-l border-white/20 pl-6">
-                <div class="flex items-center gap-2"><i class="fa-solid fa-square text-indigo-400 text-sm"></i> 객관식</div>
-                <div class="flex items-center gap-2"><i class="fa-solid fa-play rotate-[270deg] text-indigo-400 text-[10px]"></i> 초성</div>
-                <div class="flex items-center gap-2"><i class="fa-solid fa-diamond text-indigo-400 text-sm"></i> 빈칸</div>
+                <div class="flex items-center gap-2"><i class="fa-solid fa-square text-indigo-400 text-sm"></i> 객관식
+                </div>
+                <div class="flex items-center gap-2"><i
+                        class="fa-solid fa-play rotate-[270deg] text-indigo-400 text-[10px]"></i> 초성</div>
+                <div class="flex items-center gap-2"><i class="fa-solid fa-diamond text-indigo-400 text-sm"></i> 빈칸
+                </div>
                 <div class="flex items-center gap-2"><i class="fa-solid fa-star text-indigo-400 text-sm"></i> OX</div>
             </div>
         </footer>
     </div>
 
-    <!-- [QUESTION PAGE] -->
-    <div id="page-question" class="page bg-slate-950">
-        <div class="w-full max-w-5xl flex justify-between items-center mb-8 bg-slate-900/80 p-4 rounded-2xl border border-white/10 backdrop-blur-md">
-            <div id="q-category-mini" class="px-6 py-2.5 rounded-full text-sm font-black tracking-widest uppercase border border-white/10 shadow-lg"></div>
+    <div id="page-question" class="page">
+        <div
+            class="w-full max-w-5xl flex justify-between items-center mb-8 bg-slate-900/80 p-4 rounded-2xl border border-white/10 backdrop-blur-md">
+            <div id="q-category-mini"
+                class="px-6 py-2.5 rounded-full text-sm font-black tracking-widest uppercase border border-white/10 shadow-lg">
+            </div>
+
+            <div id="timer-display" class="text-5xl font-black text-white flex items-center gap-4">
+                <i class="fa-solid fa-clock-rotate-left text-2xl text-indigo-400"></i>
+                <span id="timer-text">02:00</span>
+            </div>
+
             <div class="flex gap-3">
-                <button onclick="goHome()" class="bg-slate-800 hover:bg-slate-700 text-white w-12 h-12 rounded-xl text-lg font-bold transition flex items-center justify-center border border-white/5">
+                <button onclick="goHome()"
+                    class="bg-slate-800 hover:bg-slate-700 text-white w-12 h-12 rounded-xl text-lg font-bold transition flex items-center justify-center border border-white/5">
                     <i class="fa-solid fa-house"></i>
                 </button>
-                <button id="btn-show-answer" onclick="showAnswer()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-10 py-2 rounded-xl font-black text-lg shadow-[0_0_20px_rgba(79,70,229,0.4)] transition flex items-center gap-2">
+                <button id="btn-show-answer" onclick="showAnswer()"
+                    class="bg-indigo-600 hover:bg-indigo-500 text-white px-10 py-2 rounded-xl font-black text-lg shadow-[0_0_20px_rgba(79,70,229,0.4)] transition flex items-center gap-2">
                     정답 확인
                 </button>
             </div>
@@ -160,19 +329,20 @@
                 <div id="q-options" class="grid gap-6 max-w-4xl mx-auto hidden"></div>
             </div>
 
-            <div id="answer-section" class="answer-box space-y-4 bg-indigo-950/60 p-10 rounded-[40px] border-2 border-indigo-500/30 text-center shadow-2xl backdrop-blur-lg">
+            <div id="answer-section"
+                class="answer-box space-y-4 bg-indigo-950/60 p-10 rounded-[40px] border-2 border-indigo-500/30 text-center shadow-2xl backdrop-blur-lg">
                 <div id="a-text" class="text-5xl md:text-8xl font-black text-white tracking-tight"></div>
                 <p id="a-verse" class="text-xl md:text-2xl text-indigo-300 font-medium italic opacity-80"></p>
             </div>
         </div>
     </div>
 
-    <!-- [SCORE MODAL] -->
     <div id="modal-score" class="modal">
         <div class="score-container shadow-2xl">
             <div class="flex justify-between items-center p-4 bg-white border-b border-gray-200">
                 <span class="text-gray-500 font-bold ml-4"><i class="fa-solid fa-chart-simple mr-2"></i>조별 점수 현황</span>
-                <button onclick="closeScoreModal()" class="bg-gray-800 hover:bg-black text-white px-6 py-2 rounded-full font-bold transition flex items-center gap-2">
+                <button onclick="closeScoreModal()"
+                    class="bg-gray-800 hover:bg-black text-white px-6 py-2 rounded-full font-bold transition flex items-center gap-2">
                     <i class="fa-solid fa-chevron-left"></i> 돌아가기
                 </button>
             </div>
@@ -180,42 +350,73 @@
         </div>
     </div>
 
-    <!-- [CSV MODAL] -->
     <div id="modal-csv" class="modal">
-        <div class="bg-slate-800 w-full max-w-4xl h-[70vh] rounded-[32px] overflow-hidden flex flex-col p-8 shadow-2xl border border-white/10">
-             <div class="flex justify-between items-center mb-6">
+        <div
+            class="bg-slate-800 w-full max-w-4xl h-[70vh] rounded-[32px] overflow-hidden flex flex-col p-8 shadow-2xl border border-white/10">
+            <div class="flex justify-between items-center mb-6">
                 <h3 class="text-2xl font-bold text-indigo-300">데이터 소스 관리</h3>
                 <button onclick="closeCsvModal()" class="text-slate-400 hover:text-white text-4xl">×</button>
-             </div>
-             <p class="text-slate-400 text-sm mb-4">엑셀에서 복사한 데이터를 아래에 붙여넣으세요 (ID / 유형 / 난이도 / 문제 / 정답 / 구절)</p>
-             <textarea id="csv-input" class="flex-1 w-full bg-slate-950 text-indigo-400 font-mono text-sm p-6 rounded-2xl border border-white/5 focus:border-indigo-500 outline-none transition" placeholder="1	객관식	하	문제 내용...	정답	구절"></textarea>
-             <button onclick="importCsv()" class="bg-indigo-600 hover:bg-indigo-500 py-4 mt-6 rounded-2xl font-black text-lg transition shadow-xl">데이터 즉시 적용</button>
+            </div>
+            <textarea id="csv-input"
+                class="flex-1 w-full bg-slate-950 text-indigo-400 font-mono text-sm p-6 rounded-2xl border border-white/5 outline-none transition"></textarea>
+            <button onclick="importCsv()"
+                class="bg-indigo-600 hover:bg-indigo-500 py-4 mt-6 rounded-2xl font-black text-lg transition shadow-xl">데이터
+                즉시 적용</button>
         </div>
     </div>
 
     <script>
-        const DATA_FILE_URL = 'data.csv'; 
-
+        const DATA_FILE_URL = 'data.csv';
         let quizData = [];
         let solvedSet = new Set(JSON.parse(localStorage.getItem('bible_solved_v12')) || []);
         let currentQuestion = null;
 
+        /* [추가] 타이머 관련 변수 */
+        let timerInterval = null;
+        let timeLeft = 120; // 2분 (120초)
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timeLeft = 120;
+            updateTimerDisplay();
+
+            document.body.classList.remove('flash-bg');
+            document.getElementById('timer-display').classList.remove('timer-warning');
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+
+                if (timeLeft <= 10 && timeLeft > 0) {
+                    document.body.classList.add('flash-bg');
+                    document.getElementById('timer-display').classList.add('timer-warning');
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    document.body.classList.remove('flash-bg');
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(timeLeft / 60);
+            const secs = timeLeft % 60;
+            document.getElementById('timer-text').innerText =
+                `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // 기존 로직들
         async function loadExternalData() {
             try {
                 const response = await fetch(DATA_FILE_URL);
-                if (!response.ok) throw new Error('파일 없음');
                 const text = await response.text();
                 parseData(text);
                 initGrid();
             } catch (err) {
                 const saved = localStorage.getItem('bible_quiz_v12');
-                if (saved) {
-                    quizData = JSON.parse(saved);
-                    initGrid();
-                } else {
-                    generate40SampleData();
-                    initGrid();
-                }
+                if (saved) { quizData = JSON.parse(saved); initGrid(); }
+                else { generate40SampleData(); initGrid(); }
             }
         }
 
@@ -224,14 +425,7 @@
             quizData = lines.map((line, index) => {
                 const p = line.includes('\t') ? line.split('\t') : line.split(',');
                 if (p.length < 5) return null;
-                return {
-                    id: parseInt(p[0]) || (index + 1),
-                    type: p[1].trim(),
-                    difficulty: p[2].trim(),
-                    question: p[3].trim(),
-                    answer: p[4].trim(),
-                    verse: p[5] ? p[5].trim() : ""
-                };
+                return { id: parseInt(p[0]) || (index + 1), type: p[1].trim(), difficulty: p[2].trim(), question: p[3].trim(), answer: p[4].trim(), verse: p[5] ? p[5].trim() : "" };
             }).filter(q => q !== null);
             localStorage.setItem('bible_quiz_v12', JSON.stringify(quizData));
         }
@@ -265,13 +459,11 @@
             qOptionsEl.innerHTML = '';
             qOptionsEl.classList.add('hidden');
 
+            // 문제 타입별 렌더링 (기존 로직 유지)
             if (q.type === "OX 퀴즈") {
                 qTextEl.innerText = q.question.replace("(O/X)", "").trim();
                 qOptionsEl.className = "grid grid-cols-2 gap-10 max-w-2xl mx-auto mt-8";
-                qOptionsEl.innerHTML = `
-                    <div id="opt-O" class="option-card h-64 text-8xl font-black border-8 border-emerald-500/50 rounded-[40px] flex justify-center items-center text-emerald-400">O</div>
-                    <div id="opt-X" class="option-card h-64 text-8xl font-black border-8 border-red-500/50 rounded-[40px] flex justify-center items-center text-red-400">X</div>
-                `;
+                qOptionsEl.innerHTML = `<div id="opt-O" class="option-card h-64 text-8xl font-black border-8 border-emerald-500/50 rounded-[40px] flex justify-center items-center text-emerald-400">O</div><div id="opt-X" class="option-card h-64 text-8xl font-black border-8 border-red-500/50 rounded-[40px] flex justify-center items-center text-red-400">X</div>`;
                 qOptionsEl.classList.remove('hidden');
             } else if (q.type === "객관식") {
                 const pattern = /\d+\s*\)/g;
@@ -279,31 +471,29 @@
                 qTextEl.innerText = firstIdx !== -1 ? q.question.substring(0, firstIdx).trim() : q.question;
                 const options = q.question.substring(firstIdx).split(pattern).filter(t => t.trim());
                 qOptionsEl.className = "grid grid-cols-2 gap-6 max-w-4xl mx-auto mt-8";
-                options.slice(0,4).forEach((opt, i) => {
-                    qOptionsEl.innerHTML += `
-                        <div id="opt-${i+1}" class="option-card flex items-center gap-6 p-6 bg-slate-900 rounded-[24px] border-2 border-white/10 shadow-xl">
-                            <div class="w-14 h-14 bg-indigo-600 rounded-full flex-shrink-0 flex items-center justify-center font-black text-2xl text-white shadow-lg">${i+1}</div>
-                            <div class="text-2xl md:text-3xl font-bold text-slate-200">${opt.trim()}</div>
-                        </div>
-                    `;
+                options.slice(0, 4).forEach((opt, i) => {
+                    qOptionsEl.innerHTML += `<div id="opt-${i + 1}" class="option-card flex items-center gap-6 p-6 bg-slate-900 rounded-[24px] border-2 border-white/10 shadow-xl"><div class="w-14 h-14 bg-indigo-600 rounded-full flex-shrink-0 flex items-center justify-center font-black text-2xl text-white shadow-lg">${i + 1}</div><div class="text-2xl md:text-3xl font-bold text-slate-200">${opt.trim()}</div></div>`;
                 });
                 qOptionsEl.classList.remove('hidden');
             } else if (q.type === "빈칸 채우기") {
                 qTextEl.innerHTML = q.question.replace(/\(\s*\)/g, '<span class="blank-box"></span>');
             } else if (q.type === "초성 퀴즈") {
                 qTextEl.innerHTML = q.question.replace(/\(([^)]+)\)/g, (m, p1) => `<span class="initial-box">${p1}</span>`);
-            } else {
-                qTextEl.innerText = q.question;
-            }
+            } else { qTextEl.innerText = q.question; }
 
             document.getElementById('a-text').innerText = q.answer;
             document.getElementById('a-verse').innerText = q.verse;
 
             solvedSet.add(q.id);
             localStorage.setItem('bible_solved_v12', JSON.stringify([...solvedSet]));
+
+            /* [추가] 문제 열 때 타이머 시작 */
+            startTimer();
         }
 
         function showAnswer() {
+            clearInterval(timerInterval); // 정답 공개 시 타이머 멈춤
+            document.body.classList.remove('flash-bg');
             document.getElementById('answer-section').classList.add('visible');
             document.getElementById('btn-show-answer').style.display = 'none';
 
@@ -311,50 +501,46 @@
                 const isO = currentQuestion.answer.toUpperCase().includes("O");
                 const oEl = document.getElementById('opt-O');
                 const xEl = document.getElementById('opt-X');
-                if(isO) { oEl.classList.replace('border-emerald-500/50', 'border-emerald-500'); oEl.classList.add('bg-emerald-500/20'); xEl.style.opacity = '0.1'; }
+                if (isO) { oEl.classList.replace('border-emerald-500/50', 'border-emerald-500'); oEl.classList.add('bg-emerald-500/20'); xEl.style.opacity = '0.1'; }
                 else { xEl.classList.replace('border-red-500/50', 'border-red-500'); xEl.classList.add('bg-red-500/20'); oEl.style.opacity = '0.1'; }
             } else if (currentQuestion.type === "객관식") {
                 const ansNum = currentQuestion.answer.match(/\d/)?.[0];
-                for(let i=1; i<=4; i++) {
+                for (let i = 1; i <= 4; i++) {
                     const el = document.getElementById(`opt-${i}`);
-                    if(el) {
-                        if(i == ansNum) { el.classList.add('bg-emerald-600/30', 'border-emerald-500'); el.classList.remove('bg-slate-900'); }
+                    if (el) {
+                        if (i == ansNum) { el.classList.add('bg-emerald-600/30', 'border-emerald-500'); el.classList.remove('bg-slate-900'); }
                         else el.style.opacity = '0.15';
                     }
                 }
             } else {
                 const boxes = document.querySelectorAll('.blank-box, .initial-box');
                 const answers = currentQuestion.answer.split(',').map(s => s.trim());
-                boxes.forEach((box, i) => {
-                    box.innerText = answers[i] || answers[0];
-                    box.classList.add('revealed');
-                });
+                boxes.forEach((box, i) => { box.innerText = answers[i] || answers[0]; box.classList.add('revealed'); });
             }
         }
 
         function goHome() {
+            clearInterval(timerInterval); // 홈으로 갈 때 타이머 정지
+            document.body.classList.remove('flash-bg');
             document.getElementById('page-question').classList.remove('active');
             document.getElementById('page-main').classList.add('active');
             initGrid();
         }
 
-        /* 스코어 모달 제어 함수 */
         function openScoreModal() {
             const modal = document.getElementById('modal-score');
             const iframe = document.getElementById('score-iframe');
-            iframe.src = 'scoredisplay.html'; // 팝업 시점에 로드
+            iframe.src = 'scoredisplay.html';
             modal.classList.add('active');
         }
-
         function closeScoreModal() {
             const modal = document.getElementById('modal-score');
             const iframe = document.getElementById('score-iframe');
             modal.classList.remove('active');
-            iframe.src = 'about:blank'; // 닫을 때 내용 초기화
+            iframe.src = 'about:blank';
         }
-
         function getShapeClass(type) {
-            switch(type?.trim()) {
+            switch (type?.trim()) {
                 case "객관식": return "shape-rounded-square";
                 case "빈칸 채우기": return "shape-diamond";
                 case "초성 퀴즈": return "shape-triangle";
@@ -363,47 +549,39 @@
                 default: return "shape-rounded-square";
             }
         }
-
         function getDiffColor(diff) {
-            switch(diff?.trim()) {
+            switch (diff?.trim()) {
                 case "상": return "bg-red-500 shadow-[0_4px_15px_rgba(239,68,68,0.4)]";
                 case "중": return "bg-amber-500 shadow-[0_4px_15px_rgba(245,158,11,0.4)]";
                 case "하": return "bg-emerald-500 shadow-[0_4px_15px_rgba(16,185,129,0.4)]";
                 default: return "bg-slate-500";
             }
         }
-
         function openCsvModal() {
             document.getElementById('csv-input').value = quizData.map(q => `${q.id}\t${q.type}\t${q.difficulty}\t${q.question}\t${q.answer}\t${q.verse}`).join('\n');
             document.getElementById('modal-csv').classList.add('active');
         }
         function closeCsvModal() { document.getElementById('modal-csv').classList.remove('active'); }
-        function importCsv() {
-            parseData(document.getElementById('csv-input').value);
-            initGrid(); 
-            closeCsvModal();
-        }
-
+        function importCsv() { parseData(document.getElementById('csv-input').value); initGrid(); closeCsvModal(); }
         function resetSolved() {
-            if(confirm("모든 문제 풀이 기록을 초기화하시겠습니까?")) {
+            if (confirm("모든 문제 풀이 기록을 초기화하시겠습니까?")) {
                 solvedSet.clear();
                 localStorage.setItem('bible_solved_v12', "[]");
                 initGrid();
             }
         }
-
         function generate40SampleData() {
             quizData = [];
             const types = ["객관식", "초성 퀴즈", "빈칸 채우기", "OX 퀴즈", "주관식"];
             const fontDiffs = ["하", "중", "상"];
-            for(let i=1; i<=40; i++) {
+            for (let i = 1; i <= 40; i++) {
                 const type = types[i % 5];
                 const diff = fontDiffs[i % 3];
                 quizData.push({ id: i, type: type, difficulty: diff, question: `샘플 문제 ${i}: 가독성 테스트를 위한 문장입니다.`, answer: "정답 내용", verse: "구절 정보" });
             }
         }
-
         window.onload = loadExternalData;
     </script>
 </body>
+
 </html>
