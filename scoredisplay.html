@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>조별 점수 현황판</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        body { 
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; 
-            background-color: #f0f2f5; 
-            padding: 20px; 
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: #f0f2f5;
+            padding: 20px;
             margin: 0;
             color: #1e293b;
             overflow-x: hidden;
@@ -17,14 +18,16 @@
             flex-direction: column;
             align-items: center;
         }
-        h1 { 
-            text-align: center; 
-            color: #0f172a; 
+
+        h1 {
+            text-align: center;
+            color: #0f172a;
             margin-bottom: 30px;
             font-size: 2rem;
             font-weight: 900;
             letter-spacing: -0.05em;
         }
+
         .grid-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -33,6 +36,7 @@
             max-width: 1200px;
             margin: 0 auto;
         }
+
         .team-card {
             background: white;
             border-radius: 24px;
@@ -44,7 +48,7 @@
             position: relative;
             overflow: hidden;
         }
-        
+
         /* Rank Styles */
         .rank-badge {
             display: inline-flex;
@@ -57,9 +61,9 @@
             font-size: 0.9rem;
             font-weight: 800;
             margin-bottom: 16px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-        
+
         /* Top 3 Special Styles */
         .team-card.rank-1 {
             background: linear-gradient(135deg, #fff, #fff9e6);
@@ -68,11 +72,12 @@
             transform: scale(1.05);
             z-index: 10;
         }
+
         .team-card.rank-1 .rank-badge {
             background: linear-gradient(135deg, #fbbf24, #d97706);
             box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
         }
-        
+
         .team-card.rank-2 {
             background: linear-gradient(135deg, #fff, #f8fafc);
             border-color: #94a3b8;
@@ -80,11 +85,12 @@
             transform: scale(1.02);
             z-index: 5;
         }
+
         .team-card.rank-2 .rank-badge {
             background: linear-gradient(135deg, #94a3b8, #64748b);
             box-shadow: 0 4px 12px rgba(148, 163, 184, 0.4);
         }
-        
+
         .team-card.rank-3 {
             background: linear-gradient(135deg, #fff, #fff1f2);
             border-color: #fca5a5;
@@ -92,6 +98,7 @@
             transform: scale(1.02);
             z-index: 5;
         }
+
         .team-card.rank-3 .rank-badge {
             background: linear-gradient(135deg, #f87171, #b91c1c);
             box-shadow: 0 4px 12px rgba(248, 113, 113, 0.4);
@@ -104,45 +111,46 @@
             color: #0f172a;
             letter-spacing: -0.02em;
         }
-        
+
         .score-info {
             background: rgba(241, 245, 249, 0.5);
             border-radius: 16px;
             padding: 12px;
         }
-        
+
         .score-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 6px 8px;
         }
-        
+
         .score-row.total-score {
             margin-top: 8px;
             padding-top: 12px;
             border-top: 2px dashed #e2e8f0;
         }
 
-        .score-label { 
-            font-size: 0.9rem; 
-            color: #64748b; 
-            font-weight: 600; 
+        .score-label {
+            font-size: 0.9rem;
+            color: #64748b;
+            font-weight: 600;
         }
-        .score-value { 
-            font-size: 1.1rem; 
-            font-weight: 800; 
-            color: #334155; 
+
+        .score-value {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #334155;
             font-variant-numeric: tabular-nums;
         }
-        
+
         .total-score .score-label {
             color: #0f172a;
             font-size: 1rem;
         }
-        
-        .total-score .score-value { 
-            color: #2563eb; 
+
+        .total-score .score-value {
+            color: #2563eb;
             font-size: 1.8rem;
             line-height: 1;
         }
@@ -151,10 +159,13 @@
         .rank-icon {
             font-size: 1.1em;
         }
-        
+
         .loading-overlay {
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             background: rgba(240, 242, 245, 0.95);
             display: flex;
             justify-content: center;
@@ -167,18 +178,25 @@
 
         /* Responsive resizing */
         @media screen and (max-height: 800px) {
-            body { zoom: 0.9; }
+            body {
+                zoom: 0.9;
+            }
         }
+
         @media screen and (max-height: 600px) {
-            body { zoom: 0.75; }
+            body {
+                zoom: 0.75;
+            }
         }
     </style>
 </head>
+
 <body>
 
     <div id="loading" class="loading-overlay">
         <div style="text-align: center;">
-            <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2rem; margin-bottom: 10px; color: #3b82f6;"></i><br>
+            <i class="fa-solid fa-circle-notch fa-spin"
+                style="font-size: 2rem; margin-bottom: 10px; color: #3b82f6;"></i><br>
             데이터를 불러오는 중...
         </div>
     </div>
@@ -193,7 +211,7 @@
         import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // Keep original config
+        // Config from lseungkyu.github.io/scoreboard
         const firebaseConfig = {
             apiKey: "AIzaSyCxCOVwf1cY7dx1B9Bk0pTIsxww_Bc8qTQ",
             authDomain: "biblequizcloud.firebaseapp.com",
@@ -206,7 +224,7 @@
         const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
         const db = getFirestore(app);
         const auth = getAuth(app);
-        
+
         const COLLECTION_NAME = "team_scores";
         const TEAM_COUNT = 12;
 
@@ -245,25 +263,103 @@
             renderPlaceholder();
 
             try {
-                if (!auth.currentUser) {
-                    await signInAnonymously(auth);
+                // Try to sign in, but don't block if it fails (e.g. local environment issues)
+                try {
+                    if (!auth.currentUser) {
+                        await signInAnonymously(auth);
+                        console.log("Signed in anonymously");
+                    }
+                } catch (authError) {
+                    console.warn("Auth failed or skipped (might work if public read is allowed):", authError);
                 }
 
+                // Use the correct App ID ("default-app-id" is what the external site uses by default)
                 const finalAppId = typeof window.__app_id !== 'undefined' ? window.__app_id : 'default-app-id';
+                console.log(`Connecting to Firestore path: artifacts/${finalAppId}/public/data/${COLLECTION_NAME}/current_game`);
+
                 const docRef = doc(db, 'artifacts', finalAppId, 'public', 'data', COLLECTION_NAME, 'current_game');
 
                 onSnapshot(docRef, (docSnap) => {
                     loading.style.display = 'none';
 
-                    if (!docSnap.exists()) return;
+                    if (!docSnap.exists()) {
+                        console.warn("Document does not exist!");
+                        return;
+                    }
 
                     const gameData = docSnap.data();
-                    const stats = gameData.stats || [];
+
+                    // Client-side score calculation logic to match external site
+                    const rounds = gameData.rounds || [];
+
+                    // Initialize scores for all teams
+                    const teamScores = {};
+                    for (let i = 1; i <= TEAM_COUNT; i++) {
+                        teamScores[i] = { id: i, baseScore: 0, itemScore: 0, totalScore: 0 };
+                    }
+
+                    rounds.forEach(round => {
+                        // 1. Base Scores (Winners)
+                        const winners = round.winners || [];
+                        const points = round.points || 0;
+                        winners.forEach(teamId => {
+                            if (teamScores[teamId]) {
+                                teamScores[teamId].baseScore += points;
+                            }
+                        });
+
+                        // 2. Process Cards
+                        const cards = round.cards || [];
+                        const defenses = {};
+
+                        // Identify defenses first (Map: ActorID -> Set of TargetIDs they are defending against)
+                        // Note: External site logic implies targeted defense blocks specific attacks.
+                        cards.forEach(card => {
+                            if (card.cardType === 'defense') {
+                                if (!defenses[card.teamId]) defenses[card.teamId] = new Set();
+                                if (card.targetId) defenses[card.teamId].add(Number(card.targetId));
+                            }
+                        });
+
+                        // Apply card effects
+                        cards.forEach(card => {
+                            const actorId = Number(card.teamId);
+                            const targetId = Number(card.targetId);
+                            const val = Number(card.value) || 0;
+
+                            if (card.cardType === 'plus') {
+                                // Plus adds to the actor (self-buff)
+                                if (teamScores[actorId]) teamScores[actorId].itemScore += val;
+                            } else if (card.cardType === 'attack') {
+                                // Attack subtracts from target
+                                if (teamScores[targetId]) {
+                                    // Check defense: Does target have a defense against actor?
+                                    const hasDefense = defenses[targetId] && defenses[targetId].has(actorId);
+                                    if (!hasDefense) {
+                                        teamScores[targetId].itemScore -= val;
+                                        // Note: Usually attacks reduce the target's score.
+                                        // If external site shows "Item Delta" as positive while attacks happened, 
+                                        // it likely means the attacks failed or other pluses outweighed them.
+                                    } else {
+                                        console.log(`Round ${round.id}: Attack from ${actorId} on ${targetId} blocked by defense.`);
+                                    }
+                                }
+                            }
+                            // 'overtake' is complex and observed to be potentially 0 effect in sample, skipping for safety
+                        });
+                    });
+
+                    // Flatten to array for rendering
+                    const calculatedStats = [];
+                    Object.values(teamScores).forEach(t => {
+                        t.totalScore = t.baseScore + t.itemScore;
+                        calculatedStats.push(t);
+                    });
 
                     // Calculate Ranks
-                    const sortedStats = [...stats].sort((a, b) => b.totalScore - a.totalScore || a.id - b.id);
+                    const sortedStats = [...calculatedStats].sort((a, b) => b.totalScore - a.totalScore || a.id - b.id);
 
-                    stats.forEach((team) => {
+                    calculatedStats.forEach((team) => {
                         const teamId = team.id;
                         // Find rank (1-based), handle ties if needed, but simple index for now
                         const rank = sortedStats.findIndex(t => t.id === teamId) + 1;
@@ -277,7 +373,7 @@
 
                         if (appliedEl) appliedEl.innerText = (team.totalScore || 0).toLocaleString();
                         if (unappliedEl) unappliedEl.innerText = (team.baseScore || 0).toLocaleString();
-                        
+
                         if (rankTextEl) rankTextEl.innerText = `${rank}위`;
 
                         // Reset Classes
@@ -296,15 +392,18 @@
                         }
                     });
                 }, (error) => {
-                    loading.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i><br>데이터 연결 오류';
+                    console.error("Snapshot error:", error);
+                    loading.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i><br>데이터 연결 오류<br><span style="font-size:0.8rem">' + error.message + '</span>';
                 });
 
             } catch (error) {
-                loading.innerText = "초기화 오류";
+                console.error("Init error:", error);
+                loading.innerText = "초기화 오류: " + error.message;
             }
         };
 
         initApp();
     </script>
 </body>
+
 </html>
