@@ -404,7 +404,8 @@
                     teamScores.forEach((team) => {
                         const teamId = team.id;
                         // Find rank (1-based)
-                        const rank = sortedStats.findIndex(t => t.id === teamId) + 1;
+                        // const rank = sortedStats.findIndex(t => t.id === teamId) + 1;
+                        const rank = sortedStats.filter(t => t.totalScore > team.totalScore).length + 1;
 
                         const appliedEl = document.getElementById(`applied-${teamId}`);
                         const unappliedEl = document.getElementById(`unapplied-${teamId}`);
