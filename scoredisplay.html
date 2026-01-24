@@ -289,80 +289,122 @@
 
                     const gameData = docSnap.data();
 
-                    // Client-side score calculation logic to match external site
+                    // Client-side score calculation logic to match external site (React) logic
+                    // Logic ported from calculateAllStats
                     const rounds = gameData.rounds || [];
 
                     // Initialize scores for all teams
-                    const teamScores = {};
-                    for (let i = 1; i <= TEAM_COUNT; i++) {
-                        teamScores[i] = { id: i, baseScore: 0, itemScore: 0, totalScore: 0 };
-                    }
+                    // Using array for easier iteration/sorting matching the React logic
+                    let teamScores = Array.from({ length: TEAM_COUNT }, (_, i) => ({
+                        id: i + 1,
+                        baseScore: 0,
+                        totalScore: 0,
+                        itemDiff: 0,
+                        defenseStack: 0
+                    }));
 
                     rounds.forEach(round => {
-                        // 1. Base Scores (Winners)
-                        const winners = round.winners || [];
                         const points = round.points || 0;
-                        winners.forEach(teamId => {
-                            if (teamScores[teamId]) {
-                                teamScores[teamId].baseScore += points;
-                            }
-                        });
-
-                        // 2. Process Cards
+                        const winners = round.winners || [];
                         const cards = round.cards || [];
-                        const defenses = {};
 
-                        // Identify defenses first (Map: ActorID -> Set of TargetIDs they are defending against)
-                        // Note: External site logic implies targeted defense blocks specific attacks.
-                        cards.forEach(card => {
-                            if (card.cardType === 'defense') {
-                                if (!defenses[card.teamId]) defenses[card.teamId] = new Set();
-                                if (card.targetId) defenses[card.teamId].add(Number(card.targetId));
+                        // 1. Base Scores (Winners)
+                        teamScores.forEach(t => {
+                            if (winners.includes(t.id)) {
+                                t.baseScore += points;
+                                t.totalScore += points;
                             }
                         });
 
-                        // Apply card effects
+                        // 2. Build Defense Stacks
+                        cards.filter(c => c.cardType === 'defense').forEach(card => {
+                            const team = teamScores.find(t => t.id === card.teamId);
+                            if (team) team.defenseStack += (parseInt(card.value) || 0);
+                        });
+
+                        // 3. Process Plus & Attack
                         cards.forEach(card => {
-                            const actorId = Number(card.teamId);
-                            const targetId = Number(card.targetId);
-                            const val = Number(card.value) || 0;
+                            const team = teamScores.find(t => t.id === card.teamId);
+                            const val = parseInt(card.value) || 0;
 
                             if (card.cardType === 'plus') {
-                                // Plus adds to the actor (self-buff)
-                                if (teamScores[actorId]) teamScores[actorId].itemScore += val;
+                                if (team) {
+                                    team.totalScore += val;
+                                    team.itemDiff += val;
+                                }
                             } else if (card.cardType === 'attack') {
-                                // Attack subtracts from target
-                                if (teamScores[targetId]) {
-                                    // Check defense: Does target have a defense against actor?
-                                    const hasDefense = defenses[targetId] && defenses[targetId].has(actorId);
-                                    if (!hasDefense) {
-                                        teamScores[targetId].itemScore -= val;
-                                        // Note: Usually attacks reduce the target's score.
-                                        // If external site shows "Item Delta" as positive while attacks happened, 
-                                        // it likely means the attacks failed or other pluses outweighed them.
+                                // Attack logic
+                                const targetId = parseInt(card.targetId);
+                                const target = teamScores.find(t => t.id === targetId);
+
+                                if (target) {
+                                    if (target.defenseStack > 0) {
+                                        // Blocked by defense
+                                        target.defenseStack -= 1;
+                                        console.log(`Attack from ${card.teamId} on ${targetId} blocked.`);
                                     } else {
-                                        console.log(`Round ${round.id}: Attack from ${actorId} on ${targetId} blocked by defense.`);
+                                        // Apply attack (steal logic logic from React: team.totalScore += steal)
+                                        const steal = Math.min(val, target.totalScore);
+
+                                        target.totalScore -= steal;
+                                        target.itemDiff -= steal;
+
+                                        // In React code, attacker gets points
+                                        if (team) {
+                                            team.totalScore += steal;
+                                            team.itemDiff += steal;
+                                        }
                                     }
                                 }
                             }
-                            // 'overtake' is complex and observed to be potentially 0 effect in sample, skipping for safety
                         });
+
+                        // 4. Process Overtake
+                        cards.filter(c => c.cardType === 'overtake').forEach(card => {
+                            const team = teamScores.find(t => t.id === card.teamId);
+                            if (!team) return;
+
+                            const steps = parseInt(card.value) || 0;
+
+                            // Sort to find current ranks (High to Low)
+                            // Note: Logic must match React exactly: b.totalScore - a.totalScore || a.id - b.id
+                            const sorted = [...teamScores].sort((a, b) => b.totalScore - a.totalScore || a.id - b.id);
+
+                            const myRankIndex = sorted.findIndex(t => t.id === team.id);
+                            const targetIndex = myRankIndex - (steps - 1);
+
+                            if (targetIndex >= 0) {
+                                const targetTeamRef = sorted[targetIndex];
+                                const targetScoreValue = targetTeamRef.totalScore;
+                                let isBlocked = false;
+
+                                for (let i = 0; i < myRankIndex; i++) {
+                                    if (sorted[i].defenseStack > 0) {
+                                        sorted[i].defenseStack -= 1; // It consumes the shield
+                                        isBlocked = true;
+                                        break;
+                                    }
+                                }
+
+                                if (!isBlocked) {
+                                    const oldScore = team.totalScore;
+                                    team.totalScore = targetScoreValue + 1; // Overtake: Become target + 1
+                                    team.itemDiff += (team.totalScore - oldScore);
+                                }
+                            }
+                        });
+
+                        // 5. Reset Defense
+                        teamScores.forEach(t => t.defenseStack = 0);
                     });
 
-                    // Flatten to array for rendering
-                    const calculatedStats = [];
-                    Object.values(teamScores).forEach(t => {
-                        t.totalScore = t.baseScore + t.itemScore;
-                        calculatedStats.push(t);
-                    });
+                    // Final Sort for Display
+                    const sortedStats = [...teamScores].sort((a, b) => b.totalScore - a.totalScore || a.id - b.id);
 
-                    // Calculate Ranks
-                    const sortedStats = [...calculatedStats].sort((a, b) => b.totalScore - a.totalScore || a.id - b.id);
-
-                    calculatedStats.forEach((team) => {
+                    teamScores.forEach((team) => {
                         const teamId = team.id;
-                        // Find rank (1-based), teams with same score get same rank
-                        const rank = sortedStats.findIndex(t => t.totalScore === team.totalScore) + 1;
+                        // Find rank (1-based)
+                        const rank = sortedStats.findIndex(t => t.id === teamId) + 1;
 
                         const appliedEl = document.getElementById(`applied-${teamId}`);
                         const unappliedEl = document.getElementById(`unapplied-${teamId}`);
@@ -371,20 +413,21 @@
                         const rankBadgeEl = document.getElementById(`rank-badge-${teamId}`);
                         const cardEl = document.getElementById(`team-card-${teamId}`);
 
+                        // Mapping requirements:
+                        // "합계에는 그냥 점수" -> Total Score
+                        // "아이템 미반영 점수에는 기본 점수" -> Base Score
                         if (appliedEl) appliedEl.innerText = (team.totalScore || 0).toLocaleString();
                         if (unappliedEl) unappliedEl.innerText = (team.baseScore || 0).toLocaleString();
 
                         if (rankTextEl) rankTextEl.innerText = `${rank}위`;
 
-                        // Reset Classes
                         if (cardEl) {
                             cardEl.classList.remove('rank-1', 'rank-2', 'rank-3');
                             if (rank <= 3) cardEl.classList.add(`rank-${rank}`);
                         }
 
-                        // Icon Logic
                         if (rankIconEl) {
-                            rankIconEl.className = 'rank-icon'; // reset
+                            rankIconEl.className = 'rank-icon';
                             if (rank === 1) rankIconEl.innerHTML = '<i class="fa-solid fa-trophy"></i>';
                             else if (rank === 2) rankIconEl.innerHTML = '<i class="fa-solid fa-medal"></i>';
                             else if (rank === 3) rankIconEl.innerHTML = '<i class="fa-solid fa-medal"></i>';
