@@ -1,9 +1,7 @@
 /* ==========================================================================
    2026 SUMMER FESTIVAL DAEJEON CITY TOUR MOBILE MISSION SHEET SCRIPT
-   HYBRID NAVER MAP API v3 & LEAFLET GIS ENGINE
    ========================================================================== */
 
-// 8 Core Mission Places with Exact Daejeon GIS Coordinates
 const placeDetails = {
   1: {
     name: "① 대전근현대사전시관",
@@ -79,7 +77,6 @@ const placeDetails = {
   }
 };
 
-// 34 Food/Cafe Places
 const foodSpotsData = [
   { name: "성심당 본점", cat: "식당", addr: "은행동 145-1", lat: 36.32766, lng: 127.42728 },
   { name: "성심당 테라스키친", cat: "식당", addr: "은행동 145-1", lat: 36.32766, lng: 127.42728 },
@@ -127,200 +124,74 @@ const allPlacesBounds = [
   [36.3306, 127.4308]
 ];
 
-let activeEngine = 'leaflet'; // 'naver' or 'leaflet'
-let naverMap = null;
-let naverMarkers = {};
-let naverPolygons = {};
-let naverUserGpsMarker = null;
-
 let leafletMap = null;
 let leafletMarkers = {};
 let zonePolygons = {};
 let userGpsMarker = null;
+let currentEngineMode = 'pin'; // 'pin', 'naver', 'kakao'
 
 document.addEventListener("DOMContentLoaded", () => {
   startGatheringTimer();
-  initMapEngine();
+  initLeafletMap();
 });
 
-// Initialize Map Engine (Naver Map API v3 or Leaflet Fallback)
-function initMapEngine() {
-  const mapProviderBadge = document.getElementById("mapProviderBadge");
+// Switch Map Engine View Mode ('pin', 'naver', 'kakao')
+function switchMapEngine(mode) {
+  currentEngineMode = mode;
 
-  // Check if Naver Maps API v3 script loaded successfully
-  if (typeof naver !== 'undefined' && naver.maps && typeof naver.maps.Map === 'function') {
-    try {
-      activeEngine = 'naver';
-      if (mapProviderBadge) mapProviderBadge.textContent = "네이버지도 API v3";
-      initNaverMap();
-      return;
-    } catch (e) {
-      console.warn("Naver Map init fallback to Leaflet:", e);
+  const btnPin = document.getElementById("btnPinMap");
+  const btnNaver = document.getElementById("btnNaverIframe");
+  const btnKakao = document.getElementById("btnKakaoIframe");
+
+  const realMapDiv = document.getElementById("realMap");
+  const iframeContainer = document.getElementById("iframeMapContainer");
+  const iframe = document.getElementById("embeddedMapIframe");
+  const iframeTitle = document.getElementById("iframeTitleTag");
+  const iframeLink = document.getElementById("iframeExternalLink");
+  const mapTools = document.getElementById("mapToolsContainer");
+  const zonePills = document.getElementById("zoneGridPills");
+
+  // Deactivate all buttons
+  [btnPin, btnNaver, btnKakao].forEach(b => b.classList.remove("active"));
+
+  if (mode === 'pin') {
+    btnPin.classList.add("active");
+    realMapDiv.style.display = "block";
+    iframeContainer.style.display = "none";
+    if (mapTools) mapTools.style.display = "flex";
+    if (zonePills) zonePills.style.display = "grid";
+    
+    if (leafletMap) {
+      setTimeout(() => leafletMap.invalidateSize(), 100);
     }
-  }
-
-  // Fallback to Leaflet OpenStreetMap Engine
-  activeEngine = 'leaflet';
-  if (mapProviderBadge) mapProviderBadge.textContent = "실시간 GIS 지도";
-  initLeafletMap();
-}
-
-/* ================= NAVER MAP ENGINE IMPLEMENTATION ================= */
-function initNaverMap() {
-  const mapDiv = document.getElementById("realMap");
-  if (!mapDiv) return;
-
-  const centerLatLng = new naver.maps.LatLng(36.327600, 127.425300);
-  
-  naverMap = new naver.maps.Map('realMap', {
-    center: centerLatLng,
-    zoom: 16,
-    minZoom: 13,
-    maxZoom: 19,
-    zoomControl: true,
-    zoomControlOptions: {
-      position: naver.maps.Position.TOP_LEFT
-    }
-  });
-
-  naver.maps.Event.addListener(naverMap, 'click', () => {
+  } else if (mode === 'naver') {
+    btnNaver.classList.add("active");
+    realMapDiv.style.display = "none";
+    iframeContainer.style.display = "block";
+    if (mapTools) mapTools.style.display = "none";
+    if (zonePills) zonePills.style.display = "none";
     closeBottomSheet();
-  });
 
-  // NAVER MAP ZONE POLYGONS
-  naverPolygons['A'] = new naver.maps.Polygon({
-    map: naverMap,
-    paths: [
-      new naver.maps.LatLng(36.3248, 127.4196),
-      new naver.maps.LatLng(36.3263, 127.4199),
-      new naver.maps.LatLng(36.3262, 127.4216),
-      new naver.maps.LatLng(36.3247, 127.4213)
-    ],
-    fillColor: '#ef4444',
-    fillOpacity: 0.22,
-    strokeColor: '#ef4444',
-    strokeWeight: 2.5
-  });
-  naver.maps.Event.addListener(naverPolygons['A'], 'click', () => zoomToZone('A'));
+    const url = "https://m.map.naver.com/search2/search.naver?query=대전+중앙로역";
+    iframe.src = url;
+    iframeTitle.textContent = "🟢 네이버지도 웹 내장 뷰";
+    iframeLink.href = url;
+  } else if (mode === 'kakao') {
+    btnKakao.classList.add("active");
+    realMapDiv.style.display = "none";
+    iframeContainer.style.display = "block";
+    if (mapTools) mapTools.style.display = "none";
+    if (zonePills) zonePills.style.display = "none";
+    closeBottomSheet();
 
-  naverPolygons['B'] = new naver.maps.Polygon({
-    map: naverMap,
-    paths: [
-      new naver.maps.LatLng(36.3250, 127.4255),
-      new naver.maps.LatLng(36.3290, 127.4262),
-      new naver.maps.LatLng(36.3292, 127.4288),
-      new naver.maps.LatLng(36.3250, 127.4283)
-    ],
-    fillColor: '#8b5cf6',
-    fillOpacity: 0.20,
-    strokeColor: '#8b5cf6',
-    strokeWeight: 2.5
-  });
-  naver.maps.Event.addListener(naverPolygons['B'], 'click', () => zoomToZone('B'));
-
-  naverPolygons['C'] = new naver.maps.Polygon({
-    map: naverMap,
-    paths: [
-      new naver.maps.LatLng(36.3275, 127.4282),
-      new naver.maps.LatLng(36.3302, 127.4288),
-      new naver.maps.LatLng(36.3302, 127.4308),
-      new naver.maps.LatLng(36.3275, 127.4304)
-    ],
-    fillColor: '#f59e0b',
-    fillOpacity: 0.22,
-    strokeColor: '#f59e0b',
-    strokeWeight: 2.5
-  });
-  naver.maps.Event.addListener(naverPolygons['C'], 'click', () => zoomToZone('C'));
-
-  // 34 FOOD DOT MARKERS ON NAVER MAP
-  foodSpotsData.forEach(food => {
-    const marker = new naver.maps.Marker({
-      position: new naver.maps.LatLng(food.lat, food.lng),
-      map: naverMap,
-      icon: {
-        content: `<div class="food-red-dot" title="${food.name}"></div>`,
-        size: new naver.maps.Size(14, 14),
-        anchor: new naver.maps.Point(7, 7)
-      }
-    });
-
-    naver.maps.Event.addListener(marker, 'click', (e) => {
-      openBottomSheet({
-        title: `📍 ${food.name}`,
-        badge: food.cat,
-        badgeClass: 'zone-a',
-        desc: `주소: ${food.addr}`,
-        img: '',
-        kakao: `https://map.kakao.com/link/search/${encodeURIComponent(food.name)}`,
-        naver: `https://m.map.naver.com/search2/search.naver?query=${encodeURIComponent(food.name)}`
-      });
-      naverMap.panTo(new naver.maps.LatLng(food.lat, food.lng));
-    });
-  });
-
-  // GATHERING SPOT FLAG MARKER
-  const flagMarker = new naver.maps.Marker({
-    position: new naver.maps.LatLng(gatheringSpot.lat, gatheringSpot.lng),
-    map: naverMap,
-    icon: {
-      content: `<div class="custom-leaflet-pin target-spot">🚩</div>`,
-      size: new naver.maps.Size(34, 34),
-      anchor: new naver.maps.Point(17, 17)
-    }
-  });
-
-  naver.maps.Event.addListener(flagMarker, 'click', () => {
-    openBottomSheet({
-      title: "🚩 14:55 최종 집결 장소",
-      badge: "집결지",
-      badgeClass: "zone-a",
-      desc: "중앙로역 4번 출구 앞 (모든 조 14:55분까지 집결!)",
-      img: "",
-      kakao: "https://map.kakao.com/link/search/중앙로역4번출구",
-      naver: "https://m.map.naver.com/search2/search.naver?query=중앙로역4번출구"
-    });
-    naverMap.panTo(new naver.maps.LatLng(gatheringSpot.lat, gatheringSpot.lng));
-  });
-
-  // 8 MISSION PLACE MARKERS
-  Object.keys(placeDetails).forEach(id => {
-    const p = placeDetails[id];
-
-    let zoneClass = "zone-a";
-    let zoneBadgeText = "A";
-    if (p.zone === "B") { zoneClass = "zone-b"; zoneBadgeText = "B"; }
-    else if (p.zone === "C") { zoneClass = "zone-c"; zoneBadgeText = "C"; }
-    else if (p.zone === "BC") { zoneClass = "zone-bc"; zoneBadgeText = "B,C"; }
-
-    const marker = new naver.maps.Marker({
-      position: new naver.maps.LatLng(p.lat, p.lng),
-      map: naverMap,
-      icon: {
-        content: `<div class="custom-leaflet-pin ${zoneClass}">${id}</div>`,
-        size: new naver.maps.Size(34, 34),
-        anchor: new naver.maps.Point(17, 17)
-      }
-    });
-
-    naverMarkers[id] = marker;
-
-    naver.maps.Event.addListener(marker, 'click', () => {
-      openBottomSheet({
-        title: p.name,
-        badge: `구역 ${zoneBadgeText}`,
-        badgeClass: zoneClass,
-        desc: p.desc,
-        img: p.img,
-        kakao: p.kakao,
-        naver: p.naver
-      });
-      naverMap.panTo(new naver.maps.LatLng(p.lat, p.lng));
-    });
-  });
+    const url = "https://m.map.kakao.com";
+    iframe.src = url;
+    iframeTitle.textContent = "🟡 카카오맵 웹 내장 뷰";
+    iframeLink.href = url;
+  }
 }
 
-/* ================= LEAFLET GIS ENGINE IMPLEMENTATION (FALLBACK) ================= */
+// Initialize Leaflet Map Engine
 function initLeafletMap() {
   const mapDiv = document.getElementById("realMap");
   if (!mapDiv || typeof L === 'undefined') return;
@@ -341,6 +212,7 @@ function initLeafletMap() {
     closeBottomSheet();
   });
 
+  // Zone Polygons
   const zoneAPoly = L.polygon([
     [36.3248, 127.4196],
     [36.3263, 127.4199],
@@ -386,6 +258,7 @@ function initLeafletMap() {
   zoneCPoly.on('click', () => zoomToZone('C'));
   zonePolygons['C'] = zoneCPoly;
 
+  // Food Markers
   foodSpotsData.forEach(food => {
     const foodDotIcon = L.divIcon({
       className: 'custom-food-dot-wrapper',
@@ -411,6 +284,7 @@ function initLeafletMap() {
     });
   });
 
+  // Flag Marker
   const flagIcon = L.divIcon({
     className: 'custom-leaflet-pin-wrapper',
     html: `<div class="custom-leaflet-pin target-spot">🚩</div>`,
@@ -432,6 +306,7 @@ function initLeafletMap() {
     leafletMap.panTo([gatheringSpot.lat, gatheringSpot.lng]);
   });
 
+  // 8 Places
   Object.keys(placeDetails).forEach(id => {
     const p = placeDetails[id];
 
@@ -467,7 +342,7 @@ function initLeafletMap() {
   });
 }
 
-/* ================= MOBILE MAP BOTTOM SHEET HANDLER ================= */
+// Open Bottom Sheet
 function openBottomSheet(data) {
   const sheet = document.getElementById("mapBottomSheet");
   const sTitle = document.getElementById("sheetTitle");
@@ -514,16 +389,7 @@ function closeBottomSheet() {
 
 // Zoom to Zone
 function zoomToZone(zoneName) {
-  if (activeEngine === 'naver' && naverMap) {
-    const centerCoords = {
-      'A': new naver.maps.LatLng(36.3255, 127.4205),
-      'B': new naver.maps.LatLng(36.3270, 127.4270),
-      'C': new naver.maps.LatLng(36.3288, 127.4295)
-    };
-    if (centerCoords[zoneName]) {
-      naverMap.morph(centerCoords[zoneName], 17);
-    }
-  } else if (leafletMap) {
+  if (leafletMap) {
     const poly = zonePolygons[zoneName];
     if (poly) {
       leafletMap.flyToBounds(poly.getBounds().pad(0.25), { duration: 0.8 });
@@ -537,17 +403,19 @@ function focusMapPlace(placeId) {
   const p = placeDetails[placeId];
   if (!p) return;
 
+  if (currentEngineMode !== 'pin') {
+    switchMapEngine('pin');
+  }
+
+  if (leafletMap) {
+    leafletMap.flyTo([p.lat, p.lng], 18, { duration: 0.8 });
+  }
+
   let zoneClass = "zone-a";
   let zoneBadgeText = "A";
   if (p.zone === "B") { zoneClass = "zone-b"; zoneBadgeText = "B"; }
   else if (p.zone === "C") { zoneClass = "zone-c"; zoneBadgeText = "C"; }
   else if (p.zone === "BC") { zoneClass = "zone-bc"; zoneBadgeText = "B,C"; }
-
-  if (activeEngine === 'naver' && naverMap) {
-    naverMap.morph(new naver.maps.LatLng(p.lat, p.lng), 18);
-  } else if (leafletMap) {
-    leafletMap.flyTo([p.lat, p.lng], 18, { duration: 0.8 });
-  }
 
   openBottomSheet({
     title: p.name,
@@ -562,9 +430,7 @@ function focusMapPlace(placeId) {
 
 // Reset Map
 function resetMapCenter() {
-  if (activeEngine === 'naver' && naverMap) {
-    naverMap.morph(new naver.maps.LatLng(36.327600, 127.425300), 16);
-  } else if (leafletMap) {
+  if (leafletMap) {
     leafletMap.flyToBounds(allPlacesBounds, { padding: [16, 16], duration: 0.8 });
   }
   closeBottomSheet();
@@ -582,23 +448,7 @@ function locateUserGPS() {
       const uLat = pos.coords.latitude;
       const uLng = pos.coords.longitude;
 
-      if (activeEngine === 'naver' && naverMap) {
-        const uLatLng = new naver.maps.LatLng(uLat, uLng);
-        if (!naverUserGpsMarker) {
-          naverUserGpsMarker = new naver.maps.Marker({
-            position: uLatLng,
-            map: naverMap,
-            icon: {
-              content: `<div class="custom-leaflet-pin user-spot">📍</div>`,
-              size: new naver.maps.Size(34, 34),
-              anchor: new naver.maps.Point(17, 17)
-            }
-          });
-        } else {
-          naverUserGpsMarker.setPosition(uLatLng);
-        }
-        naverMap.morph(uLatLng, 17);
-      } else if (leafletMap) {
+      if (leafletMap) {
         if (!userGpsMarker) {
           const userIcon = L.divIcon({
             className: 'custom-leaflet-pin-wrapper',
@@ -646,14 +496,8 @@ function switchTab(tabId) {
     btns[indexMap[tabId]].classList.add("active");
   }
   
-  if (tabId === 'mapTab') {
-    setTimeout(() => {
-      if (activeEngine === 'naver' && naverMap) {
-        window.dispatchEvent(new Event('resize'));
-      } else if (leafletMap) {
-        leafletMap.invalidateSize();
-      }
-    }, 150);
+  if (tabId === 'mapTab' && leafletMap && currentEngineMode === 'pin') {
+    setTimeout(() => leafletMap.invalidateSize(), 150);
   }
 
   window.scrollTo({ top: 0, behavior: 'smooth' });

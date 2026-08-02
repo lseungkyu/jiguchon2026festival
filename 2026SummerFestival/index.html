@@ -15,11 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap" rel="stylesheet">
   
-  <!-- 🗺️ NAVER MAP WEB API (v3) -->
-  <!-- Client ID를 네이버 클라우드 플랫폼에서 발급받은 키로 교체할 수 있습니다. -->
-  <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=YOUR_NAVER_CLIENT_ID"></script>
-  
-  <!-- Leaflet Fallback (네이버 지도 API 키 설정 전 기본 호환용) -->
+  <!-- Leaflet GIS Map Engine -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -186,19 +182,23 @@
 
       </div>
 
-      <!-- Real Map Container (Naver Map / Leaflet Map Container) -->
+      <!-- Real Map Container with Embedded Naver/Kakao Map Mode -->
       <div class="content-box">
         
         <div class="box-header-block">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h2 class="box-title">🗺️ 실시간 이동 지도</h2>
-            <span class="map-provider-tag" id="mapProviderBadge">네이버지도 연동</span>
-          </div>
-          <p class="box-subtitle">마커나 구역 버튼을 터치하면 상세 정보가 하단 시트에 나타납니다.</p>
+          <h2 class="box-title">🗺️ 실시간 지도 & 길찾기</h2>
+          <p class="box-subtitle">API 키 없이 네이버지도/카카오맵을 바로 이용하실 수 있습니다.</p>
+        </div>
+
+        <!-- Map Engine Switcher Buttons -->
+        <div class="map-engine-switcher">
+          <button class="engine-btn active" id="btnPinMap" onclick="switchMapEngine('pin')">🎯 미션 핀 지도</button>
+          <button class="engine-btn naver" id="btnNaverIframe" onclick="switchMapEngine('naver')">🟢 네이버지도 내장 뷰</button>
+          <button class="engine-btn kakao" id="btnKakaoIframe" onclick="switchMapEngine('kakao')">🟡 카카오맵 내장 뷰</button>
         </div>
 
         <!-- Map Zone Selector Pills (Spacious 3 Column Grid) -->
-        <div class="map-zone-grid">
+        <div class="map-zone-grid" id="zoneGridPills">
           <button class="m-zone-btn za" onclick="zoomToZone('A')">
             <span class="zb-title">🔴 구역 A</span>
             <span class="zb-sub">①, ②</span>
@@ -214,15 +214,26 @@
         </div>
 
         <div class="map-view-wrapper">
+          <!-- 1. Interactive Pin Map (Leaflet) -->
           <div id="realMap" class="real-map-div"></div>
           
-          <!-- Map Floating Tool Controls -->
-          <div class="map-tools">
+          <!-- 2. Embedded Naver / Kakao Map Iframe -->
+          <div id="iframeMapContainer" class="iframe-map-div" style="display: none;">
+            <iframe id="embeddedMapIframe" src="about:blank" title="네이버지도/카카오맵 내장 뷰"></iframe>
+            
+            <div class="iframe-overlay-bar">
+              <span id="iframeTitleTag">🟢 네이버지도 웹 뷰</span>
+              <a id="iframeExternalLink" href="https://m.map.naver.com/search2/search.naver?query=대전+중앙로역" target="_blank" class="iframe-open-btn">앱에서 크게 보기 ↗</a>
+            </div>
+          </div>
+          
+          <!-- Map Floating Tool Controls (Pin Map Only) -->
+          <div class="map-tools" id="mapToolsContainer">
             <button class="map-tool-btn" onclick="locateUserGPS()">📍 내 위치</button>
             <button class="map-tool-btn" onclick="resetMapCenter()">🎯 전체 보기</button>
           </div>
 
-          <!-- 📱 COMPACT BOTTOM SHEET (COMPLETELY HIDDEN UNTIL A MARKER IS TAPPED) -->
+          <!-- 📱 COMPACT BOTTOM SHEET (FOR PIN MAP) -->
           <div id="mapBottomSheet" class="map-bottom-sheet" style="display: none;">
             <div class="sheet-header">
               <div class="sheet-title-group">
