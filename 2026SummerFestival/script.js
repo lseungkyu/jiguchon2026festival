@@ -8,7 +8,7 @@ const placeDetails = {
     desc: "구 충청남도청사 건물. 고풍스러운 근대 건축물 배경!",
     img: "./assets/place1_1.png",
     zone: "A",
-    lat: 36.326813, lng: 127.421938, // Plus Code: 8CGC+P9 대전광역시 정밀 해독값 (선화동 충남도청 북동쪽 정문)
+    lat: 36.326888, lng: 127.421188, // 구글맵 링크 8CGC+QF2 대전광역시 (대전근현대사전시관 정문 계단 전면)
     kakao: "https://map.kakao.com/link/search/대전근현대사전시관",
     naver: "https://m.map.naver.com/search2/search.naver?query=대전근현대사전시관"
   },
@@ -214,8 +214,8 @@ function initLeafletMap() {
   // Zone Polygons
   const zoneAPoly = L.polygon([
     [36.3248, 127.4196],
-    [36.3270, 127.4199],
-    [36.3270, 127.4225],
+    [36.3272, 127.4199],
+    [36.3272, 127.4225],
     [36.3247, 127.4213]
   ], {
     color: '#ef4444',
