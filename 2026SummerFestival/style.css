@@ -110,6 +110,7 @@ body {
   justify-content: space-between; 
   align-items: center;
   gap: 6px;
+  flex-wrap: wrap;
 }
 
 .timer-label { 
@@ -119,7 +120,8 @@ body {
   font-size: 12px; 
   font-weight: 800; 
   color: #ddd6fe;
-  white-space: nowrap;
+  white-space: nowrap; /* Prevents single character breaks like '집\n결' */
+  word-break: keep-all;
 }
 
 .pulse-dot {
@@ -140,12 +142,14 @@ body {
   padding: 3px 8px;
   border-radius: 8px;
   flex-shrink: 0;
+  white-space: nowrap; /* Prevents single character breaks like '완\n료!' */
 }
 
 .timer-txt {
   font-size: 10px;
   color: #a78bfa;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .timer-display { 
@@ -154,6 +158,7 @@ body {
   font-weight: 900; 
   color: #fbbf24; 
   letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
 /* Quick Floating Action Bar */
