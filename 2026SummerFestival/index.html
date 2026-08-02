@@ -215,22 +215,22 @@
             <button class="map-tool-btn" onclick="resetMapCenter()">🎯 전체 보기</button>
           </div>
 
-          <!-- 📱 COMPACT ULTRA-SLIM BOTTOM SHEET (THUMBNAIL SIZE CUT TO COMPACT 55PX) -->
-          <div id="mapBottomSheet" class="map-bottom-sheet">
+          <!-- 📱 COMPACT BOTTOM SHEET (COMPLETELY HIDDEN UNTIL A MARKER IS TAPPED) -->
+          <div id="mapBottomSheet" class="map-bottom-sheet" style="display: none;">
             <div class="sheet-header">
               <div class="sheet-title-group">
-                <h4 id="sheetTitle">장소 명칭</h4>
-                <span id="sheetBadge" class="z-badge-mini zone-a">구역 A</span>
+                <h4 id="sheetTitle"></h4>
+                <span id="sheetBadge" class="z-badge-mini zone-a"></span>
               </div>
               <button class="sheet-close-btn" onclick="closeBottomSheet()">✕</button>
             </div>
             
             <div class="sheet-body-flex">
-              <div id="sheetImgWrapper" class="sheet-img-wrap-thumb">
+              <div id="sheetImgWrapper" class="sheet-img-wrap-thumb" style="display: none;">
                 <img id="sheetImg" src="" alt="장소 사진">
               </div>
               <div class="sheet-info-col">
-                <p id="sheetDesc">장소 설명 내용</p>
+                <p id="sheetDesc"></p>
                 <div class="sheet-btn-grid" id="sheetNavBtns">
                   <a id="sheetKakaoBtn" href="#" target="_blank" class="nav-btn kakao sm">🧭 카카오맵</a>
                   <a id="sheetNaverBtn" href="#" target="_blank" class="nav-btn naver sm">🗺️ 네이버지도</a>

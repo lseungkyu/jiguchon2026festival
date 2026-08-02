@@ -321,13 +321,19 @@ function openBottomSheet(data) {
   sKakaoBtn.href = data.kakao || "#";
   sNaverBtn.href = data.naver || "#";
 
-  sheet.classList.add("active");
+  sheet.style.display = "flex";
+  requestAnimationFrame(() => {
+    sheet.classList.add("active");
+  });
 }
 
 function closeBottomSheet() {
   const sheet = document.getElementById("mapBottomSheet");
   if (sheet) {
     sheet.classList.remove("active");
+    setTimeout(() => {
+      sheet.style.display = "none";
+    }, 220);
   }
 }
 
