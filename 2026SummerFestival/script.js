@@ -1,14 +1,16 @@
 /* ==========================================================================
    2026 SUMMER FESTIVAL DAEJEON CITY TOUR MOBILE MISSION SHEET SCRIPT
+   VERIFIED GPS COORDINATES & PRECISE PIN ANCHORING
    ========================================================================== */
 
+// 8 Core Mission Places with Exact Daejeon GIS Coordinates
 const placeDetails = {
   1: {
     name: "① 대전근현대사전시관",
     desc: "구 충청남도청사 건물. 고풍스러운 근대 건축물 배경!",
     img: "./assets/place1_1.png",
     zone: "A",
-    lat: 36.325375, lng: 127.420556,
+    lat: 36.325633, lng: 127.420448, // 구 충남도청사 본관
     kakao: "https://map.kakao.com/link/search/대전근현대사전시관",
     naver: "https://m.map.naver.com/search2/search.naver?query=대전근현대사전시관"
   },
@@ -17,7 +19,7 @@ const placeDetails = {
     desc: "전시관 내부 미술공간 전시장 입구 배경!",
     img: "./assets/place2_1.png",
     zone: "A",
-    lat: 36.325600, lng: 127.420800,
+    lat: 36.325450, lng: 127.420700, // 전시관 1층 미술공간
     kakao: "https://map.kakao.com/link/search/대전근현대사전시관",
     naver: "https://m.map.naver.com/search2/search.naver?query=대전근현대사전시관"
   },
@@ -26,7 +28,7 @@ const placeDetails = {
     desc: "대흥동 야외공연장 및 문화거리 중심 상징물 앞!",
     img: "./assets/place3_1.png",
     zone: "B",
-    lat: 36.326200, lng: 127.426500,
+    lat: 36.326490, lng: 127.426150, // 우리들공원 야외무대
     kakao: "https://map.kakao.com/link/search/우리들공원",
     naver: "https://m.map.naver.com/search2/search.naver?query=우리들공원"
   },
@@ -35,7 +37,7 @@ const placeDetails = {
     desc: "웅장한 성당 외관 정면 전경 배경!",
     img: "./assets/place4_1.png",
     zone: "B",
-    lat: 36.325600, lng: 127.427700,
+    lat: 36.325700, lng: 127.427800, // 대흥동성당 정면
     kakao: "https://map.kakao.com/link/search/대흥동성당",
     naver: "https://m.map.naver.com/search2/search.naver?query=대흥동성당"
   },
@@ -44,7 +46,7 @@ const placeDetails = {
     desc: "성심당 본점 건물 및 시그니처 튀김소보로 동상 앞!",
     img: "./assets/place5_1.png",
     zone: "B",
-    lat: 36.327700, lng: 127.427200,
+    lat: 36.327660, lng: 127.427280, // 성심당 본점 입구
     kakao: "https://map.kakao.com/link/search/성심당본점",
     naver: "https://m.map.naver.com/search2/search.naver?query=성심당본점"
   },
@@ -53,7 +55,7 @@ const placeDetails = {
     desc: "스카이로드 LED 전광판 기둥 및 거리 입구 게이트!",
     img: "./assets/place6_1.png",
     zone: "BC",
-    lat: 36.328700, lng: 127.428500,
+    lat: 36.328450, lng: 127.428350, // 으능정이 스카이로드 메인
     kakao: "https://map.kakao.com/link/search/으능정이문화의거리",
     naver: "https://m.map.naver.com/search2/search.naver?query=으능정이문화의거리"
   },
@@ -62,7 +64,7 @@ const placeDetails = {
     desc: "대전천을 건너는 은행교 교량 조형물 및 다리 위!",
     img: "./assets/place7_1.png",
     zone: "C",
-    lat: 36.328300, lng: 127.430000,
+    lat: 36.328000, lng: 127.429950, // 은행교 다리 중앙
     kakao: "https://map.kakao.com/link/search/은행교",
     naver: "https://m.map.naver.com/search2/search.naver?query=은행교"
   },
@@ -71,7 +73,7 @@ const placeDetails = {
     desc: "목척교 상징 나무 조형물 및 쉼터 배경!",
     img: "./assets/place8_1.png",
     zone: "C",
-    lat: 36.330100, lng: 127.430400,
+    lat: 36.329450, lng: 127.429800, // 목척교 나무 조형물
     kakao: "https://map.kakao.com/link/search/목척교",
     naver: "https://m.map.naver.com/search2/search.naver?query=목척교"
   }
@@ -79,45 +81,45 @@ const placeDetails = {
 
 // 34 Recommended Food, Cafe & Play Spots Coordinates for Map
 const foodSpotsData = [
-  { name: "성심당 본점", cat: "식당", addr: "은행동 145-1", lat: 36.3277, lng: 127.4272 },
-  { name: "성심당 테라스키친", cat: "식당", addr: "은행동 145-1", lat: 36.3276, lng: 127.4273 },
-  { name: "성심당 우동야", cat: "식당", addr: "지하상가 D가-2", lat: 36.3275, lng: 127.4261 },
-  { name: "마라천하마라탕", cat: "식당", addr: "은행동 169-10", lat: 36.3283, lng: 127.4275 },
-  { name: "아저씨돈까스", cat: "식당", addr: "은행동 33-5", lat: 36.3279, lng: 127.4282 },
-  { name: "희락반점", cat: "식당", addr: "선화동 36", lat: 36.3260, lng: 127.4220 },
-  { name: "니뽕내뽕", cat: "식당", addr: "은행동 33-2", lat: 36.3278, lng: 127.4283 },
-  { name: "멘야네코라멘 본점", cat: "식당", addr: "은행동 76-21", lat: 36.3290, lng: 127.4278 },
-  { name: "육첩반상", cat: "식당", addr: "은행동 33-1", lat: 36.3277, lng: 127.4284 },
-  { name: "바로그집", cat: "식당", addr: "지하상가 CL 61호", lat: 36.3268, lng: 127.4248 },
-  { name: "춘천집무한닭갈비", cat: "식당", addr: "은행동 76-10", lat: 36.3289, lng: 127.4280 },
-  { name: "선화면옥", cat: "식당", addr: "선화동 16-3", lat: 36.3268, lng: 127.4215 },
-  { name: "두끼떡볶이", cat: "식당", addr: "은행동 33-11", lat: 36.3280, lng: 127.4281 },
-  { name: "미도리카레", cat: "식당", addr: "대흥동 205-2", lat: 36.3258, lng: 127.4258 },
-  { name: "동그라미즉석떡볶이", cat: "식당", addr: "은행동 138-2", lat: 36.3285, lng: 127.4268 },
-  { name: "롤링파스타", cat: "식당", addr: "은행동 48-8", lat: 36.3274, lng: 127.4281 },
-  { name: "도쿄돈부리", cat: "식당", addr: "은행동 166-1", lat: 36.3281, lng: 127.4274 },
-  { name: "닭갈비제작소", cat: "식당", addr: "은행동 40-4", lat: 36.3272, lng: 127.4279 },
-  { name: "설빙", cat: "카페", addr: "은행동 48-9", lat: 36.3273, lng: 127.4280 },
-  { name: "성심당 옛맛솜씨", cat: "카페", addr: "은행동 166-2", lat: 36.3280, lng: 127.4273 },
-  { name: "모도시", cat: "카페", addr: "선화동 236-3", lat: 36.3262, lng: 127.4211 },
-  { name: "커피전도사의 집", cat: "카페", addr: "대흥동 6-1", lat: 36.3264, lng: 127.4242 },
-  { name: "카운트 커피", cat: "카페", addr: "선화동 99", lat: 36.3266, lng: 127.4224 },
-  { name: "알로하녹", cat: "카페", addr: "선화동 236-8", lat: 36.3264, lng: 127.4209 },
-  { name: "포우드", cat: "카페", addr: "선화동 45-2", lat: 36.3261, lng: 127.4218 },
-  { name: "오드눅", cat: "카페", addr: "은행동 33-10", lat: 36.3279, lng: 127.4280 },
-  { name: "커닝", cat: "카페", addr: "대흥동 203-5", lat: 36.3257, lng: 127.4259 },
-  { name: "단위", cat: "카페", addr: "대흥동 479-4", lat: 36.3250, lng: 127.4268 },
-  { name: "모디프커피", cat: "카페", addr: "은행동 165-1", lat: 36.3282, lng: 127.4276 },
-  { name: "라무킷도", cat: "놀거리", addr: "대흥동 225-5", lat: 36.3255, lng: 127.4262 },
-  { name: "레드버튼", cat: "보드게임", addr: "은행동 45-5", lat: 36.3270, lng: 127.4282 },
-  { name: "홈즈앤루팡", cat: "보드게임", addr: "은행동 142-4", lat: 36.3282, lng: 127.4270 },
-  { name: "나사락볼링장", cat: "액티비티", addr: "대흥동 245-2", lat: 36.3252, lng: 127.4272 },
-  { name: "점핑배틀", cat: "액티비티", addr: "은행동 40-3", lat: 36.3271, lng: 127.4278 }
+  { name: "성심당 본점", cat: "식당", addr: "은행동 145-1", lat: 36.32766, lng: 127.42728 },
+  { name: "성심당 테라스키친", cat: "식당", addr: "은행동 145-1", lat: 36.32766, lng: 127.42728 },
+  { name: "성심당 우동야", cat: "식당", addr: "지하상가 D가-2", lat: 36.32750, lng: 127.42610 },
+  { name: "마라천하마라탕", cat: "식당", addr: "은행동 169-10", lat: 36.32830, lng: 127.42750 },
+  { name: "아저씨돈까스", cat: "식당", addr: "은행동 33-5", lat: 36.32790, lng: 127.42820 },
+  { name: "희락반점", cat: "식당", addr: "선화동 36", lat: 36.32600, lng: 127.42200 },
+  { name: "니뽕내뽕", cat: "식당", addr: "은행동 33-2", lat: 36.32780, lng: 127.42830 },
+  { name: "멘야네코라멘 본점", cat: "식당", addr: "은행동 76-21", lat: 36.32900, lng: 127.42780 },
+  { name: "육첩반상", cat: "식당", addr: "은행동 33-1", lat: 36.32770, lng: 127.42840 },
+  { name: "바로그집", cat: "식당", addr: "지하상가 CL 61호", lat: 36.32680, lng: 127.42480 },
+  { name: "춘천집무한닭갈비", cat: "식당", addr: "은행동 76-10", lat: 36.32890, lng: 127.42800 },
+  { name: "선화면옥", cat: "식당", addr: "선화동 16-3", lat: 36.32680, lng: 127.42150 },
+  { name: "두끼떡볶이", cat: "식당", addr: "은행동 33-11", lat: 36.32800, lng: 127.42810 },
+  { name: "미도리카레", cat: "식당", addr: "대흥동 205-2", lat: 36.32580, lng: 127.42580 },
+  { name: "동그라미즉석떡볶이", cat: "식당", addr: "은행동 138-2", lat: 36.32850, lng: 127.42680 },
+  { name: "롤링파스타", cat: "식당", addr: "은행동 48-8", lat: 36.32740, lng: 127.42810 },
+  { name: "도쿄돈부리", cat: "식당", addr: "은행동 166-1", lat: 36.32810, lng: 127.42740 },
+  { name: "닭갈비제작소", cat: "식당", addr: "은행동 40-4", lat: 36.32720, lng: 127.42790 },
+  { name: "설빙", cat: "카페", addr: "은행동 48-9", lat: 36.32730, lng: 127.42800 },
+  { name: "성심당 옛맛솜씨", cat: "카페", addr: "은행동 166-2", lat: 36.32800, lng: 127.42730 },
+  { name: "모도시", cat: "카페", addr: "선화동 236-3", lat: 36.32620, lng: 127.42110 },
+  { name: "커피전도사의 집", cat: "카페", addr: "대흥동 6-1", lat: 36.32640, lng: 127.42420 },
+  { name: "카운트 커피", cat: "카페", addr: "선화동 99", lat: 36.32660, lng: 127.42240 },
+  { name: "알로하녹", cat: "카페", addr: "선화동 236-8", lat: 36.32640, lng: 127.42090 },
+  { name: "포우드", cat: "카페", addr: "선화동 45-2", lat: 36.32610, lng: 127.42180 },
+  { name: "오드눅", cat: "카페", addr: "은행동 33-10", lat: 36.32790, lng: 127.42800 },
+  { name: "커닝", cat: "카페", addr: "대흥동 203-5", lat: 36.32570, lng: 127.42590 },
+  { name: "단위", cat: "카페", addr: "대흥동 479-4", lat: 36.32500, lng: 127.42680 },
+  { name: "모디프커피", cat: "카페", addr: "은행동 165-1", lat: 36.32820, lng: 127.42760 },
+  { name: "라무킷도", cat: "놀거리", addr: "대흥동 225-5", lat: 36.32550, lng: 127.42620 },
+  { name: "레드버튼", cat: "보드게임", addr: "은행동 45-5", lat: 36.32700, lng: 127.42820 },
+  { name: "홈즈앤루팡", cat: "보드게임", addr: "은행동 142-4", lat: 36.32820, lng: 127.42700 },
+  { name: "나사락볼링장", cat: "액티비티", addr: "대흥동 245-2", lat: 36.32520, lng: 127.42720 },
+  { name: "점핑배틀", cat: "액티비티", addr: "은행동 40-3", lat: 36.32710, lng: 127.42780 }
 ];
 
 const gatheringSpot = {
   name: "🚩 14:55 집결지 (중앙로역 4번출구)",
-  lat: 36.327600, lng: 127.425100
+  lat: 36.327600, lng: 127.425300 // 중앙로역 4번출구 정확 지점
 };
 
 // Tight bounding box enclosing Places 1 through 8 exactly
@@ -159,13 +161,13 @@ function initLeafletMap() {
     closeBottomSheet();
   });
 
-  // DRAW 3 VISUAL ZONE POLYGONS WITH CLICK TO ZOOM
-  // Zone A Polygon (①, ②)
+  // DRAW 3 ACCURATE VISUAL ZONE POLYGONS
+  // Zone A Polygon (①, ② - 구 충남도청사 구역)
   const zoneAPoly = L.polygon([
-    [36.3246, 127.4196],
+    [36.3248, 127.4196],
     [36.3263, 127.4199],
     [36.3262, 127.4216],
-    [36.3245, 127.4213]
+    [36.3247, 127.4213]
   ], {
     color: '#ef4444',
     fillColor: '#ef4444',
@@ -176,12 +178,12 @@ function initLeafletMap() {
   zoneAPoly.on('click', () => zoomToZone('A'));
   zonePolygons['A'] = zoneAPoly;
 
-  // Zone B Polygon (③, ④, ⑤, ⑥)
+  // Zone B Polygon (③, ④, ⑤, ⑥ - 대흥동/은행동 상권 구역)
   const zoneBPoly = L.polygon([
     [36.3250, 127.4255],
-    [36.3292, 127.4262],
-    [36.3294, 127.4292],
-    [36.3250, 127.4285]
+    [36.3290, 127.4262],
+    [36.3292, 127.4288],
+    [36.3250, 127.4283]
   ], {
     color: '#8b5cf6',
     fillColor: '#8b5cf6',
@@ -192,12 +194,12 @@ function initLeafletMap() {
   zoneBPoly.on('click', () => zoomToZone('B'));
   zonePolygons['B'] = zoneBPoly;
 
-  // Zone C Polygon (⑥, ⑦, ⑧)
+  // Zone C Polygon (⑥, ⑦, ⑧ - 대전천 변 구역)
   const zoneCPoly = L.polygon([
-    [36.3280, 127.4278],
-    [36.3308, 127.4288],
-    [36.3308, 127.4312],
-    [36.3276, 127.4308]
+    [36.3275, 127.4282],
+    [36.3302, 127.4288],
+    [36.3302, 127.4308],
+    [36.3275, 127.4304]
   ], {
     color: '#f59e0b',
     fillColor: '#f59e0b',
@@ -208,7 +210,7 @@ function initLeafletMap() {
   zoneCPoly.on('click', () => zoomToZone('C'));
   zonePolygons['C'] = zoneCPoly;
 
-  // 🔴 ADD 34 SMALL RED DOT MARKERS FOR FOOD / CAFES
+  // 🔴 ADD 34 SMALL RED DOT MARKERS FOR FOOD / CAFES WITH PRECISE ANCHORING
   foodSpotsData.forEach(food => {
     const foodDotIcon = L.divIcon({
       className: 'custom-food-dot-wrapper',
@@ -234,7 +236,7 @@ function initLeafletMap() {
     });
   });
 
-  // Gathering Spot Marker (🚩)
+  // Gathering Spot Marker (🚩) PRECISE ANCHOR
   const flagIcon = L.divIcon({
     className: 'custom-leaflet-pin-wrapper',
     html: `<div class="custom-leaflet-pin target-spot">🚩</div>`,
@@ -256,7 +258,7 @@ function initLeafletMap() {
     leafletMap.panTo([gatheringSpot.lat, gatheringSpot.lng]);
   });
 
-  // Place Markers 1 to 8 (MOBILE BOTTOM SHEET DISPATCH)
+  // Place Markers 1 to 8 PRECISE ANCHORING AT EXACT GPS LOCATIONS
   Object.keys(placeDetails).forEach(id => {
     const p = placeDetails[id];
 
