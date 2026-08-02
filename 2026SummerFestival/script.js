@@ -17,7 +17,7 @@ const placeDetails = {
     desc: "전시관 내부 미술공간 전시장 입구 배경!",
     img: "./assets/place2_1.png",
     zone: "A",
-    lat: 36.325600, lng: 127.420800,
+    lat: 36.326188, lng: 127.423188, // Plus Code: 8CGF+F7 대전광역시
     kakao: "https://map.kakao.com/link/search/대전근현대사전시관",
     naver: "https://m.map.naver.com/search2/search.naver?query=대전근현대사전시관"
   },
@@ -26,7 +26,7 @@ const placeDetails = {
     desc: "대흥동 야외공연장 및 문화거리 중심 상징물 앞!",
     img: "./assets/place3_1.png",
     zone: "B",
-    lat: 36.326490, lng: 127.426150,
+    lat: 36.327363, lng: 127.425641, // Plus Code: 8CGG+W7R 대전광역시
     kakao: "https://map.kakao.com/link/search/우리들공원",
     naver: "https://m.map.naver.com/search2/search.naver?query=우리들공원"
   },
