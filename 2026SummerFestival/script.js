@@ -9,8 +9,8 @@ const placeDetails = {
     img: "./assets/place1_1.png",
     zone: "A",
     lat: 36.326888, lng: 127.421188, // 구글맵 링크 8CGC+QF2 대전광역시 (대전근현대사전시관 정문 계단 전면)
-    kakao: "https://map.kakao.com/link/search/대전근현대사전시관",
-    naver: "https://map.naver.com/p/search/대전근현대사전시관"
+    kakao: "https://map.kakao.com/link/search/대전 선화동 대전근현대사전시관",
+    naver: "https://map.naver.com/p/search/대전 선화동 대전근현대사전시관"
   },
   2: {
     name: "② 정영복 미술공간",
@@ -18,8 +18,8 @@ const placeDetails = {
     img: "./assets/place2_1.png",
     zone: "A",
     lat: 36.326188, lng: 127.423188, // Plus Code: 8CGF+F7 대전광역시
-    kakao: "https://map.kakao.com/link/search/정영복미술공간",
-    naver: "https://map.naver.com/p/search/정영복미술공간"
+    kakao: "https://map.kakao.com/link/search/대전 선화동 정영복미술공간",
+    naver: "https://map.naver.com/p/search/대전 선화동 정영복미술공간"
   },
   3: {
     name: "③ 우리들 공원 + 문화거리",
@@ -28,7 +28,7 @@ const placeDetails = {
     zone: "B",
     lat: 36.327363, lng: 127.425641, // Plus Code: 8CGG+W7R 대전광역시
     kakao: "https://place.map.kakao.com/410607403",
-    naver: "https://map.naver.com/p/search/대전우리들공원"
+    naver: "https://map.naver.com/p/search/대전 대흥동 우리들공원"
   },
   4: {
     name: "④ 대흥동 성당",
@@ -36,8 +36,8 @@ const placeDetails = {
     img: "./assets/place4_1.png",
     zone: "B",
     lat: 36.326812, lng: 127.426437, // Plus Code: 8CGG+PH 대전광역시
-    kakao: "https://map.kakao.com/link/search/대전 대흥동성당",
-    naver: "https://map.naver.com/p/search/대전 대흥동성당"
+    kakao: "https://map.kakao.com/link/search/대전 대흥동 대흥동성당",
+    naver: "https://map.naver.com/p/search/대전 대흥동 대흥동성당"
   },
   5: {
     name: "⑤ 성심당 본점",
@@ -45,8 +45,8 @@ const placeDetails = {
     img: "./assets/place5_1.png",
     zone: "B",
     lat: 36.327660, lng: 127.427280,
-    kakao: "https://map.kakao.com/link/search/대전 성심당 본점",
-    naver: "https://map.naver.com/p/search/대전 성심당 본점"
+    kakao: "https://map.kakao.com/link/search/대전 은행동 성심당 본점",
+    naver: "https://map.naver.com/p/search/대전 은행동 성심당 본점"
   },
   6: {
     name: "⑥ 으능정이 문화의거리",
@@ -54,8 +54,8 @@ const placeDetails = {
     img: "./assets/place6_1.png",
     zone: "BC",
     lat: 36.328450, lng: 127.428350,
-    kakao: "https://map.kakao.com/link/search/대전 으능정이문화의거리",
-    naver: "https://map.naver.com/p/search/대전 으능정이문화의거리"
+    kakao: "https://map.kakao.com/link/search/대전 은행동 으능정이문화의거리",
+    naver: "https://map.naver.com/p/search/대전 은행동 으능정이문화의거리"
   },
   7: {
     name: "⑦ 은행교",
@@ -63,8 +63,8 @@ const placeDetails = {
     img: "./assets/place7_1.png",
     zone: "C",
     lat: 36.328563, lng: 127.430188, // Plus Code: 8CHJ+C3 대전광역시
-    kakao: "https://map.kakao.com/link/search/대전 은행교",
-    naver: "https://map.naver.com/p/search/대전 은행교"
+    kakao: "https://map.kakao.com/link/search/대전 은행동 은행교",
+    naver: "https://map.naver.com/p/search/대전 은행동 은행교"
   },
   8: {
     name: "⑧ 목척교",
@@ -72,8 +72,8 @@ const placeDetails = {
     img: "./assets/place8_1.png",
     zone: "C",
     lat: 36.329938, lng: 127.429313, // Plus Code: 8CHH+XP 대전광역시
-    kakao: "https://map.kakao.com/link/search/대전 목척교",
-    naver: "https://map.naver.com/p/search/대전 목척교"
+    kakao: "https://map.kakao.com/link/search/대전 은행동 목척교",
+    naver: "https://map.naver.com/p/search/대전 은행동 목척교"
   }
 };
 
@@ -276,8 +276,8 @@ function initLeafletMap() {
         badgeClass: 'zone-a',
         desc: `주소: ${food.addr}`,
         img: '',
-        kakao: `https://map.kakao.com/link/search/${encodeURIComponent(food.name)}`,
-        naver: `https://map.naver.com/p/search/${encodeURIComponent(food.name)}`
+        kakao: `https://map.kakao.com/link/search/${encodeURIComponent("대전 " + food.addr.split(" ")[0] + " " + food.name)}`,
+        naver: `https://map.naver.com/p/search/${encodeURIComponent("대전 " + food.addr.split(" ")[0] + " " + food.name)}`
       });
       leafletMap.panTo([food.lat, food.lng]);
     });
