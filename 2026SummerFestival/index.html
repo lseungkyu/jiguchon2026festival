@@ -96,7 +96,7 @@
             </div>
             <div class="m-card-content">
               <p class="m-highlight-text">
-                📸 첫 번째 장소 <strong>[ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ]</strong> 에서 조원 모두가 <strong>가장 크게 웃는 포즈</strong>로 단체사진 촬영!
+                📸 첫 번째 장소에서 조원 모두가 <strong>가장 크게 웃는 포즈</strong>로 단체사진 촬영!
               </p>
             </div>
           </div>
@@ -115,7 +115,7 @@
             </div>
             <div class="m-card-content">
               <p class="m-highlight-text">
-                📸 두 번째 장소 <strong>[ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ]</strong> 에서 조원 모두가 <strong>똑같은 포즈</strong>로 단체사진 촬영!
+                📸 두 번째 장소에서 조원 모두가 <strong>똑같은 포즈</strong>로 단체사진 촬영!
               </p>
             </div>
           </div>
@@ -187,7 +187,7 @@
         
         <div class="box-header-block">
           <h2 class="box-title">🗺️ 실시간 이동 지도</h2>
-          <p class="box-subtitle">지도 구역을 터치하면 해당 영역으로 바로 확대됩니다.</p>
+          <p class="box-subtitle">마커나 구역 버튼을 터치하면 상세 정보가 하단 시트에 나타납니다.</p>
         </div>
 
         <!-- Map Zone Selector Pills (Spacious 3 Column Grid) -->
@@ -214,6 +214,29 @@
             <button class="map-tool-btn" onclick="locateUserGPS()">📍 내 위치</button>
             <button class="map-tool-btn" onclick="resetMapCenter()">🎯 전체 보기</button>
           </div>
+
+          <!-- 📱 NATIVE MOBILE MAP BOTTOM SHEET (NEVER COVERS THE MAP!) -->
+          <div id="mapBottomSheet" class="map-bottom-sheet">
+            <div class="sheet-header">
+              <div class="sheet-title-group">
+                <h4 id="sheetTitle">장소 명칭</h4>
+                <span id="sheetBadge" class="z-badge-mini zone-a">구역 A</span>
+              </div>
+              <button class="sheet-close-btn" onclick="closeBottomSheet()">✕</button>
+            </div>
+            
+            <div class="sheet-body">
+              <p id="sheetDesc">장소 설명 내용</p>
+              <div id="sheetImgWrapper" class="sheet-img-wrap">
+                <img id="sheetImg" src="" alt="장소 사진">
+              </div>
+              <div class="sheet-btn-grid" id="sheetNavBtns">
+                <a id="sheetKakaoBtn" href="#" target="_blank" class="nav-btn kakao">🧭 카카오맵</a>
+                <a id="sheetNaverBtn" href="#" target="_blank" class="nav-btn naver">🗺️ 네이버지도</a>
+              </div>
+            </div>
+          </div>
+
         </div>
 
         <!-- Quick Links Grid (Spacious Touch Chips) -->

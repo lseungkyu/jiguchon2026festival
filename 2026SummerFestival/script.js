@@ -154,6 +154,11 @@ function initLeafletMap() {
     attribution: '&copy; OpenStreetMap contributors | 지구촌교회 중등부'
   }).addTo(leafletMap);
 
+  // Tap anywhere on map to close Bottom Sheet
+  leafletMap.on('click', () => {
+    closeBottomSheet();
+  });
+
   // DRAW 3 VISUAL ZONE POLYGONS WITH CLICK TO ZOOM
   // Zone A Polygon (①, ②)
   const zoneAPoly = L.polygon([
@@ -168,7 +173,6 @@ function initLeafletMap() {
     weight: 2.5,
     dashArray: '5, 5'
   }).addTo(leafletMap);
-  zoneAPoly.bindTooltip("<b>🔴 동일구역 A (①, ②)</b><br>터치 시 확대", { permanent: false, direction: "center" });
   zoneAPoly.on('click', () => zoomToZone('A'));
   zonePolygons['A'] = zoneAPoly;
 
@@ -185,7 +189,6 @@ function initLeafletMap() {
     weight: 2.5,
     dashArray: '5, 5'
   }).addTo(leafletMap);
-  zoneBPoly.bindTooltip("<b>🟣 동일구역 B (③, ④, ⑤, ⑥)</b><br>터치 시 확대", { permanent: false, direction: "center" });
   zoneBPoly.on('click', () => zoomToZone('B'));
   zonePolygons['B'] = zoneBPoly;
 
@@ -202,7 +205,6 @@ function initLeafletMap() {
     weight: 2.5,
     dashArray: '5, 5'
   }).addTo(leafletMap);
-  zoneCPoly.bindTooltip("<b>🟠 동일구역 C (⑥, ⑦, ⑧)</b><br>터치 시 확대", { permanent: false, direction: "center" });
   zoneCPoly.on('click', () => zoomToZone('C'));
   zonePolygons['C'] = zoneCPoly;
 
@@ -211,27 +213,25 @@ function initLeafletMap() {
     const foodDotIcon = L.divIcon({
       className: 'custom-food-dot-wrapper',
       html: `<div class="food-red-dot" title="${food.name}"></div>`,
-      iconSize: [12, 12],
-      iconAnchor: [6, 6]
+      iconSize: [14, 14],
+      iconAnchor: [7, 7]
     });
 
-    const popupHtml = `
-      <div class="popup-card">
-        <div class="popup-title-row">
-          <h4 style="color:#ef4444;">📍 ${food.name}</h4>
-          <span style="font-size:9.5px; background:rgba(239,68,68,0.2); color:#fca5a5; padding:1px 5px; border-radius:4px;">${food.cat}</span>
-        </div>
-        <p>주소: ${food.addr}</p>
-        <div class="popup-nav-grid" style="grid-template-columns:1fr;">
-          <a href="https://m.map.naver.com/search2/search.naver?query=${encodeURIComponent(food.name)}" target="_blank" class="popup-nav-btn n">🧭 네이버지도 길찾기</a>
-        </div>
-        <button class="popup-close-action-btn" onclick="closeMapPopup()">✕ 지도 돌아가기</button>
-      </div>
-    `;
-
-    L.marker([food.lat, food.lng], { icon: foodDotIcon })
-      .addTo(leafletMap)
-      .bindPopup(popupHtml, { autoPanPadding: [15, 15], maxWidth: 230 });
+    const marker = L.marker([food.lat, food.lng], { icon: foodDotIcon }).addTo(leafletMap);
+    
+    marker.on('click', (e) => {
+      L.DomEvent.stopPropagation(e);
+      openBottomSheet({
+        title: `📍 ${food.name}`,
+        badge: food.cat,
+        badgeClass: 'zone-a',
+        desc: `주소: ${food.addr}`,
+        img: '',
+        kakao: `https://map.kakao.com/link/search/${encodeURIComponent(food.name)}`,
+        naver: `https://m.map.naver.com/search2/search.naver?query=${encodeURIComponent(food.name)}`
+      });
+      leafletMap.panTo([food.lat, food.lng]);
+    });
   });
 
   // Gathering Spot Marker (🚩)
@@ -241,17 +241,22 @@ function initLeafletMap() {
     iconSize: [34, 34],
     iconAnchor: [17, 17]
   });
-  L.marker([gatheringSpot.lat, gatheringSpot.lng], { icon: flagIcon })
-    .addTo(leafletMap)
-    .bindPopup(`
-      <div class="popup-card">
-        <h4>🚩 14:55 최종 집결 장소</h4>
-        <p><strong>중앙로역 4번 출구 앞</strong><br>14:55분까지 집결해 주세요!</p>
-        <button class="popup-close-action-btn" onclick="closeMapPopup()">✕ 지도 돌아가기</button>
-      </div>
-    `, { autoPanPadding: [15, 15], maxWidth: 230 });
+  const flagMarker = L.marker([gatheringSpot.lat, gatheringSpot.lng], { icon: flagIcon }).addTo(leafletMap);
+  flagMarker.on('click', (e) => {
+    L.DomEvent.stopPropagation(e);
+    openBottomSheet({
+      title: "🚩 14:55 최종 집결 장소",
+      badge: "집결지",
+      badgeClass: "zone-a",
+      desc: "중앙로역 4번 출구 앞 (모든 조 14:55분까지 집결!)",
+      img: "",
+      kakao: "https://map.kakao.com/link/search/중앙로역4번출구",
+      naver: "https://m.map.naver.com/search2/search.naver?query=중앙로역4번출구"
+    });
+    leafletMap.panTo([gatheringSpot.lat, gatheringSpot.lng]);
+  });
 
-  // Place Markers 1 to 8 (COMPACT POPUP WITH CLOSE BUTTON)
+  // Place Markers 1 to 8 (MOBILE BOTTOM SHEET DISPATCH)
   Object.keys(placeDetails).forEach(id => {
     const p = placeDetails[id];
 
@@ -268,33 +273,61 @@ function initLeafletMap() {
       iconAnchor: [17, 17]
     });
 
-    const popupHtml = `
-      <div class="popup-card">
-        <div class="popup-title-row">
-          <h4>${p.name}</h4>
-          <span class="z-badge-mini ${zoneClass}">구역 ${zoneBadgeText}</span>
-        </div>
-        <p>${p.desc}</p>
-        <img src="${p.img}" alt="${p.name}" class="popup-thumb" onclick="openLightbox('${p.img}', '${p.name}')">
-        <div class="popup-nav-grid">
-          <a href="${p.kakao}" target="_blank" class="popup-nav-btn k">카카오맵</a>
-          <a href="${p.naver}" target="_blank" class="popup-nav-btn n">네이버지도</a>
-        </div>
-        <button class="popup-close-action-btn" onclick="closeMapPopup()">✕ 지도 돌아가기</button>
-      </div>
-    `;
-
-    const marker = L.marker([p.lat, p.lng], { icon: numIcon })
-      .addTo(leafletMap)
-      .bindPopup(popupHtml, { autoPanPadding: [15, 15], maxWidth: 230 });
-
+    const marker = L.marker([p.lat, p.lng], { icon: numIcon }).addTo(leafletMap);
     leafletMarkers[id] = marker;
+
+    marker.on('click', (e) => {
+      L.DomEvent.stopPropagation(e);
+      openBottomSheet({
+        title: p.name,
+        badge: `구역 ${zoneBadgeText}`,
+        badgeClass: zoneClass,
+        desc: p.desc,
+        img: p.img,
+        kakao: p.kakao,
+        naver: p.naver
+      });
+      leafletMap.panTo([p.lat, p.lng]);
+    });
   });
 }
 
-function closeMapPopup() {
-  if (leafletMap) {
-    leafletMap.closePopup();
+// Mobile Map Bottom Sheet Handler
+function openBottomSheet(data) {
+  const sheet = document.getElementById("mapBottomSheet");
+  const sTitle = document.getElementById("sheetTitle");
+  const sBadge = document.getElementById("sheetBadge");
+  const sDesc = document.getElementById("sheetDesc");
+  const sImgWrap = document.getElementById("sheetImgWrapper");
+  const sImg = document.getElementById("sheetImg");
+  const sKakaoBtn = document.getElementById("sheetKakaoBtn");
+  const sNaverBtn = document.getElementById("sheetNaverBtn");
+
+  if (!sheet) return;
+
+  sTitle.textContent = data.title || "";
+  sBadge.textContent = data.badge || "";
+  sBadge.className = `z-badge-mini ${data.badgeClass || 'zone-a'}`;
+  sDesc.textContent = data.desc || "";
+
+  if (data.img) {
+    sImg.src = data.img;
+    sImgWrap.style.display = "block";
+    sImg.onclick = () => openLightbox(data.img, data.title);
+  } else {
+    sImgWrap.style.display = "none";
+  }
+
+  sKakaoBtn.href = data.kakao || "#";
+  sNaverBtn.href = data.naver || "#";
+
+  sheet.classList.add("active");
+}
+
+function closeBottomSheet() {
+  const sheet = document.getElementById("mapBottomSheet");
+  if (sheet) {
+    sheet.classList.remove("active");
   }
 }
 
@@ -309,6 +342,7 @@ function zoomToZone(zoneName) {
       maxZoom: 18
     });
   }
+  closeBottomSheet();
 }
 
 // Focus Map on a specific Place (1..8)
@@ -316,10 +350,22 @@ function focusMapPlace(placeId) {
   const p = placeDetails[placeId];
   if (leafletMap && p) {
     leafletMap.flyTo([p.lat, p.lng], 18, { duration: 0.8 });
-    const marker = leafletMarkers[placeId];
-    if (marker) {
-      setTimeout(() => marker.openPopup(), 900);
-    }
+    
+    let zoneClass = "zone-a";
+    let zoneBadgeText = "A";
+    if (p.zone === "B") { zoneClass = "zone-b"; zoneBadgeText = "B"; }
+    else if (p.zone === "C") { zoneClass = "zone-c"; zoneBadgeText = "C"; }
+    else if (p.zone === "BC") { zoneClass = "zone-bc"; zoneBadgeText = "B,C"; }
+
+    openBottomSheet({
+      title: p.name,
+      badge: `구역 ${zoneBadgeText}`,
+      badgeClass: zoneClass,
+      desc: p.desc,
+      img: p.img,
+      kakao: p.kakao,
+      naver: p.naver
+    });
   }
 }
 
@@ -331,6 +377,7 @@ function resetMapCenter() {
       duration: 0.8
     });
   }
+  closeBottomSheet();
 }
 
 // Locate User's Real-time GPS Location
@@ -353,10 +400,31 @@ function locateUserGPS() {
           iconAnchor: [17, 17]
         });
         userGpsMarker = L.marker([uLat, uLng], { icon: userIcon }).addTo(leafletMap);
-        userGpsMarker.bindPopup("<b>📍 내 현재 위치</b><br><button class='popup-close-action-btn' onclick='closeMapPopup()'>✕ 닫기</button>").openPopup();
+        userGpsMarker.on('click', (e) => {
+          L.DomEvent.stopPropagation(e);
+          openBottomSheet({
+            title: "📍 내 현재 위치",
+            badge: "GPS",
+            badgeClass: "zone-a",
+            desc: `위도: ${uLat.toFixed(4)}, 경도: ${uLng.toFixed(4)}`,
+            img: "",
+            kakao: `https://map.kakao.com/link/map/내위치,${uLat},${uLng}`,
+            naver: `https://m.map.naver.com/search2/search.naver?query=${uLat},${uLng}`
+          });
+        });
       } else if (userGpsMarker) {
-        userGpsMarker.setLatLng([uLat, uLng]).openPopup();
+        userGpsMarker.setLatLng([uLat, uLng]);
       }
+
+      openBottomSheet({
+        title: "📍 내 현재 위치",
+        badge: "GPS",
+        badgeClass: "zone-a",
+        desc: "실시간 GPS 내 현재 위치입니다.",
+        img: "",
+        kakao: `https://map.kakao.com/link/map/내위치,${uLat},${uLng}`,
+        naver: `https://m.map.naver.com/search2/search.naver?query=${uLat},${uLng}`
+      });
 
       if (leafletMap) {
         leafletMap.flyTo([uLat, uLng], 17, { duration: 0.8 });

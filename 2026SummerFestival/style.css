@@ -1,6 +1,6 @@
 /* ==========================================================================
    2026 SUMMER FESTIVAL DAEJEON CITY TOUR MOBILE MISSION SHEET STYLES
-   COMPACT MAP POPUP & ULTRA-HIGH READABILITY MOBILE DESIGN SYSTEM
+   MOBILE MAP BOTTOM SHEET & ULTRA-HIGH READABILITY MOBILE DESIGN SYSTEM
    ========================================================================== */
 
 :root {
@@ -431,7 +431,7 @@ body {
 .m-zone-btn.zc { background: rgba(245, 158, 11, 0.2); color: #fef08a; border-color: rgba(245, 158, 11, 0.4); }
 .m-zone-btn:active { transform: scale(0.95); }
 
-/* ================= Real GIS Leaflet Map Mobile Viewport & COMPACT POPUP FIX ================= */
+/* ================= Real GIS Leaflet Map Viewport & MOBILE BOTTOM SHEET ================= */
 .map-view-wrapper {
   position: relative;
   border-radius: var(--radius-md);
@@ -441,53 +441,57 @@ body {
 
 .real-map-div {
   width: 100%;
-  height: clamp(340px, 48vh, 440px);
+  height: clamp(360px, 50vh, 460px);
   background: #1e293b;
   z-index: 1;
 }
 
-/* 🗺️ COMPACT MOBILE POPUP STYLING (FIXES POPUP TOO LARGE ISSUE) */
-.leaflet-popup-content-wrapper {
-  background: rgba(15, 23, 42, 0.96) !important;
-  color: #f8fafc !important;
-  border: 1px solid rgba(255, 255, 255, 0.25) !important;
-  border-radius: 14px !important;
-  backdrop-filter: blur(12px) !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7) !important;
-  padding: 0 !important;
-}
+/* Hide Leaflet default popups completely to prevent map coverage */
+.leaflet-popup-pane { display: none !important; }
 
-.leaflet-popup-content {
-  margin: 10px 12px !important;
-  width: 220px !important;
-  max-width: 230px !important;
-  font-family: var(--font-family) !important;
-}
-
-.leaflet-container a.leaflet-popup-close-button {
-  color: #ffffff !important;
-  padding: 6px 8px 0 0 !important;
-  font-size: 20px !important;
-  font-weight: 700 !important;
-  width: 30px !important;
-  height: 30px !important;
-}
-
-.popup-card {
+/* 📱 NATIVE MOBILE BOTTOM SHEET ANCHORED AT THE BOTTOM OF THE MAP */
+.map-bottom-sheet {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 800;
+  background: rgba(11, 19, 41, 0.96);
+  border-top: 1.5px solid rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.8);
+  padding: 12px 14px;
+  border-radius: 18px 18px 0 0;
+  transform: translateY(100%);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
+  max-height: 230px;
 }
 
-.popup-title-row {
+.map-bottom-sheet.active {
+  transform: translateY(0);
+}
+
+.sheet-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.popup-card h4 {
-  font-size: 14px;
+.sheet-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.sheet-title-group h4 {
+  font-size: 15px;
   font-weight: 900;
   color: #ffffff;
   margin: 0;
@@ -496,61 +500,61 @@ body {
   text-overflow: ellipsis;
 }
 
-.popup-card p {
-  font-size: 11.5px;
+.sheet-close-btn {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sheet-close-btn:active { background: rgba(255, 255, 255, 0.3); }
+
+.sheet-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sheet-body p {
+  font-size: 12px;
   color: #cbd5e1;
   line-height: 1.35;
   margin: 0;
 }
 
-.popup-thumb {
+.sheet-img-wrap {
   width: 100%;
-  height: 85px;
-  object-fit: cover;
+  height: 90px;
+  overflow: hidden;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
-.popup-nav-grid {
+.sheet-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sheet-btn-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 4px;
-  margin-top: 2px;
+  gap: 6px;
 }
-
-.popup-nav-btn {
-  text-decoration: none;
-  font-size: 11px;
-  font-weight: 800;
-  padding: 6px 4px;
-  border-radius: 6px;
-  text-align: center;
-  white-space: nowrap;
-}
-
-.popup-nav-btn.k { background: #fee500; color: #000; }
-.popup-nav-btn.n { background: #03cf5d; color: #fff; }
-
-.popup-close-action-btn {
-  background: rgba(255, 255, 255, 0.15);
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  font-family: var(--font-family);
-  font-size: 11.5px;
-  font-weight: 800;
-  padding: 6px;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-top: 4px;
-  text-align: center;
-}
-
-.popup-close-action-btn:active { background: rgba(255, 255, 255, 0.3); }
 
 /* Map Floating Tools */
 .map-tools {
   position: absolute;
-  bottom: 16px;
+  top: 12px;
   right: 10px;
   z-index: 500;
   display: flex;
@@ -566,8 +570,8 @@ body {
   font-family: var(--font-family);
   font-size: 12px;
   font-weight: 800;
-  padding: 10px 14px;
-  min-height: 40px;
+  padding: 8px 12px;
+  min-height: 38px;
   border-radius: 20px;
   cursor: pointer;
   box-shadow: 0 4px 14px rgba(0,0,0,0.65);
