@@ -18,8 +18,8 @@ const placeDetails = {
     img: "./assets/place2_1.png",
     zone: "A",
     lat: 36.326188, lng: 127.423188, // Plus Code: 8CGF+F7 대전광역시
-    kakao: "https://map.kakao.com/link/search/대전근현대사전시관",
-    naver: "https://m.map.naver.com/search2/search.naver?query=대전근현대사전시관"
+    kakao: "https://map.kakao.com/link/search/정영복미술공간",
+    naver: "https://m.map.naver.com/search2/search.naver?query=정영복미술공간"
   },
   3: {
     name: "③ 우리들 공원 + 문화거리",
@@ -27,8 +27,8 @@ const placeDetails = {
     img: "./assets/place3_1.png",
     zone: "B",
     lat: 36.327363, lng: 127.425641, // Plus Code: 8CGG+W7R 대전광역시
-    kakao: "https://map.kakao.com/link/search/우리들공원",
-    naver: "https://m.map.naver.com/search2/search.naver?query=우리들공원"
+    kakao: "https://place.map.kakao.com/410607403",
+    naver: "https://m.map.naver.com/search2/search.naver?query=대전우리들공원"
   },
   4: {
     name: "④ 대흥동 성당",
