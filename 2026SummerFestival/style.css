@@ -1,6 +1,6 @@
 /* ==========================================================================
    2026 SUMMER FESTIVAL DAEJEON CITY TOUR MOBILE MISSION SHEET STYLES
-   HIGH VISUAL IMPACT MISSION CARDS & AMPLE SPACING MOBILE DESIGN SYSTEM
+   COMPACT MAP POPUP & ULTRA-HIGH READABILITY MOBILE DESIGN SYSTEM
    ========================================================================== */
 
 :root {
@@ -431,7 +431,7 @@ body {
 .m-zone-btn.zc { background: rgba(245, 158, 11, 0.2); color: #fef08a; border-color: rgba(245, 158, 11, 0.4); }
 .m-zone-btn:active { transform: scale(0.95); }
 
-/* ================= Real GIS Leaflet Map Mobile Viewport ================= */
+/* ================= Real GIS Leaflet Map Mobile Viewport & COMPACT POPUP FIX ================= */
 .map-view-wrapper {
   position: relative;
   border-radius: var(--radius-md);
@@ -441,10 +441,111 @@ body {
 
 .real-map-div {
   width: 100%;
-  height: clamp(360px, 50vh, 460px);
+  height: clamp(340px, 48vh, 440px);
   background: #1e293b;
   z-index: 1;
 }
+
+/* 🗺️ COMPACT MOBILE POPUP STYLING (FIXES POPUP TOO LARGE ISSUE) */
+.leaflet-popup-content-wrapper {
+  background: rgba(15, 23, 42, 0.96) !important;
+  color: #f8fafc !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  border-radius: 14px !important;
+  backdrop-filter: blur(12px) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7) !important;
+  padding: 0 !important;
+}
+
+.leaflet-popup-content {
+  margin: 10px 12px !important;
+  width: 220px !important;
+  max-width: 230px !important;
+  font-family: var(--font-family) !important;
+}
+
+.leaflet-container a.leaflet-popup-close-button {
+  color: #ffffff !important;
+  padding: 6px 8px 0 0 !important;
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  width: 30px !important;
+  height: 30px !important;
+}
+
+.popup-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.popup-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+}
+
+.popup-card h4 {
+  font-size: 14px;
+  font-weight: 900;
+  color: #ffffff;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.popup-card p {
+  font-size: 11.5px;
+  color: #cbd5e1;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.popup-thumb {
+  width: 100%;
+  height: 85px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.popup-nav-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.popup-nav-btn {
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 6px 4px;
+  border-radius: 6px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.popup-nav-btn.k { background: #fee500; color: #000; }
+.popup-nav-btn.n { background: #03cf5d; color: #fff; }
+
+.popup-close-action-btn {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-family: var(--font-family);
+  font-size: 11.5px;
+  font-weight: 800;
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 4px;
+  text-align: center;
+}
+
+.popup-close-action-btn:active { background: rgba(255, 255, 255, 0.3); }
 
 /* Map Floating Tools */
 .map-tools {

@@ -5,7 +5,7 @@
 const placeDetails = {
   1: {
     name: "① 대전근현대사전시관",
-    desc: "구 충청남도청사 건물. 고풍스러운 근대 건축물 배경 앞에서 인증샷 촬영!",
+    desc: "구 충청남도청사 건물. 고풍스러운 근대 건축물 배경!",
     img: "./assets/place1_1.png",
     zone: "A",
     lat: 36.325375, lng: 127.420556,
@@ -14,7 +14,7 @@ const placeDetails = {
   },
   2: {
     name: "② 정영복 미술공간",
-    desc: "대전근현대사전시관 내부 미술공간 전시장 입구 배경 앞에서 찰칵!",
+    desc: "전시관 내부 미술공간 전시장 입구 배경!",
     img: "./assets/place2_1.png",
     zone: "A",
     lat: 36.325600, lng: 127.420800,
@@ -23,7 +23,7 @@ const placeDetails = {
   },
   3: {
     name: "③ 우리들 공원 + 문화거리",
-    desc: "대흥동 야외공연장 및 문화예술의 거리 중심 상징물 앞 배경",
+    desc: "대흥동 야외공연장 및 문화거리 중심 상징물 앞!",
     img: "./assets/place3_1.png",
     zone: "B",
     lat: 36.326200, lng: 127.426500,
@@ -32,7 +32,7 @@ const placeDetails = {
   },
   4: {
     name: "④ 대흥동 성당",
-    desc: "웅장한 성당 외관 정면 전경 배경 앞에서 단체사진 촬영!",
+    desc: "웅장한 성당 외관 정면 전경 배경!",
     img: "./assets/place4_1.png",
     zone: "B",
     lat: 36.325600, lng: 127.427700,
@@ -41,7 +41,7 @@ const placeDetails = {
   },
   5: {
     name: "⑤ 성심당 본점",
-    desc: "대전의 명물 성심당 본점 건물 및 시그니처 튀김소보로 동상 앞!",
+    desc: "성심당 본점 건물 및 시그니처 튀김소보로 동상 앞!",
     img: "./assets/place5_1.png",
     zone: "B",
     lat: 36.327700, lng: 127.427200,
@@ -50,7 +50,7 @@ const placeDetails = {
   },
   6: {
     name: "⑥ 으능정이 문화의거리",
-    desc: "거대한 스카이로드 LED 전광판 기둥 및 으능정이 거리 입구 게이트",
+    desc: "스카이로드 LED 전광판 기둥 및 거리 입구 게이트!",
     img: "./assets/place6_1.png",
     zone: "BC",
     lat: 36.328700, lng: 127.428500,
@@ -59,7 +59,7 @@ const placeDetails = {
   },
   7: {
     name: "⑦ 은행교",
-    desc: "대전천을 건너는 은행교 교량 조형물 및 다리 위 배경",
+    desc: "대전천을 건너는 은행교 교량 조형물 및 다리 위!",
     img: "./assets/place7_1.png",
     zone: "C",
     lat: 36.328300, lng: 127.430000,
@@ -68,7 +68,7 @@ const placeDetails = {
   },
   8: {
     name: "⑧ 목척교",
-    desc: "목척교 상징 나무 조형물 및 쉼터 배경",
+    desc: "목척교 상징 나무 조형물 및 쉼터 배경!",
     img: "./assets/place8_1.png",
     zone: "C",
     lat: 36.330100, lng: 127.430400,
@@ -216,16 +216,22 @@ function initLeafletMap() {
     });
 
     const popupHtml = `
-      <div class="popup-card" style="padding:2px;">
-        <h4 style="margin:0; font-size:13px; color:#ef4444;">📍 ${food.name}</h4>
-        <p style="margin:2px 0 6px 0; font-size:11px; color:#cbd5e1;">주소: ${food.addr} (${food.cat})</p>
-        <a href="https://m.map.naver.com/search2/search.naver?query=${encodeURIComponent(food.name)}" target="_blank" class="popup-nav-btn n" style="display:block; padding:5px; font-size:11px; text-decoration:none;">🧭 네이버 길찾기</a>
+      <div class="popup-card">
+        <div class="popup-title-row">
+          <h4 style="color:#ef4444;">📍 ${food.name}</h4>
+          <span style="font-size:9.5px; background:rgba(239,68,68,0.2); color:#fca5a5; padding:1px 5px; border-radius:4px;">${food.cat}</span>
+        </div>
+        <p>주소: ${food.addr}</p>
+        <div class="popup-nav-grid" style="grid-template-columns:1fr;">
+          <a href="https://m.map.naver.com/search2/search.naver?query=${encodeURIComponent(food.name)}" target="_blank" class="popup-nav-btn n">🧭 네이버지도 길찾기</a>
+        </div>
+        <button class="popup-close-action-btn" onclick="closeMapPopup()">✕ 지도 돌아가기</button>
       </div>
     `;
 
     L.marker([food.lat, food.lng], { icon: foodDotIcon })
       .addTo(leafletMap)
-      .bindPopup(popupHtml);
+      .bindPopup(popupHtml, { autoPanPadding: [15, 15], maxWidth: 230 });
   });
 
   // Gathering Spot Marker (🚩)
@@ -240,11 +246,12 @@ function initLeafletMap() {
     .bindPopup(`
       <div class="popup-card">
         <h4>🚩 14:55 최종 집결 장소</h4>
-        <p><strong>중앙로역 4번 출구 앞</strong><br>모든 조는 14:55분까지 집결해 주세요!</p>
+        <p><strong>중앙로역 4번 출구 앞</strong><br>14:55분까지 집결해 주세요!</p>
+        <button class="popup-close-action-btn" onclick="closeMapPopup()">✕ 지도 돌아가기</button>
       </div>
-    `);
+    `, { autoPanPadding: [15, 15], maxWidth: 230 });
 
-  // Place Markers 1 to 8
+  // Place Markers 1 to 8 (COMPACT POPUP WITH CLOSE BUTTON)
   Object.keys(placeDetails).forEach(id => {
     const p = placeDetails[id];
 
@@ -263,25 +270,32 @@ function initLeafletMap() {
 
     const popupHtml = `
       <div class="popup-card">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-          <h4 style="margin:0;">${p.name}</h4>
+        <div class="popup-title-row">
+          <h4>${p.name}</h4>
           <span class="z-badge-mini ${zoneClass}">구역 ${zoneBadgeText}</span>
         </div>
         <p>${p.desc}</p>
-        <img src="${p.img}" alt="${p.name}">
+        <img src="${p.img}" alt="${p.name}" class="popup-thumb" onclick="openLightbox('${p.img}', '${p.name}')">
         <div class="popup-nav-grid">
           <a href="${p.kakao}" target="_blank" class="popup-nav-btn k">카카오맵</a>
           <a href="${p.naver}" target="_blank" class="popup-nav-btn n">네이버지도</a>
         </div>
+        <button class="popup-close-action-btn" onclick="closeMapPopup()">✕ 지도 돌아가기</button>
       </div>
     `;
 
     const marker = L.marker([p.lat, p.lng], { icon: numIcon })
       .addTo(leafletMap)
-      .bindPopup(popupHtml);
+      .bindPopup(popupHtml, { autoPanPadding: [15, 15], maxWidth: 230 });
 
     leafletMarkers[id] = marker;
   });
+}
+
+function closeMapPopup() {
+  if (leafletMap) {
+    leafletMap.closePopup();
+  }
 }
 
 // Zoom to Specific Zone (A, B, C)
@@ -339,7 +353,7 @@ function locateUserGPS() {
           iconAnchor: [17, 17]
         });
         userGpsMarker = L.marker([uLat, uLng], { icon: userIcon }).addTo(leafletMap);
-        userGpsMarker.bindPopup("<b>📍 내 현재 위치</b>").openPopup();
+        userGpsMarker.bindPopup("<b>📍 내 현재 위치</b><br><button class='popup-close-action-btn' onclick='closeMapPopup()'>✕ 닫기</button>").openPopup();
       } else if (userGpsMarker) {
         userGpsMarker.setLatLng([uLat, uLng]).openPopup();
       }
