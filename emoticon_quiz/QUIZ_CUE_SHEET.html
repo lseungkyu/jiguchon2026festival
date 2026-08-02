@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>지구촌 퀴즈 대회 현장 진행 큐시트</title>
+    <style>
+        @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
+
+        :root {
+            --primary: #6c5ce7;
+            --primary-light: rgba(108, 92, 231, 0.08);
+            --accent-green: #2ecc71;
+            --accent-pink: #ff7675;
+            --accent-yellow: #f1c40f;
+            --text-dark: #2c3e50;
+            --text-muted: #7f8c8d;
+            --bg-light: #f8f9fa;
+            --border-color: #dfe6e9;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            color: var(--text-dark);
+            background-color: #ffffff;
+            line-height: 1.6;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 3px double var(--primary);
+            padding-bottom: 25px;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            margin: 0 0 10px 0;
+            color: var(--text-dark);
+            font-weight: 900;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin: 0;
+            font-weight: 500;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            border-left: 5px solid var(--primary);
+            padding-left: 12px;
+            margin-top: 35px;
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+
+        h3 {
+            font-size: 1.15rem;
+            color: #2d3436;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        p {
+            margin: 0 0 12px 0;
+        }
+
+        /* Callout Box 스타일 */
+        .callout {
+            background-color: var(--primary-light);
+            border-left: 4px solid var(--primary);
+            padding: 12px 18px;
+            border-radius: 0 8px 8px 0;
+            margin: 15px 0;
+            font-size: 0.9rem;
+        }
+
+        .callout-title {
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        /* 테이블 디자인 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.88rem;
+            box-shadow: var(--shadow);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th {
+            background-color: var(--text-dark);
+            color: #ffffff;
+            font-weight: 700;
+            padding: 12px 14px;
+            text-align: left;
+            border-bottom: 2px solid #1a252f;
+        }
+
+        td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: top;
+        }
+
+        tr:nth-child(even) td {
+            background-color: var(--bg-light);
+        }
+
+        .card {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            background-color: #ffffff;
+            box-shadow: var(--shadow);
+        }
+
+        .card-title {
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 타임라인 바 형태 시각화 */
+        .timeline-bar {
+            display: flex;
+            height: 35px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 20px 0 30px 0;
+            box-shadow: var(--shadow);
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: white;
+            text-align: center;
+            line-height: 35px;
+        }
+
+        .timeline-segment {
+            height: 100%;
+        }
+
+        .segment-1 { background-color: #a29bfe; width: 13%; } /* 2분 (13%) */
+        .segment-2 { background-color: #74b9ff; width: 17%; } /* 2.5분 (17%) */
+        .segment-3 { background-color: #0984e3; width: 23%; } /* 3.5분 (23%) */
+        .segment-4 { background-color: #6c5ce7; width: 23%; } /* 3.5분 (23%) */
+        .segment-5 { background-color: #d63031; width: 10%; } /* 1.5분 (10%) */
+        .segment-6 { background-color: #fdcb6e; width: 14%; color: #2c3e50; } /* 2분 (14%) */
+
+        @media print {
+            body {
+                padding: 15px;
+            }
+            tr {
+                page-break-inside: avoid;
+            }
+            .card {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌍 지구촌 퀴즈 대회 현장 진행 큐시트</h1>
+            <p>15분 컴팩트 진행 시나리오 및 운영 매뉴얼</p>
+        </div>
+
+        <h2>📌 진행 개요</h2>
+        <div class="card" style="margin-top: 5px;">
+            <p style="margin: 0; font-size: 0.95rem;">
+                • <strong>전체 제한 시간:</strong> 15분 (900초)<br>
+                • <strong>게임 모드:</strong> 팀전 (목장별 대항전 - 상위 3명 합산제)<br>
+                • <strong>진행자 PC:</strong> 빔 프로젝터 연결 (조작 버튼이 없는 깔끔한 전광판 노출)<br>
+                • <strong>진행자 스마트폰:</strong> 모바일 리모컨 접속 (`/monitor?pin=XXXX` 권한 연동)<br>
+                • <strong>학생 스마트폰:</strong> 개별 접속 및 터치식 입력 (선택형 학년/목장 가입)
+            </p>
+        </div>
+
+        <h2>🎯 핵심 진행 규칙 & 점수 시스템</h2>
+        <div class="card-grid">
+            <div class="card" style="border-left: 5px solid var(--primary); margin: 0;">
+                <div class="card-title">📋 진행 및 제출 규칙</div>
+                <ul style="font-size: 0.9rem; padding-left: 20px; margin: 0; line-height: 1.6;">
+                    <li style="margin-bottom: 8px;"><strong>실시간 타이머 & 경고:</strong> 화면 우측 상단에 타이머 표시. 종료 5초 이하 시 폰에 <strong>비프음 경고</strong>와 <strong>진동</strong> 발생.</li>
+                    <li style="margin-bottom: 8px;"><strong>자동 제출 시스템:</strong> 타이머 만료(0초) 또는 진행자 정답 공개 시 <strong>작성 중이던 텍스트가 자동 제출</strong>됨.</li>
+                    <li><strong>자유로운 정답 수정:</strong> 제출 완료 후에도 제한 시간이 남아 있다면(>0초) 언제든지 정답 수정 전송 가능.</li>
+                </ul>
+            </div>
+            <div class="card" style="border-left: 5px solid var(--primary); margin: 0;">
+                <div class="card-title">🏆 점수 산정 & 랭킹 시스템</div>
+                <ul style="font-size: 0.9rem; padding-left: 20px; margin: 0; line-height: 1.6;">
+                    <li style="margin-bottom: 8px;"><strong>상위 3명 합산제 (팀전):</strong> 목장별 소속원 중 <strong>개인 최고 점수 3인의 성적만 합산</strong>해 목장 등수 결정 (인원 불균형 보완).</li>
+                    <li style="margin-bottom: 8px;"><strong>공동 순위(Tied Rank) 적용:</strong> 동점 시 동일 등수를 부여하고, 최종 빔 시상대(Podium)에 나란히 동일 높이 단상 및 왕관 연출.</li>
+                    <li><strong>자동 보너스 (+15점):</strong> 최다 접속 / 최소 접속 / 동반성장(표준편차 최저) / 평균 최속 제출 목장에 일괄 가산점 자동 연산 부여.</li>
+                </ul>
+            </div>
+        </div>
+
+        <h2>🧭 1안. 진행자 통제형 (추천: 중계식 15문제 쇼)</h2>
+        <p>진행자가 마이크를 잡고 현장 제출 상황을 위트 있게 중계하며, 정답 공개 시마다 리액션을 유도해 나가는 현장 레크리에이션 방식입니다.</p>
+
+        <h3>⏱️ 단계별 시간 분배 (15분 타임라인)</h3>
+        <div class="timeline-bar">
+            <div class="timeline-segment segment-1">가입 (2분)</div>
+            <div class="timeline-segment segment-2">몸풀기 (2.5분)</div>
+            <div class="timeline-segment segment-3">성경 인물 (3.5분)</div>
+            <div class="timeline-segment segment-4">심화 상식 (3.5분)</div>
+            <div class="timeline-segment segment-5">파이널 (1.5분)</div>
+            <div class="timeline-segment segment-6">시상 (2분)</div>
+        </div>
+
+        <h3>📋 상세 진행 시나리오 </h3>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 12%;">시간</th>
+                    <th style="width: 15%;">단계</th>
+                    <th style="width: 33%;">출제 문제 정보 </th>
+                    <th style="width: 40%;">진행자 멘트 및 연출 가이드</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="font-weight: bold; text-align: center;">00:00 ~ 02:00<br>(2.0분)</td>
+                    <td style="font-weight: bold; color: var(--primary);">오프닝 &<br>목장 입장</td>
+                    <td><strong>[대기실 화면]</strong><br>• PC 전광판 PIN 및 QR 송출<br>• 가입방 오픈</td>
+                    <td><strong>"스마트폰을 켜고 전광판의 QR을 스캔하세요! 이번 퀴즈는 개인 점수가 모여 목장 순위가 결정됩니다!"</strong><br>• 학년/목장 선택형 버튼 가입을 중계합니다: <em>"2학년 3목장, 3학년 1목장 벌써 다 모였네요!"</em></td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; text-align: center;">02:00 ~ 04:30<br>(2.5분)</td>
+                    <td style="font-weight: bold; color: var(--primary);">몸풀기 퀴즈<br>(Q1 ~ Q3)</td>
+                    <td>• <strong>Q1 (주관식/10점):</strong> 🇰🇷⚽7️⃣📸 (손흥민)<br>• <strong>Q2 (주관식/10점):</strong> 🧨🧈🎤7️⃣ (방탄소년단)<br>• <strong>Q3 (주관식/10점):</strong> 대형 기획사 명칭 (하이브)</td>
+                    <td><strong>"Q1부터 Q3까지는 누구나 맞출 수 있는 10점짜리 몸풀기 문제입니다. 제한 시간 끝나기 전에만 답 수정 가능!"</strong><br>• <em>"Q1 힌트! 카메라와 7번, 축구하면 바로 떠오르는 그 국가대표 선수입니다!"</em></td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; text-align: center;">04:30 ~ 08:00<br>(3.5분)</td>
+                    <td style="font-weight: bold; color: var(--primary);">성경 인물/기적<br>(Q4 ~ Q7)</td>
+                    <td>• <strong>Q4 (주관식/20점):</strong> 🌳🧔🤏👀💰 (삭개오)<br>• <strong>Q5 (주관식/20점):</strong> 🐟⛵🧔🎣 (베드로)<br>• <strong>Q6 (객관식/10점):</strong> 🍞🍞🍞🍞🍞🐟🐟 (오병이어)<br>• <strong>Q7 (객관식/10점):</strong> 🍷🏺💧🍇 (가나의 혼인잔치)</td>
+                    <td><strong>"여기서부터 점수가 높은 성경 퀴즈입니다! 삭개오와 베드로는 주관식이에요!"</strong><br>• <em>"Q4 힌트! 🤏 손가락 모양 보이시죠? 성경 인물 중 키가 아주 작아서 뽕나무에 올라간 사람!"</em></td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; text-align: center;">08:00 ~ 11:30<br>(3.5분)</td>
+                    <td style="font-weight: bold; color: var(--primary);">일반/성경 심화<br>(Q8 ~ Q12)</td>
+                    <td>• <strong>Q8 (주관식/10점):</strong> 동영상 공유 플랫폼 (유튜브)<br>• <strong>Q9 (주관식/20점):</strong> 🧔💰🪙💋 (가룟유다)<br>• <strong>Q10 (객관식/10점):</strong> 🌊🚶‍♂️🧔⛵ (물 위를 걸으심)<br>• <strong>Q11 (객관식/5점):</strong> ⚽🏃‍♂️🏁🚫 (오프사이드)<br>• <strong>Q12 (주관식/10점):</strong> 32도 이상 휴식 시간 (하이드레이션브레이크)</td>
+                    <td><strong>"Q9은 은화 주머니와 배신의 입맞춤입니다! Q12는 하이드레이션브레이크, 띄어쓰기 없이 정확히 적으세요!"</strong><br>• <em>"시간 마감 5초 전 경고 소리와 폰 진동 울립니다! 마감 전에 정답 수정 마무리하세요!"</em></td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; text-align: center;">11:30 ~ 13:00<br>(1.5분)</td>
+                    <td style="font-weight: bold; color: var(--primary);">파이널 장소<br>(Q13 ~ Q15)</td>
+                    <td>• <strong>Q13 (주관식/25점):</strong> 🌃🌳🧔🙏 (겟세마네)<br>• <strong>Q14 (주관식/25점):</strong> 💀⛰️✝️ (골고다)<br>• <strong>Q15 (주관식/30점):</strong> 예수님이 어부 부른 호수 (갈릴리)</td>
+                    <td><strong>"마지막 장소 3문제는 배점이 최고 30점까지 올라갑니다. 여기서 목장 순위 완전히 뒤바뀝니다!"</strong><br>• <em>"예수님 기도처 겟세마네, 십자가 지신 해골의 언덕 골고다, 제자를 부르신 갈릴리 호수까지!"</em></td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; text-align: center;">13:00 ~ 15:00<br>(2.0분)</td>
+                    <td style="font-weight: bold; color: var(--primary);">보너스 정산<br>& 시상식</td>
+                    <td><strong>[최종 정산 및 시상대]</strong><br>• 리모컨으로 자동 보너스 계산<br>• 동점 랭킹 대응 시상대 오픈</td>
+                    <td><strong>"최다 접속, 최소 접속, 동반성장, 평균 스피드 목장! 보너스 점수를 적용합니다."</strong><br>• 리모컨으로 보너스 적용 후 최종 시상대 오픈: <em>"공동 1등 축하합니다!"</em></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>⚡ 2안. 참여자 자율 풀이형 (스피드런 모드)</h2>
+        <p>정해진 10분 동안 학생들이 각자의 폰을 보며 자기 속도에 맞춰 문제를 푸는 개인/목장 자율 퀴즈 레이스입니다.</p>
+        
+        <h3>📋 자율 풀이형 진행 시나리오</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 12%;">시간</th>
+                    <th style="width: 15%;">단계</th>
+                    <th style="width: 33%;">진행 및 화면 연동</th>
+                    <th style="width: 40%;">진행자 멘트 및 중계 가이드</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="font-weight: bold; text-align: center;">00:00 ~ 02:00<br>(2.0분)</td>
+                    <td style="font-weight: bold; color: #0984e3;">방 개설 및<br>목장 입장</td>
+                    <td>• PC 전광판 PIN 및 QR 송출<br>• Play Style: <strong>[참여자 자율 풀이]</strong><br>• 제한 시간: <strong>10분</strong> 설정</td>
+                    <td><strong>"이번 판은 자율 풀이 레이스입니다! 제한시간 10분 동안 각자의 페이스대로 1번부터 끝까지 정답 질주를 펼치면 됩니다!"</strong><br>• 학년/목장 선택형 버튼 가입을 중계합니다.</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; text-align: center;">02:00 ~ 12:00<br>(10.0분)</td>
+                    <td style="font-weight: bold; color: #0984e3;">자율 퀴즈<br>스피드런 레이스</td>
+                    <td>• 리모컨으로 [퀴즈 시작] 실행<br>• PC 전광판에 학생별 <strong>퀴즈 진척 현황 그래프</strong> 및 실시간 랭킹 교차 송출</td>
+                    <td><strong>"퀴즈 스타트! 1번 문제부터 거침없이 달려가세요! 0초가 되면 모든 기기가 자동으로 닫힙니다!"</strong><br>• 실시간 전광판의 진척도 요동을 박진감 있게 E-스포츠 해설처럼 중계합니다.<br>• <em>"오! 현재 2학년 3목장의 홍길동 학생이 Q11을 돌파하며 1위입니다! 그 뒤를 1학년 이영희 학생이 무서운 속도로 추격합니다!"</em></td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; text-align: center;">12:00 ~ 15:00<br>(3.0분)</td>
+                    <td style="font-weight: bold; color: #0984e3;">타임아웃 종료<br>& 최종 정산</td>
+                    <td>• 10분 제한 시간 자동 종료<br>• 리모컨으로 자동 보너스 계산 및 적용<br>• 최종 시상대(Podium) 발표</td>
+                    <td><strong>"10분 레이스 마감되었습니다! 이제 정산에 들어갑니다!"</strong><br>• 자동 보너스 지급 내역 호명 및 리액션.<br>• 최종 리모컨의 [결과 보러가기] 터치해 시상대 연출 발표.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>⚖️ 1안(진행자 통제형) 대비 장단점 비교</h3>
+        <div class="card-grid">
+            <div class="card" style="border-left: 5px solid var(--accent-green);">
+                <div class="card-title" style="color: var(--accent-green);">👍 장점 (Pros)</div>
+                <ul style="font-size: 0.9rem; padding-left: 20px; margin: 0; line-height: 1.6;">
+                    <li style="margin-bottom: 8px;"><strong>소외 없는 높은 참여율:</strong> 모든 학생이 자기 템포에 맞춰 동시에 문제를 풀므로, 퀴즈 도중 흥미를 잃지 않고 전원 끝까지 최고 수준으로 몰입합니다.</li>
+                    <li style="margin-bottom: 8px;"><strong>칼 같은 시간 관리:</strong> 10분 타임어택 제한 시간이 시스템상에서 자동으로 관리되므로, 현장 행사 진행 시 타임라인이 절대 밀리지 않습니다.</li>
+                    <li><strong>E-스포츠 스타일의 연출:</strong> 빔 화면의 진척도 그래프와 순위가 실시간으로 쉴 새 없이 엎치락뒤치락하여 현장 긴장감이 극대화됩니다.</li>
+                </ul>
+            </div>
+            <div class="card" style="border-left: 5px solid var(--accent-pink);">
+                <div class="card-title" style="color: var(--accent-pink);">👎 단점 (Cons)</div>
+                <ul style="font-size: 0.9rem; padding-left: 20px; margin: 0; line-height: 1.6;">
+                    <li style="margin-bottom: 8px;"><strong>단합 리액션 유도 한계:</strong> 문제마다 다 함께 정답을 맞춰보는 오프라인 레크리에이션 고유의 현장 떼창이나 폭소, 탄성 등의 현장 호흡을 나누기 어렵습니다.</li>
+                    <li style="margin-bottom: 8px;"><strong>현장 난이도 힌트 조절 차단:</strong> 개개인의 진척 속도가 전부 다르기 때문에, 오답률이 높은 고난도 문제에서 공통적으로 재치 있는 힌트를 주어 유도하기 어렵습니다.</li>
+                    <li><strong>기기 통신 환경 편차:</strong> 개인 스마트폰의 통신 감도(WiFi/LTE)나 물리적 터치 속도 편차가 미미하게 결과에 영향을 줄 수 있습니다.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,90 @@
+function createStudentForm() {
+  // 1. 설문지 생성 및 기본 설정
+  var form = FormApp.create('2026 지구촌 중등부 여름수련회 학생준비위 설문조사');
+  
+  form.setDescription(
+    '와줘서 고마워! 수련회 직접 커스텀 기획단에 합류한 너희를 격하게 환영해 💖\n' +
+    '아래 설문을 작성해 주면 첫 모임을 준비하는 데 정말 큰 도움이 될 거야! 금방 끝나니까 솔직하게 적어줘! 😎'
+  );
+  
+  // 설문지 기본 설정 (답변 수정 허용, 응답 요약 공개)
+  form.setAllowResponseEdits(true);
+  form.setPublishingSummary(true);
+
+  // [질문 1] 이름 (단답형 / 필수)
+  var nameItem = form.addTextItem();
+  nameItem.setTitle('1. 너의 이름은 무엇이니? 🙋‍♂️')
+          .setRequired(true);
+
+  // [질문 2] 학교 및 학년 (단답형 / 필수)
+  var schoolItem = form.addTextItem();
+  schoolItem.setTitle('2. 지금 다니는 학교와 학년을 적어줘! 🏫')
+            .setHelpText('예: 지구촌중 2학년')
+            .setRequired(true);
+
+  // [질문 3] 소속 목장 (단답형 / 필수)
+  var shepherdItem = form.addTextItem();
+  shepherdItem.setTitle('3. 현재 소속된 목장을 입력해줘! ⛪')
+              .setHelpText('예: 2-4목장')
+              .setRequired(true);
+
+  // [질문 4] 사는 동네 (단답형 / 선택)
+  var addressItem = form.addTextItem();
+  addressItem.setTitle('4. 사는 동네가 어디인가요? 🏡')
+             .setHelpText('🚗 첫 모임(6월 14일) 후 귀가 차량 지원을 위해 필요한 정보예요!\n' +
+                          '집으로 돌아갈 때 목자님 차편 지원이 필요 없는 친구는 안 적고 넘어가도 괜찮아요!\n' +
+                          '작성할 때는 [ ~구 ~동 아파트 이름 ]까지 적어주세요! (예: 분당구 정자동 OO아파트)')
+             .setRequired(false);
+
+  // [질문 5] 귀가 차편 필요 여부 (객관식 / 필수)
+  var carNeedItem = form.addMultipleChoiceItem();
+  carNeedItem.setTitle('5. 첫 모임이 끝나고 귀가 차편 지원이 필요한가요? 🚗')
+             .setHelpText('끝나고 안전하고 편안하게 집에 바래다줄 예정입니다!')
+             .setChoices([
+               carNeedItem.createChoice('🙆‍♂️ 네! 안전하게 타고 갈래요'),
+               carNeedItem.createChoice('🙅‍♂️ 아니요! 혼자 갈 수 있어요')
+             ])
+             .setRequired(true);
+
+  // [질문 6] 최애 간식 & 알레르기 (단답형 / 필수)
+  var snackItem = form.addTextItem();
+  snackItem.setTitle('6. 매달 맛있는 간식 투표/먹방 시 반영할 너의 최애 간식은? 🍕')
+           .setHelpText('혹시 특정 음식 알레르기가 있다면 같이 꼭 적어줘! (소중하게 챙겨줄게 🤤)')
+           .setRequired(true);
+
+  // [질문 7] 이 모임에 가입하게 된 이유 (객관식 / 필수)
+  var reasonItem = form.addMultipleChoiceItem();
+  reasonItem.setTitle('7. 이 모임(학생준비위)에 참여하게 된 진짜 이유는? 😎')
+            .setChoices([
+              reasonItem.createChoice('🎮 내 손으로 직접 수련회를 간지나게 디자인해 보고 싶어서!'),
+              reasonItem.createChoice('🍕 맛있는 간식 투표와 먹방 혜택이 너무 끌려서!'),
+              reasonItem.createChoice('😎 중등부의 \'핵인싸 활동단\'이라는 타이틀이 멋져 보여서!'),
+              reasonItem.createChoice('목자님의 열렬한 구애와 추천으로 인해... 하하!')
+            ])
+            .showOtherOption(true)
+            .setRequired(true);
+
+  // [질문 8] 나의 치트키 능력치 (체크박스 / 필수)
+  var skillItem = form.addCheckboxItem();
+  skillItem.setTitle('8. 내가 준비위에서 은근히 잘 발휘할 수 있는 나만의 재능은? ✨')
+           .setHelpText('중복 선택 가능! 부담 없이 골라줘!')
+           .setChoices([
+             skillItem.createChoice('🎲 보드게임 룰 설명왕 (설명서 읽고 친구들에게 전파)'),
+             skillItem.createChoice('🎪 호응 & 리액션 요정 (의견이 나오면 호응 폭격기)'),
+             skillItem.createChoice('🎵 힙한 찬양 음악 발굴러 (신나는 찬양 리스트 추천)'),
+             skillItem.createChoice('💡 예능급 게임 아이디어 뱅크 (꿀잼 아이디어 가득)'),
+             skillItem.createChoice('🤤 프로 먹방러 (간식을 세상에서 가장 맛있게 먹음)')
+           ])
+           .setRequired(true);
+
+  // [질문 9] 수련회 프로그램 스포일러 (단답형 / 선택)
+  var ideaItem = form.addTextItem();
+  ideaItem.setTitle('9. 수련회 때 이거 하면 대박 난다! 하는 신박한 게임이나 해보고 싶었던 활동 스포하기 🧠')
+          .setHelpText('자유롭게 한 줄만 가볍게 적어줘!')
+          .setRequired(false);
+
+  // 결과 출력
+  Logger.log('✨ 설문지 생성 완료!');
+  Logger.log('👉 아래 링크를 복사하여 브라우저에 입력하시면 완성된 설문지로 이동합니다!');
+  Logger.log('🔗 편집 및 확인 주소: ' + form.getEditUrl());
+}

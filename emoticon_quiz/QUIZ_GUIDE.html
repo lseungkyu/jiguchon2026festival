@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=initial-scale=1.0">
+    <title>지구촌 퀴즈 진행 및 점수 가이드북</title>
+    <style>
+        @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
+
+        :root {
+            --primary: #6c5ce7;
+            --primary-light: rgba(108, 92, 231, 0.08);
+            --accent-green: #2ecc71;
+            --accent-green-light: rgba(46, 204, 113, 0.08);
+            --accent-pink: #ff7675;
+            --accent-yellow: #f1c40f;
+            --text-dark: #2c3e50;
+            --text-muted: #7f8c8d;
+            --bg-light: #f8f9fa;
+            --border-color: #dfe6e9;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            color: var(--text-dark);
+            background-color: #ffffff;
+            line-height: 1.7;
+            margin: 0;
+            padding: 50px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            border-bottom: 3px double var(--primary);
+            padding-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.4rem;
+            margin: 0 0 10px 0;
+            color: var(--text-dark);
+            font-weight: 900;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin: 0;
+            font-weight: 500;
+        }
+
+        h2 {
+            font-size: 1.6rem;
+            color: var(--text-dark);
+            border-left: 5px solid var(--primary);
+            padding-left: 12px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-weight: 800;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            color: #2d3436;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        p {
+            margin: 0 0 15px 0;
+        }
+
+        /* Callout Box 스타일 */
+        .callout {
+            background-color: var(--primary-light);
+            border-left: 4px solid var(--primary);
+            padding: 15px 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+            font-size: 0.95rem;
+        }
+
+        .callout-title {
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        /* 테이블 디자인 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            font-size: 0.95rem;
+            box-shadow: var(--shadow);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th {
+            background-color: var(--text-dark);
+            color: #ffffff;
+            font-weight: 700;
+            padding: 14px 18px;
+            text-align: left;
+        }
+
+        td {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:nth-child(even) td {
+            background-color: var(--bg-light);
+        }
+
+        /* 카드 UI */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .card {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            background-color: #ffffff;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 배분 규칙 흐름 시각화 */
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background-color: var(--bg-light);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin: 25px 0;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px 18px;
+            box-shadow: var(--shadow);
+        }
+
+        .flow-step-num {
+            background-color: var(--primary);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 20px;
+            margin-right: 12px;
+        }
+
+        .flow-step-text {
+            font-size: 0.95rem;
+            font-weight: bold;
+        }
+
+        @media print {
+            body {
+                padding: 20px;
+            }
+            .card {
+                page-break-inside: avoid;
+            }
+            tr {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌍 지구촌 퀴즈 (Jiguchon Quiz) 가이드</h1>
+            <p>진행자 및 목자용 통합 가이드 및 점수 시스템 매뉴얼</p>
+        </div>
+
+        <h2>📅 1. 퀴즈 진행 규칙 (Gameplay Rules)</h2>
+        <p>학생들은 스마트폰으로 실시간 연결하여 참가하며, 퀴즈 대회의 전체적인 흐름은 다음과 같습니다.</p>
+
+        <div class="card-grid">
+            <div class="card">
+                <div class="card-title">⏱️ 시간 제한 및 자동 제출</div>
+                <p style="font-size: 0.9rem; color: var(--text-dark); margin: 0;">
+                    진행자가 문제를 출제하면 실시간 타이머가 학생 기기에 표기됩니다. 5초 이하가 되면 <strong>비프음 경고</strong>와 <strong>진동</strong>이 활성화되어 직관적인 피드백을 주며, 제한 시간이 다 되었을 때 아직 답안을 제출하지 않았다면 <strong>쓰고 있던 상태가 자동으로 서버에 전송</strong>되어 제출됩니다.
+                </p>
+            </div>
+            <div class="card">
+                <div class="card-title">✏️ 자유로운 정답 수정 범위</div>
+                <p style="font-size: 0.9rem; color: var(--text-dark); margin: 0;">
+                    답안을 전송한 이후에도 <strong>제한 시간이 남아있을 때(&gt;0초)는 횟수 제한 없이 자유롭게 답안을 수정</strong>하여 다시 제출할 수 있습니다. 다만, 남은 시간이 0초가 되는 마감 순간에는 정답 수정 모드가 강제로 해제되며 더 이상 수정이 불가해집니다.
+                </p>
+            </div>
+        </div>
+
+        <h2>🏆 2. 점수 산정 및 랭킹 시스템 (Scoring System)</h2>
+        <p>참가 학생 수의 유동성을 극복하고 공정한 보너스 혜택을 주기 위해 고유의 랭킹 공식을 적용합니다.</p>
+
+        <h3>👥 목장(팀) 점수 합산 방식: [상위 3명 합산제]</h3>
+        <p>인원이 많은 특정 목장이 무조건 1등을 독점하는 구조를 막고, 소수정예 목장도 정당하게 경쟁할 수 있도록 설계되었습니다.</p>
+        <div class="callout">
+            <div class="callout-title">💡 상위 3명 합산제 공식</div>
+            각 목장에 소속된 학생들의 점수를 가장 점수가 높은 순으로 내림차순 정렬한 뒤, <strong>상위 3명의 누적 점수만 합산</strong>하여 목장의 공식 팀 점수로 계산합니다. (단, 총 인원이 1~2명뿐인 소규모 목장은 참여 인원 전원의 점수를 합산합니다.)
+        </div>
+
+        <h3>🥇 공동 순위(Tied Ranking) 규칙</h3>
+        <p>점수가 같으면 동일한 등수(공동 순위)로 표기하며, 그 다음 순위자는 공동 등수 인원 수만큼 건너뛰어 표기하는 표준 경쟁 순위(Standard Competition Ranking) 방식을 따릅니다.</p>
+        <div class="callout">
+            <div class="callout-title">👑 시상대 동적 연동</div>
+            진행자 전광판의 3위 단상(Podium) 그래픽은 공동 순위에 맞춰 높이가 동적으로 갱신됩니다. 만약 공동 1위가 2명이라면, 둘 다 시상대 중앙의 동일한 높이에 서서 왕관(👑)을 착용하게 됩니다.
+        </div>
+
+        <h2>🤖 3. 실시간 자동 보너스 점수 시스템 (각 +15점)</h2>
+        <p>퀴즈 정산 단계에서 진행자가 들고 있는 모바일 리모컨을 통해 클릭 한 번으로 자동 산출하여 부여할 수 있는 4가지 보너스 혜택입니다.</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 25%;">보너스 항목</th>
+                    <th style="width: 35%;">선정 기준</th>
+                    <th style="width: 40%;">목적 및 기대 효과</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="font-weight: bold;">👥 최다 접속 (다다익선)</td>
+                    <td>접속 인원이 가장 많은 목장</td>
+                    <td>수련회 참여율이 우수하고 단합이 잘된 목장을 격려합니다.</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold;">🔍 최소 접속 (소수정예)</td>
+                    <td>접속 인원이 가장 적은 목장 (최소 1명)</td>
+                    <td>참석한 목장원이 적어 낙심하기 쉬운 소형 목장을 응원합니다.</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold;">⚖️ 동반성장 (평균편차)</td>
+                    <td>팀원들의 점수 <strong>표준편차</strong>가 가장 적은 목장 (최소 2명 이상 접속)</td>
+                    <td>한 명의 에이스 독식을 막고, 팀원 전체가 평균적으로 고르게 공부하여 동반 득점한 목장에게 가산점을 줍니다.</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold;">⚡ 평균 최속 제출</td>
+                    <td>제출자들의 문제별 <strong>평균 소요 시간</strong>이 가장 짧은 목장</td>
+                    <td>빠른 순발력과 완벽한 호흡으로 빠르게 답을 적어 낸 목장을 격려합니다.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>🛠️ 보너스 점수 반영 방식 (+15점 분배 규칙)</h3>
+        <p>보너스로 획득한 +15점을 팀 성적(상위 3명 합산제)에 공정하게 합산시키기 위해, 해당 목장 에이스들의 개인 점수를 시스템상으로 쪼개서 가산합니다.</p>
+
+        <div class="flow-container">
+            <div class="flow-step">
+                <span class="flow-step-num">3명 이상</span>
+                <span class="flow-step-text">목장 내 상위 1, 2, 3위에게 각각 <strong>+5점</strong>씩 가점 (총 +15점)</span>
+            </div>
+            <div class="flow-step">
+                <span class="flow-step-num">2명</span>
+                <span class="flow-step-text">목장 내 상위 1위 <strong>+8점</strong>, 2위 <strong>+7점</strong>씩 나누어 가점 (총 +15점)</span>
+            </div>
+            <div class="flow-step">
+                <span class="flow-step-num">1명</span>
+                <span class="flow-step-text">목장 내 유일한 참여자가 혼자 <strong>+15점</strong>을 모두 가점 (총 +15점)</span>
+            </div>
+        </div>
+
+        <h2>📱 4. 소속 입력 방식 및 세션 백업</h2>
+        <ul>
+            <li><strong>버튼식 소속 설정:</strong> 닉네임 입력 후, 학년(1학년, 2학년, 3학년) 버튼과 목장 번호(1~9목장) 버튼을 터치하여 설정하므로 텍스트 오타나 띄어쓰기 입력 오류가 없습니다.</li>
+            <li><strong>안전한 세션 복구:</strong> 퀴즈 도중 스마트폰이 튕기거나 브라우저를 새로고침해도 로컬 데이터를 사용해 작성 중이던 점수, 닉네임, 목장 정보가 완벽히 실시간 복구됩니다.</li>
+        </ul>
+    </div>
+</body>
+</html>

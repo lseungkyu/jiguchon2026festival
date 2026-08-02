@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>대전 시티투어 미션지 | 2026 지구촌교회 중등부 수련회</title>
+  <meta name="description" content="2026 지구촌교회 청소년지구 중등부 여름수련회 빌드업 액션1 대전 시티투어 모바일 미션지">
+  <meta name="theme-color" content="#0b1329">
+  <meta property="og:title" content="대전 시티투어 미션지 | 2026 지구촌교회 중등부">
+  <meta property="og:description" content="빌드업 액션1 대전 시티투어 핵심 미션 및 실시간 지도">
+  <meta property="og:image" content="./assets/place5_1.png">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet Interactive Real Map CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+  <!-- Top Sticky Header -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand-badge">2026 SUMMER FESTIVAL BUILD-UP</div>
+      <div class="header-main">
+        <h1 class="header-title">🎒 대전 시티투어 미션지</h1>
+      </div>
+    </div>
+  </header>
+
+  <!-- Gathering Countdown Banner -->
+  <section class="timer-banner">
+    <div class="timer-inner">
+      <div class="timer-label">
+        <span class="pulse-dot"></span>
+        <span>🚩 14:55 중앙로역 4번출구 집결</span>
+      </div>
+      <div class="timer-display" id="countdownTimer">--:--:--</div>
+    </div>
+  </section>
+
+  <!-- Quick Floating Action Bar -->
+  <div class="quick-action-bar">
+    <button class="quick-act-btn call-btn full-w" onclick="openEmergencyCall()">
+      📞 긴급 연락처 안내
+    </button>
+  </div>
+
+  <!-- Sticky Navigation Tabs -->
+  <nav class="nav-tabs">
+    <button class="tab-btn active" onclick="switchTab('mapTab')">🎯 미션안내&지도</button>
+    <button class="tab-btn" onclick="switchTab('routesTab')">🍱 맛집&추천동선</button>
+    <button class="tab-btn" onclick="switchTab('placesTab')">📍 장소&길찾기</button>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="app-content">
+
+    <!-- ==================== TAB 1: 미션 안내 & 실시간 지도 (FIRST VIEW) ==================== -->
+    <div id="mapTab" class="tab-pane active">
+      
+      <!-- 📌 Highlighted First Screen Mission Guide Card -->
+      <div class="first-mission-guide-card">
+        <div class="f-guide-header">
+          <span class="f-badge">🎯 시티투어 핵심 미션 안내</span>
+          <span class="f-sub-tag">인증샷 단톡방 업로드</span>
+        </div>
+        
+        <div class="f-guide-body">
+          <p class="f-main-rule">
+            📌 아래 8개 장소 중 <strong>2곳을 자유 선정</strong>하여 각 장소 미션을 수행하세요!
+          </p>
+
+          <!-- Warning & Bonus Grid -->
+          <div class="f-rule-box">
+            <div class="f-rule-item warn">
+              <strong>⚠️ 동일 구역 동시 선정 불가 (지도 영역 참조):</strong>
+              <div class="zone-breakdown">
+                <span class="z-tag">• <strong>①, ②</strong> 가 같은 영역 (동시 선택 불가)</span>
+                <span class="z-tag">• <strong>③, ④, ⑤, ⑥</strong> 이 같은 영역 (동시 선택 불가)</span>
+                <span class="z-tag">• <strong>⑥, ⑦, ⑧</strong> 이 같은 영역 (동시 선택 불가)</span>
+              </div>
+            </div>
+
+            <div class="f-rule-item bonus">
+              <strong>⭐ 특별 가산점 (+100점):</strong>
+              <span><strong>①+⑦ 장소</strong> 또는 <strong>②+⑧ 장소</strong> 선택 시 추가 가산점!</span>
+            </div>
+          </div>
+
+          <!-- 3 Main Missions Summary List -->
+          <div class="f-missions-list">
+            
+            <div class="f-m-item">
+              <div class="f-m-top">
+                <span class="f-m-title">a. 미션 1 (+100점)</span>
+                <span class="f-m-tag">첫 번째 장소</span>
+              </div>
+              <p class="f-m-desc">선정 장소에서 조원 모두가 <strong>가장 크게 웃는</strong> 단체사진 찍기</p>
+            </div>
+
+            <div class="f-m-item">
+              <div class="f-m-top">
+                <span class="f-m-title">b. 미션 2 (+100점)</span>
+                <span class="f-m-tag">두 번째 장소</span>
+              </div>
+              <p class="f-m-desc">선정 장소에서 조원 모두가 <strong>같은 포즈로</strong> 단체사진 찍기</p>
+            </div>
+
+            <div class="f-m-item gold">
+              <div class="f-m-top">
+                <span class="f-m-title gold">c. 미션 3 (+300점)</span>
+                <span class="f-m-tag gold">3시간 동안</span>
+              </div>
+              <p class="f-m-desc">
+                <strong>숨은 글자 찾기</strong>: <em>“빌드업 하나님 나라를 세우는 세대”</em><br>
+                <small>📸 한 글자 씩의 사진들을 모아 <strong>14:50분까지 한 번에 업로드</strong> (찾을 수 있는 만큼)</small>
+              </p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Real Leaflet GIS Map Container -->
+      <div class="content-box text-center" style="margin-top: 14px;">
+        
+        <div class="box-header-flex">
+          <h2 class="box-title">🗺️ 대전 시티투어 실시간 지도</h2>
+          <span class="pulse-badge">터치시 해당구역 확대</span>
+        </div>
+        <p class="box-subtitle">지도 위 영역(🔴구역A / 🟣구역B / 🟠구역C) 또는 아래 태그 터치 시 해당 구역으로 확대됩니다!</p>
+
+        <!-- Map Zone Color Legend Bar with Interactive Zoom -->
+        <div class="map-zone-legend">
+          <span class="m-legend-item za clickable-zone" onclick="zoomToZone('A')">🔍 🔴 구역A (①,②)</span>
+          <span class="m-legend-item zb clickable-zone" onclick="zoomToZone('B')">🔍 🟣 구역B (③,④,⑤,⑥)</span>
+          <span class="m-legend-item zc clickable-zone" onclick="zoomToZone('C')">🔍 🟠 구역C (⑥,⑦,⑧)</span>
+        </div>
+
+        <div class="map-view-wrapper">
+          <div id="realMap" class="real-map-div"></div>
+          
+          <!-- Map Floating Tool Controls -->
+          <div class="map-tools">
+            <button class="map-tool-btn" onclick="locateUserGPS()">📍 내 위치 확인</button>
+            <button class="map-tool-btn" onclick="resetMapCenter()">🎯 전체 보기</button>
+          </div>
+        </div>
+
+        <!-- Quick Links Legend Bar -->
+        <div class="map-quick-grid" style="margin-top: 14px;">
+          <button class="map-place-chip b1" onclick="focusMapPlace(1)">① 근현대사전시관 (A)</button>
+          <button class="map-place-chip b2" onclick="focusMapPlace(2)">② 정영복미술공간 (A)</button>
+          <button class="map-place-chip b3" onclick="focusMapPlace(3)">③ 우리들공원 (B)</button>
+          <button class="map-place-chip b4" onclick="focusMapPlace(4)">④ 대흥동성당 (B)</button>
+          <button class="map-place-chip b5" onclick="focusMapPlace(5)">⑤ 성심당본점 (B)</button>
+          <button class="map-place-chip b6" onclick="focusMapPlace(6)">⑥ 으능정이 (B,C)</button>
+          <button class="map-place-chip b7" onclick="focusMapPlace(7)">⑦ 은행교 (C)</button>
+          <button class="map-place-chip b8" onclick="focusMapPlace(8)">⑧ 목척교 (C)</button>
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ==================== TAB 2: 추천 동선 & 맛집/카페 리스트 ==================== -->
+    <div id="routesTab" class="tab-pane">
+      
+      <!-- Recommended Walking Routes -->
+      <div class="content-box">
+        <h2 class="box-title">🚶 스마트 추천 이동 동선</h2>
+        <p class="box-subtitle">시간 단축 & +100점 가산점까지 챙기는 최고의 투어 코스!</p>
+
+        <div class="routes-list">
+          <!-- Route 1 -->
+          <div class="route-card bonus-route">
+            <div class="r-header">
+              <span class="r-badge bonus">✨ 추천 코스 A (가산점 +100점)</span>
+              <span class="r-score">+300점 확보</span>
+            </div>
+            <h3 class="r-title">① 대전근현대사전시관 ➔ ⑦ 은행교 코스</h3>
+            <div class="r-steps">
+              <span class="step">중앙로역 4번출구</span> ➔ 
+              <span class="step highlight">① 근현대사전시관 (A구역)</span> ➔ 
+              <span class="step cool">❄️ 지하상가(에어컨 빵빵!)</span> ➔ 
+              <span class="step highlight">⑦ 은행교 (C구역)</span> ➔ 
+              <span class="step">⑥ 으능정이/성심당</span>
+            </div>
+            <p class="r-desc">💡 가장 깔끔한 동선! 지상의 더위를 피하기 위해 지하상가 통로로 이동하며 숨은 글자 미션도 함께 해결하세요!</p>
+          </div>
+
+          <!-- Route 2 -->
+          <div class="route-card bonus-route">
+            <div class="r-header">
+              <span class="r-badge bonus">✨ 추천 코스 B (가산점 +100점)</span>
+              <span class="r-score">+300점 확보</span>
+            </div>
+            <h3 class="r-title">② 정영복 미술공간 ➔ ⑧ 목척교 코스</h3>
+            <div class="r-steps">
+              <span class="step">중앙로역 4번출구</span> ➔ 
+              <span class="step highlight">② 정영복미술공간 (A구역)</span> ➔ 
+              <span class="step cool">❄️ 지하상가 통로</span> ➔ 
+              <span class="step highlight">⑧ 목척교 (C구역)</span> ➔ 
+              <span class="step">⑤ 성심당</span>
+            </div>
+            <p class="r-desc">💡 문화 예술 관람과 하천 풍경을 한꺼번에 즐길 수 있는 추천 코스!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nearby Convenience & Cooling Passages -->
+      <div class="content-box">
+        <h2 class="box-title">🏥 주요 편의시설 & 쉼터 안내</h2>
+        <div class="facility-grid single-row">
+          <div class="fac-card">
+            <span class="fac-icon">❄️</span>
+            <h4>시원한 쉼터</h4>
+            <p>대전 중앙로 지하상가전체 (지상 무더위 회피 우회 경로)</p>
+          </div>
+          <div class="fac-card">
+            <span class="fac-icon">🏪</span>
+            <h4>편의점 / 음료</h4>
+            <p>중앙로역 4번 출구 주변 CU, GS25, 세븐일레븐</p>
+          </div>
+          <div class="fac-card">
+            <span class="fac-icon">🚨</span>
+            <h4>응급 처치</h4>
+            <p>의약품 필요 시 진행 교사팀에게 즉시 연락하세요!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 🍕 FULL RECOMMENDED RESTAURANTS & CAFES LIST -->
+      <div class="content-box">
+        <div class="box-header-flex">
+          <h2 class="box-title">🍕 대전 은행동·선화동·대흥동 맛집 & 카페</h2>
+          <span class="pulse-badge">34곳 추천</span>
+        </div>
+        <p class="box-subtitle">점심 식사와 시원한 간식 타임을 즐길 주소록 목록입니다 (버튼 터치시 원터치 지도 길찾기)</p>
+
+        <!-- Category Filter Pills for Food -->
+        <div class="food-filter-bar">
+          <button class="f-filter-btn active" onclick="filterFoodCategory('all')">전체 (34곳)</button>
+          <button class="f-filter-btn" onclick="filterFoodCategory('meal')">🍱 식당&맛집 (18)</button>
+          <button class="f-filter-btn" onclick="filterFoodCategory('cafe')">☕ 카페&디저트 (11)</button>
+          <button class="f-filter-btn" onclick="filterFoodCategory('play')">🎮 놀거리&게임 (5)</button>
+        </div>
+
+        <!-- Food / Cafe Items Grid -->
+        <div class="food-list-container" id="foodList">
+          
+          <!-- 食堂 (Meals) -->
+          <div class="food-item" data-cat="meal">
+            <div class="f-item-info">
+              <span class="f-cat-badge meal">식당</span>
+              <h4 class="f-name">성심당 본점</h4>
+              <span class="f-addr">📍 대전 중구 은행동 145-1</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=성심당본점" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <div class="food-item" data-cat="meal">
+            <div class="f-item-info">
+              <span class="f-cat-badge meal">식당</span>
+              <h4 class="f-name">성심당 테라스키친</h4>
+              <span class="f-addr">📍 대전 중구 은행동 145-1</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=성심당테라스키친" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <div class="food-item" data-cat="meal">
+            <div class="f-item-info">
+              <span class="f-cat-badge meal">식당</span>
+              <h4 class="f-name">성심당 우동야</h4>
+              <span class="f-addr">📍 대전 지하상가 D가-2</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=성심당우동야" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <div class="food-item" data-cat="meal">
+            <div class="f-item-info">
+              <span class="f-cat-badge meal">식당</span>
+              <h4 class="f-name">마라천하마라탕</h4>
+              <span class="f-addr">📍 대전 중구 은행동 169-10</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=마라천하마라탕" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <div class="food-item" data-cat="meal">
+            <div class="f-item-info">
+              <span class="f-cat-badge meal">식당</span>
+              <h4 class="f-name">아저씨돈까스</h4>
+              <span class="f-addr">📍 대전 중구 은행동 33-5</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=아저씨돈까스" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <div class="food-item" data-cat="meal">
+            <div class="f-item-info">
+              <span class="f-cat-badge meal">식당</span>
+              <h4 class="f-name">희락반점</h4>
+              <span class="f-addr">📍 대전 중구 선화동 36</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=희락반점" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <div class="food-item" data-cat="meal">
+            <div class="f-item-info">
+              <span class="f-cat-badge meal">식당</span>
+              <h4 class="f-name">니뽕내뽕</h4>
+              <span class="f-addr">📍 대전 중구 은행동 33-2</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=니뽕내뽕대전은행점" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <div class="food-item" data-cat="meal">
+            <div class="f-item-info">
+              <span class="f-cat-badge meal">식당</span>
+              <h4 class="f-name">멘야네코라멘 본점</h4>
+              <span class="f-addr">📍 대전 중구 은행동 76-21</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=멘야네코라멘본점" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <div class="food-item" data-cat="meal">
+            <div class="f-item-info">
+              <span class="f-cat-badge meal">식당</span>
+              <h4 class="f-name">육첩반상</h4>
+              <span class="f-addr">📍 대전 중구 은행동 33-1</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=육첩반상대전은행점" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <div class="food-item" data-cat="meal">
+            <div class="f-item-info">
+              <span class="f-cat-badge meal">식당</span>
+              <h4 class="f-name">바로그집</h4>
+              <span class="f-addr">📍 대전 지하상가 CL 61호</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=바로그집" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <div class="food-item" data-cat="meal">
+            <div class="f-item-info">
+              <span class="f-cat-badge meal">식당</span>
+              <h4 class="f-name">춘천집무한닭갈비</h4>
+              <span class="f-addr">📍 대전 중구 은행동 76-10</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=춘천집무한닭갈비" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <div class="food-item" data-cat="meal">
+            <div class="f-item-info">
+              <span class="f-cat-badge meal">식당</span>
+              <h4 class="f-name">선화면옥</h4>
+              <span class="f-addr">📍 대전 중구 선화동 16-3</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=선화면옥" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <div class="food-item" data-cat="meal">
+            <div class="f-item-info">
+              <span class="f-cat-badge meal">식당</span>
+              <h4 class="f-name">두끼떡볶이</h4>
+              <span class="f-addr">📍 대전 중구 은행동 33-11</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=두끼떡볶이대전은행점" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <div class="food-item" data-cat="meal">
+            <div class="f-item-info">
+              <span class="f-cat-badge meal">식당</span>
+              <h4 class="f-name">미도리카레</h4>
+              <span class="f-addr">📍 대전 중구 대흥동 205-2</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=미도리카레" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <div class="food-item" data-cat="meal">
+            <div class="f-item-info">
+              <span class="f-cat-badge meal">식당</span>
+              <h4 class="f-name">동그라미즉석떡볶이</h4>
+              <span class="f-addr">📍 대전 중구 은행동 138-2</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=동그라미즉석떡볶이" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <div class="food-item" data-cat="meal">
+            <div class="f-item-info">
+              <span class="f-cat-badge meal">식당</span>
+              <h4 class="f-name">롤링파스타</h4>
+              <span class="f-addr">📍 대전 중구 은행동 48-8</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=롤링파스타대전은행점" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <div class="food-item" data-cat="meal">
+            <div class="f-item-info">
+              <span class="f-cat-badge meal">식당</span>
+              <h4 class="f-name">도쿄돈부리</h4>
+              <span class="f-addr">📍 대전 중구 은행동 166-1</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=도쿄돈부리" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <div class="food-item" data-cat="meal">
+            <div class="f-item-info">
+              <span class="f-cat-badge meal">식당</span>
+              <h4 class="f-name">닭갈비제작소</h4>
+              <span class="f-addr">📍 대전 중구 은행동 40-4</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=닭갈비제작소대전은행점" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <!-- 카페 (Cafes & Desserts) -->
+          <div class="food-item" data-cat="cafe">
+            <div class="f-item-info">
+              <span class="f-cat-badge cafe">카페</span>
+              <h4 class="f-name">설빙</h4>
+              <span class="f-addr">📍 대전 중구 은행동 48-9</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=설빙대전은행점" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <div class="food-item" data-cat="cafe">
+            <div class="f-item-info">
+              <span class="f-cat-badge cafe">카페</span>
+              <h4 class="f-name">성심당 옛맛솜씨</h4>
+              <span class="f-addr">📍 대전 중구 은행동 166-2</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=성심당옛맛솜씨" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <div class="food-item" data-cat="cafe">
+            <div class="f-item-info">
+              <span class="f-cat-badge cafe">카페</span>
+              <h4 class="f-name">모도시</h4>
+              <span class="f-addr">📍 대전 중구 선화동 236-3</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=모도시" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <div class="food-item" data-cat="cafe">
+            <div class="f-item-info">
+              <span class="f-cat-badge cafe">카페</span>
+              <h4 class="f-name">커피전도사의 집</h4>
+              <span class="f-addr">📍 대전 중구 대흥동 6-1</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=커피전도사의집" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <div class="food-item" data-cat="cafe">
+            <div class="f-item-info">
+              <span class="f-cat-badge cafe">카페</span>
+              <h4 class="f-name">카운트 커피</h4>
+              <span class="f-addr">📍 대전 중구 선화동 99</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=카운트커피" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <div class="food-item" data-cat="cafe">
+            <div class="f-item-info">
+              <span class="f-cat-badge cafe">카페</span>
+              <h4 class="f-name">알로하녹</h4>
+              <span class="f-addr">📍 대전 중구 선화동 236-8</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=알로하녹" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <div class="food-item" data-cat="cafe">
+            <div class="f-item-info">
+              <span class="f-cat-badge cafe">카페</span>
+              <h4 class="f-name">포우드</h4>
+              <span class="f-addr">📍 대전 중구 선화동 45-2</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=포우드" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <div class="food-item" data-cat="cafe">
+            <div class="f-item-info">
+              <span class="f-cat-badge cafe">카페</span>
+              <h4 class="f-name">오드눅</h4>
+              <span class="f-addr">📍 대전 중구 은행동 33-10</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=오드눅" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <div class="food-item" data-cat="cafe">
+            <div class="f-item-info">
+              <span class="f-cat-badge cafe">카페</span>
+              <h4 class="f-name">커닝</h4>
+              <span class="f-addr">📍 대전 중구 대흥동 203-5</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=커닝카페" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <div class="food-item" data-cat="cafe">
+            <div class="f-item-info">
+              <span class="f-cat-badge cafe">카페</span>
+              <h4 class="f-name">단위</h4>
+              <span class="f-addr">📍 대전 중구 대흥동 479-4</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=단위카페" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <div class="food-item" data-cat="cafe">
+            <div class="f-item-info">
+              <span class="f-cat-badge cafe">카페</span>
+              <h4 class="f-name">모디프커피</h4>
+              <span class="f-addr">📍 대전 중구 은행동 165-1</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=모디프커피" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <!-- 놀거리 / 보드게임 / 액티비티 (Play & Games) -->
+          <div class="food-item" data-cat="play">
+            <div class="f-item-info">
+              <span class="f-cat-badge play">놀거리</span>
+              <h4 class="f-name">라무킷도</h4>
+              <span class="f-addr">📍 대전 중구 대흥동 225-5</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=라무킷도" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <div class="food-item" data-cat="play">
+            <div class="f-item-info">
+              <span class="f-cat-badge play">보드게임</span>
+              <h4 class="f-name">레드버튼</h4>
+              <span class="f-addr">📍 대전 중구 은행동 45-5</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=레드버튼대전은행점" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <div class="food-item" data-cat="play">
+            <div class="f-item-info">
+              <span class="f-cat-badge play">보드게임</span>
+              <h4 class="f-name">홈즈앤루팡</h4>
+              <span class="f-addr">📍 대전 중구 은행동 142-4</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=홈즈앤루팡대전은행점" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <div class="food-item" data-cat="play">
+            <div class="f-item-info">
+              <span class="f-cat-badge play">액티비티</span>
+              <h4 class="f-name">나사락볼링장</h4>
+              <span class="f-addr">📍 대전 중구 대흥동 245-2</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=나사락볼링장" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+          <div class="food-item" data-cat="play">
+            <div class="f-item-info">
+              <span class="f-cat-badge play">액티비티</span>
+              <h4 class="f-name">점핑배틀</h4>
+              <span class="f-addr">📍 대전 중구 은행동 40-3</span>
+            </div>
+            <a href="https://m.map.naver.com/search2/search.naver?query=점핑배틀" target="_blank" class="f-map-link">🧭 길찾기</a>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- ==================== TAB 3: 8개 장소 & 길찾기 ==================== -->
+    <div id="placesTab" class="tab-pane">
+      
+      <div class="places-filter">
+        <button class="filter-chip active" onclick="filterPlaces('all')">전체 (8곳)</button>
+        <button class="filter-chip" onclick="filterPlaces('zone1')">①~④ 대흥동/문화거리</button>
+        <button class="filter-chip" onclick="filterPlaces('zone2')">⑤~⑧ 은행동/스카이로드</button>
+      </div>
+
+      <div class="places-list" id="placesList">
+        
+        <!-- Place 1 -->
+        <div class="place-card" id="place-card-1" data-zone="zone1">
+          <div class="p-header">
+            <span class="p-num">1</span>
+            <div class="p-title-wrap">
+              <h3 class="p-name">대전근현대사전시관</h3>
+              <span class="p-tag free">무료 관람</span>
+            </div>
+            <span class="bonus-tag">①+⑦ 조합시 +100점</span>
+            <span class="warn-tag">🔴 A구역 (②번 동시불가)</span>
+          </div>
+          <p class="p-desc">구 충청남도청사 건물. 멋진 근대 건축물 배경 앞에서 찰칵!</p>
+
+          <div class="p-nav-btns">
+            <a href="https://map.kakao.com/link/search/대전근현대사전시관" target="_blank" class="nav-btn kakao">🧭 카카오맵 길찾기</a>
+            <a href="https://m.map.naver.com/search2/search.naver?query=대전근현대사전시관" target="_blank" class="nav-btn naver">🗺️ 네이버지도 길찾기</a>
+          </div>
+
+          <div class="p-gallery">
+            <img src="./assets/place1_1.png" alt="대전근현대사전시관" onclick="openLightbox(this.src, '1. 대전근현대사전시관 인증 배경')">
+          </div>
+          <div class="p-foot">📸 사진을 터치하면 크게 볼 수 있습니다.</div>
+        </div>
+
+        <!-- Place 2 -->
+        <div class="place-card" id="place-card-2" data-zone="zone1">
+          <div class="p-header">
+            <span class="p-num">2</span>
+            <div class="p-title-wrap">
+              <h3 class="p-name">정영복 미술공간</h3>
+              <span class="p-tag free">무료 관람</span>
+            </div>
+            <span class="bonus-tag">②+⑧ 조합시 +100점</span>
+            <span class="warn-tag">🔴 A구역 (①번 동시불가)</span>
+          </div>
+          <p class="p-desc">대전근현대사전시관 내부 미술공간 전시장 입구 배경</p>
+
+          <div class="p-nav-btns">
+            <a href="https://map.kakao.com/link/search/대전근현대사전시관" target="_blank" class="nav-btn kakao">🧭 카카오맵 길찾기</a>
+            <a href="https://m.map.naver.com/search2/search.naver?query=대전근현대사전시관" target="_blank" class="nav-btn naver">🗺️ 네이버지도 길찾기</a>
+          </div>
+
+          <div class="p-gallery grid-2">
+            <img src="./assets/place2_1.png" alt="정영복 미술공간 1" onclick="openLightbox(this.src, '2. 정영복 미술공간 전경')">
+            <img src="./assets/place2_2.png" alt="정영복 미술공간 2" onclick="openLightbox(this.src, '2. 정영복 미술공간 입구')">
+          </div>
+          <div class="p-foot">📸 사진을 터치하면 크게 볼 수 있습니다.</div>
+        </div>
+
+        <!-- Place 3 -->
+        <div class="place-card" id="place-card-3" data-zone="zone1">
+          <div class="p-header">
+            <span class="p-num">3</span>
+            <div class="p-title-wrap">
+              <h3 class="p-name">우리들 공원 + 대흥동 문화예술의 거리</h3>
+            </div>
+            <span class="warn-tag">🟣 B구역 (④,⑤,⑥ 동시불가)</span>
+          </div>
+          <p class="p-desc">대흥동 야외 야외공연장 및 문화예술의 거리 중심 상징물 앞</p>
+
+          <div class="p-nav-btns">
+            <a href="https://map.kakao.com/link/search/우리들공원" target="_blank" class="nav-btn kakao">🧭 카카오맵 길찾기</a>
+            <a href="https://m.map.naver.com/search2/search.naver?query=우리들공원" target="_blank" class="nav-btn naver">🗺️ 네이버지도 길찾기</a>
+          </div>
+
+          <div class="p-gallery grid-3">
+            <img src="./assets/place3_1.png" alt="우리들공원 1" onclick="openLightbox(this.src, '3. 우리들공원 야외무대')">
+            <img src="./assets/place3_2.png" alt="우리들공원 2" onclick="openLightbox(this.src, '3. 대흥동 거리 상징물')">
+            <img src="./assets/place3_3.png" alt="우리들공원 3" onclick="openLightbox(this.src, '3. 문화예술의 거리 전경')">
+          </div>
+          <div class="p-foot">📸 사진을 터치하면 크게 볼 수 있습니다.</div>
+        </div>
+
+        <!-- Place 4 -->
+        <div class="place-card" id="place-card-4" data-zone="zone1">
+          <div class="p-header">
+            <span class="p-num">4</span>
+            <div class="p-title-wrap">
+              <h3 class="p-name">대흥동 성당</h3>
+            </div>
+            <span class="warn-tag">🟣 B구역 (③,⑤,⑥ 동시불가)</span>
+          </div>
+          <p class="p-desc">웅장한 성당 외관 정면 전경 배경</p>
+
+          <div class="p-nav-btns">
+            <a href="https://map.kakao.com/link/search/대흥동성당" target="_blank" class="nav-btn kakao">🧭 카카오맵 길찾기</a>
+            <a href="https://m.map.naver.com/search2/search.naver?query=대흥동성당" target="_blank" class="nav-btn naver">🗺️ 네이버지도 길찾기</a>
+          </div>
+
+          <div class="p-gallery">
+            <img src="./assets/place4_1.png" alt="대흥동 성당" onclick="openLightbox(this.src, '4. 대흥동 성당 정면 전경')">
+          </div>
+          <div class="p-foot">📸 사진을 터치하면 크게 볼 수 있습니다.</div>
+        </div>
+
+        <!-- Place 5 -->
+        <div class="place-card" id="place-card-5" data-zone="zone2">
+          <div class="p-header">
+            <span class="p-num">5</span>
+            <div class="p-title-wrap">
+              <h3 class="p-name">성심당 본점</h3>
+              <span class="p-tag hot">인기 맛집</span>
+            </div>
+            <span class="warn-tag">🟣 B구역 (③,④,⑥ 동시불가)</span>
+          </div>
+          <p class="p-desc">대전의 명물 성심당 본점 매장 건물 및 시그니처 튀김소보로 동상 앞</p>
+
+          <div class="p-nav-btns">
+            <a href="https://map.kakao.com/link/search/성심당본점" target="_blank" class="nav-btn kakao">🧭 카카오맵 길찾기</a>
+            <a href="https://m.map.naver.com/search2/search.naver?query=성심당본점" target="_blank" class="nav-btn naver">🗺️ 네이버지도 길찾기</a>
+          </div>
+
+          <div class="p-gallery">
+            <img src="./assets/place5_1.png" alt="성심당 본점" onclick="openLightbox(this.src, '5. 성심당 본점 정면 건물')">
+          </div>
+          <div class="p-foot">📸 사진을 터치하면 크게 볼 수 있습니다.</div>
+        </div>
+
+        <!-- Place 6 -->
+        <div class="place-card" id="place-card-6" data-zone="zone2">
+          <div class="p-header">
+            <span class="p-num">6</span>
+            <div class="p-title-wrap">
+              <h3 class="p-name">으능정이 문화의거리 (스카이 로드)</h3>
+            </div>
+            <span class="warn-tag">🟣🟠 B & C 중복구역 (③,④,⑤ 및 ⑦,⑧ 동시불가)</span>
+          </div>
+          <p class="p-desc">거대한 스카이로드 LED 전광판 기둥 및 으능정이 입구 게이트</p>
+
+          <div class="p-nav-btns">
+            <a href="https://map.kakao.com/link/search/으능정이문화의거리" target="_blank" class="nav-btn kakao">🧭 카카오맵 길찾기</a>
+            <a href="https://m.map.naver.com/search2/search.naver?query=으능정이문화의거리" target="_blank" class="nav-btn naver">🗺️ 네이버지도 길찾기</a>
+          </div>
+
+          <div class="p-gallery grid-2">
+            <img src="./assets/place6_1.png" alt="으능정이 스카이로드 1" onclick="openLightbox(this.src, '6. 으능정이 스카이로드 기둥')">
+            <img src="./assets/place6_2.png" alt="으능정이 스카이로드 2" onclick="openLightbox(this.src, '6. 으능정이 거리 입구')">
+          </div>
+          <div class="p-foot">📸 사진을 터치하면 크게 볼 수 있습니다.</div>
+        </div>
+
+        <!-- Place 7 -->
+        <div class="place-card" id="place-card-7" data-zone="zone2">
+          <div class="p-header">
+            <span class="p-num">7</span>
+            <div class="p-title-wrap">
+              <h3 class="p-name">은행교</h3>
+            </div>
+            <span class="bonus-tag">①+⑦ 조합시 +100점</span>
+            <span class="warn-tag">🟠 C구역 (⑥,⑧ 동시불가)</span>
+          </div>
+          <p class="p-desc">대전천을 건너는 은행교 교량 조형물 및 다리 위 배경</p>
+
+          <div class="p-nav-btns">
+            <a href="https://map.kakao.com/link/search/은행교" target="_blank" class="nav-btn kakao">🧭 카카오맵 길찾기</a>
+            <a href="https://m.map.naver.com/search2/search.naver?query=은행교" target="_blank" class="nav-btn naver">🗺️ 네이버지도 길찾기</a>
+          </div>
+
+          <div class="p-gallery">
+            <img src="./assets/place7_1.png" alt="은행교" onclick="openLightbox(this.src, '7. 은행교 조형물 전경')">
+          </div>
+          <div class="p-foot">📸 사진을 터치하면 크게 볼 수 있습니다.</div>
+        </div>
+
+        <!-- Place 8 -->
+        <div class="place-card" id="place-card-8" data-zone="zone2">
+          <div class="p-header">
+            <span class="p-num">8</span>
+            <div class="p-title-wrap">
+              <h3 class="p-name">목척교</h3>
+            </div>
+            <span class="bonus-tag">②+⑧ 조합시 +100점</span>
+            <span class="warn-tag">🟠 C구역 (⑥,⑦ 동시불가)</span>
+          </div>
+          <p class="p-desc">목척교 상징 나무 조형물 및 쉼터 배경</p>
+
+          <div class="p-nav-btns">
+            <a href="https://map.kakao.com/link/search/목척교" target="_blank" class="nav-btn kakao">🧭 카카오맵 길찾기</a>
+            <a href="https://m.map.naver.com/search2/search.naver?query=목척교" target="_blank" class="nav-btn naver">🗺️ 네이버지도 길찾기</a>
+          </div>
+
+          <div class="p-gallery grid-2">
+            <img src="./assets/place8_1.png" alt="목척교 1" onclick="openLightbox(this.src, '8. 목척교 상징 조형물')">
+            <img src="./assets/place8_2.png" alt="목척교 2" onclick="openLightbox(this.src, '8. 목척교 하천 뷰')">
+          </div>
+          <div class="p-foot">📸 사진을 터치하면 크게 볼 수 있습니다.</div>
+        </div>
+
+        <!-- Underground Shopping Mall Extra Card -->
+        <div class="place-card cool-route" id="place-card-cool">
+          <div class="p-header">
+            <span class="p-num cool">❄️</span>
+            <div class="p-title-wrap">
+              <h3 class="p-name">대전 중앙로 지하상가</h3>
+              <span class="p-tag cool">시원한 꿀팁 코스</span>
+            </div>
+          </div>
+          <p class="p-desc">은행동 ↔ 대흥동 이동할 때 에어컨이 빵빵한 지하상가 길을 이용하세요!</p>
+          <div class="p-nav-btns">
+            <a href="https://map.kakao.com/link/search/대전중앙로지하상가" target="_blank" class="nav-btn kakao">🧭 지하상가 위치 카카오맵</a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Lightbox Modal -->
+  <div class="lightbox-overlay" id="lightbox" onclick="closeLightbox()">
+    <span class="lightbox-close">&times;</span>
+    <img src="" alt="확대 이미지" id="lightboxImg">
+    <div class="lightbox-caption" id="lightboxCaption"></div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <p>2026 지구촌교회 청소년지구 중등부 수련회 BUILD-UP</p>
+    <p class="sub">대전 시티투어 모바일 미션 가이드</p>
+  </footer>
+
+  <script src="./script.js"></script>
+</body>
+</html>
