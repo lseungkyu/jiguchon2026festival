@@ -36,8 +36,8 @@ const placeDetails = {
     img: "./assets/place4_1.png",
     zone: "B",
     lat: 36.326812, lng: 127.426437, // Plus Code: 8CGG+PH 대전광역시
-    kakao: "https://map.kakao.com/link/search/대흥동성당",
-    naver: "https://m.map.naver.com/search2/search.naver?query=대흥동성당"
+    kakao: "https://map.kakao.com/link/search/대전 대흥동성당",
+    naver: "https://m.map.naver.com/search2/search.naver?query=대전 대흥동성당"
   },
   5: {
     name: "⑤ 성심당 본점",
@@ -45,8 +45,8 @@ const placeDetails = {
     img: "./assets/place5_1.png",
     zone: "B",
     lat: 36.327660, lng: 127.427280,
-    kakao: "https://map.kakao.com/link/search/성심당본점",
-    naver: "https://m.map.naver.com/search2/search.naver?query=성심당본점"
+    kakao: "https://map.kakao.com/link/search/대전 성심당 본점",
+    naver: "https://m.map.naver.com/search2/search.naver?query=대전 성심당 본점"
   },
   6: {
     name: "⑥ 으능정이 문화의거리",
@@ -54,8 +54,8 @@ const placeDetails = {
     img: "./assets/place6_1.png",
     zone: "BC",
     lat: 36.328450, lng: 127.428350,
-    kakao: "https://map.kakao.com/link/search/으능정이문화의거리",
-    naver: "https://m.map.naver.com/search2/search.naver?query=으능정이문화의거리"
+    kakao: "https://map.kakao.com/link/search/대전 으능정이문화의거리",
+    naver: "https://m.map.naver.com/search2/search.naver?query=대전 으능정이문화의거리"
   },
   7: {
     name: "⑦ 은행교",
@@ -63,8 +63,8 @@ const placeDetails = {
     img: "./assets/place7_1.png",
     zone: "C",
     lat: 36.328563, lng: 127.430188, // Plus Code: 8CHJ+C3 대전광역시
-    kakao: "https://map.kakao.com/link/search/은행교",
-    naver: "https://m.map.naver.com/search2/search.naver?query=은행교"
+    kakao: "https://map.kakao.com/link/search/대전 은행교",
+    naver: "https://m.map.naver.com/search2/search.naver?query=대전 은행교"
   },
   8: {
     name: "⑧ 목척교",
@@ -72,8 +72,8 @@ const placeDetails = {
     img: "./assets/place8_1.png",
     zone: "C",
     lat: 36.329938, lng: 127.429313, // Plus Code: 8CHH+XP 대전광역시
-    kakao: "https://map.kakao.com/link/search/목척교",
-    naver: "https://m.map.naver.com/search2/search.naver?query=목척교"
+    kakao: "https://map.kakao.com/link/search/대전 목척교",
+    naver: "https://m.map.naver.com/search2/search.naver?query=대전 목척교"
   }
 };
 
