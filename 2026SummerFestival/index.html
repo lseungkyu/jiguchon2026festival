@@ -52,7 +52,7 @@
     </button>
   </div>
 
-  <!-- Sticky Navigation Tabs (Large Touch Friendly Buttons) -->
+  <!-- Sticky Navigation Tabs -->
   <nav class="nav-tabs">
     <button class="tab-btn active" onclick="switchTab('mapTab')">🎯 지도 & 수칙</button>
     <button class="tab-btn" onclick="switchTab('routesTab')">🍱 맛집 & 동선</button>
@@ -65,22 +65,93 @@
     <!-- ==================== TAB 1: 미션 안내 & 실시간 지도 (FIRST VIEW) ==================== -->
     <div id="mapTab" class="tab-pane active">
       
-      <!-- 📌 Highlighted First Screen Mission Guide Card (Spacious High Readability Layout) -->
+      <!-- 📌 HIGH IMPACT REDESIGNED MISSION CARDS -->
       <div class="first-mission-guide-card">
         
         <div class="f-guide-header">
-          <h2 class="f-badge">🎯 대전 시티투어 핵심 미션</h2>
+          <h2 class="f-badge">🎯 시티투어 3대 미션 & 수칙</h2>
           <span class="f-sub-tag">인증샷 단톡방 업로드</span>
         </div>
         
         <div class="f-main-rule-box">
           <p class="f-main-rule-text">
-            📌 아래 8개 장소 중 <strong>2곳을 자유 선정</strong>하여 미션을 수행하세요!
+            📌 아래 8개 장소 중 <strong>2곳을 자유 선정</strong>하여 미션을 완료하세요!
           </p>
         </div>
 
-        <!-- Warning & Bonus Grid -->
-        <div class="f-rule-box">
+        <!-- 3 MAIN MISSIONS HIGH-IMPACT CARDS -->
+        <div class="mission-cards-container">
+          
+          <!-- MISSION 1 CARD -->
+          <div class="m-visual-card m1">
+            <div class="m-card-header">
+              <div class="m-title-wrap">
+                <span class="m-icon-badge m1-icon">😄</span>
+                <div>
+                  <h3 class="m-card-title">미션 1: 대박 웃음 단체 샷</h3>
+                  <span class="m-card-loc">📌 첫 번째 선택 장소에서 수행</span>
+                </div>
+              </div>
+              <span class="m-score-badge blue">+100점</span>
+            </div>
+            <div class="m-card-content">
+              <p class="m-highlight-text">
+                📸 첫 번째 장소 <strong>[ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ]</strong> 에서 조원 모두가 <strong>가장 크게 웃는 포즈</strong>로 단체사진 촬영!
+              </p>
+            </div>
+          </div>
+
+          <!-- MISSION 2 CARD -->
+          <div class="m-visual-card m2">
+            <div class="m-card-header">
+              <div class="m-title-wrap">
+                <span class="m-icon-badge m2-icon">🙋‍♂️</span>
+                <div>
+                  <h3 class="m-card-title">미션 2: 이심전심 동일 포즈 샷</h3>
+                  <span class="m-card-loc">📌 두 번째 선택 장소에서 수행</span>
+                </div>
+              </div>
+              <span class="m-score-badge purple">+100점</span>
+            </div>
+            <div class="m-card-content">
+              <p class="m-highlight-text">
+                📸 두 번째 장소 <strong>[ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ]</strong> 에서 조원 모두가 <strong>똑같은 포즈</strong>로 단체사진 촬영!
+              </p>
+            </div>
+          </div>
+
+          <!-- MISSION 3 CARD (GOLDEN SPARK) -->
+          <div class="m-visual-card m3-gold">
+            <div class="m-card-header">
+              <div class="m-title-wrap">
+                <span class="m-icon-badge m3-icon">🔤</span>
+                <div>
+                  <h3 class="m-card-title gold">미션 3: 숨은 글자 찾기</h3>
+                  <span class="m-card-loc gold">⏰ 3시간 투어 동안 계속 진행</span>
+                </div>
+              </div>
+              <span class="m-score-badge gold">+300점</span>
+            </div>
+            <div class="m-card-content">
+              <p class="m-sub-prompt">수련회 주제 문장을 이루는 글자들을 찾아 사진으로 수집하세요!</p>
+              
+              <!-- Glowing Sentence Box -->
+              <div class="golden-sentence-box">
+                <span class="g-quote">“</span>
+                <span class="g-sentence">빌드업 하나님 나라를 세우는 세대</span>
+                <span class="g-quote">”</span>
+              </div>
+              
+              <div class="m-upload-notice">
+                📸 한 글자 씩의 사진들을 모아 <strong>14:50분까지 단톡방에 한 번에 업로드!</strong>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Rules & Bonus Grid -->
+        <div class="f-rule-box" style="margin-top: 16px;">
           
           <div class="f-rule-card warn">
             <h3 class="f-rule-card-title">⚠️ 동일 구역 동시 선정 불가 수칙</h3>
@@ -103,39 +174,7 @@
           <div class="f-rule-card bonus">
             <h3 class="f-rule-card-title">⭐ 특별 가산점 (+100점)</h3>
             <p class="bonus-desc">
-              <strong>①+⑦ 장소</strong> 또는 <strong>②+⑧ 장소</strong> 조합 선택 시 가산점 지급!
-            </p>
-          </div>
-
-        </div>
-
-        <!-- 3 Main Missions Cards -->
-        <div class="f-missions-list">
-          
-          <div class="f-m-card">
-            <div class="f-m-card-top">
-              <span class="f-m-title">a. 미션 1 (+100점)</span>
-              <span class="f-m-tag">첫 번째 장소</span>
-            </div>
-            <p class="f-m-desc">선정 장소에서 조원 모두가 <strong>가장 크게 웃는 단체사진</strong> 촬영</p>
-          </div>
-
-          <div class="f-m-card">
-            <div class="f-m-card-top">
-              <span class="f-m-title">b. 미션 2 (+100점)</span>
-              <span class="f-m-tag">두 번째 장소</span>
-            </div>
-            <p class="f-m-desc">선정 장소에서 조원 모두가 <strong>같은 포즈로 단체사진</strong> 촬영</p>
-          </div>
-
-          <div class="f-m-card gold">
-            <div class="f-m-card-top">
-              <span class="f-m-title gold">c. 미션 3 (+300점)</span>
-              <span class="f-m-tag gold">3시간 동안 진행</span>
-            </div>
-            <p class="f-m-desc">
-              <strong>숨은 글자 찾기</strong>: <em>“빌드업 하나님 나라를 세우는 세대”</em><br>
-              <span class="sub-tip">📸 찾은 글자 사진들을 모아 <strong>14:50분까지 한 번에 업로드</strong></span>
+              <strong>①+⑦ 장소</strong> 또는 <strong>②+⑧ 장소</strong> 조합 선택 시 추가 가산점!
             </p>
           </div>
 
