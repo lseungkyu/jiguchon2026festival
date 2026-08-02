@@ -1,6 +1,6 @@
 /* ==========================================================================
    2026 SUMMER FESTIVAL DAEJEON CITY TOUR MOBILE MISSION SHEET SCRIPT
-   VERIFIED GPS COORDINATES & PRECISE PIN ANCHORING
+   HYBRID NAVER MAP API v3 & LEAFLET GIS ENGINE
    ========================================================================== */
 
 // 8 Core Mission Places with Exact Daejeon GIS Coordinates
@@ -10,7 +10,7 @@ const placeDetails = {
     desc: "구 충청남도청사 건물. 고풍스러운 근대 건축물 배경!",
     img: "./assets/place1_1.png",
     zone: "A",
-    lat: 36.325633, lng: 127.420448, // 구 충남도청사 본관
+    lat: 36.325633, lng: 127.420448,
     kakao: "https://map.kakao.com/link/search/대전근현대사전시관",
     naver: "https://m.map.naver.com/search2/search.naver?query=대전근현대사전시관"
   },
@@ -19,7 +19,7 @@ const placeDetails = {
     desc: "전시관 내부 미술공간 전시장 입구 배경!",
     img: "./assets/place2_1.png",
     zone: "A",
-    lat: 36.325450, lng: 127.420700, // 전시관 1층 미술공간
+    lat: 36.325450, lng: 127.420700,
     kakao: "https://map.kakao.com/link/search/대전근현대사전시관",
     naver: "https://m.map.naver.com/search2/search.naver?query=대전근현대사전시관"
   },
@@ -28,7 +28,7 @@ const placeDetails = {
     desc: "대흥동 야외공연장 및 문화거리 중심 상징물 앞!",
     img: "./assets/place3_1.png",
     zone: "B",
-    lat: 36.326490, lng: 127.426150, // 우리들공원 야외무대
+    lat: 36.326490, lng: 127.426150,
     kakao: "https://map.kakao.com/link/search/우리들공원",
     naver: "https://m.map.naver.com/search2/search.naver?query=우리들공원"
   },
@@ -37,7 +37,7 @@ const placeDetails = {
     desc: "웅장한 성당 외관 정면 전경 배경!",
     img: "./assets/place4_1.png",
     zone: "B",
-    lat: 36.325700, lng: 127.427800, // 대흥동성당 정면
+    lat: 36.325700, lng: 127.427800,
     kakao: "https://map.kakao.com/link/search/대흥동성당",
     naver: "https://m.map.naver.com/search2/search.naver?query=대흥동성당"
   },
@@ -46,7 +46,7 @@ const placeDetails = {
     desc: "성심당 본점 건물 및 시그니처 튀김소보로 동상 앞!",
     img: "./assets/place5_1.png",
     zone: "B",
-    lat: 36.327660, lng: 127.427280, // 성심당 본점 입구
+    lat: 36.327660, lng: 127.427280,
     kakao: "https://map.kakao.com/link/search/성심당본점",
     naver: "https://m.map.naver.com/search2/search.naver?query=성심당본점"
   },
@@ -55,7 +55,7 @@ const placeDetails = {
     desc: "스카이로드 LED 전광판 기둥 및 거리 입구 게이트!",
     img: "./assets/place6_1.png",
     zone: "BC",
-    lat: 36.328450, lng: 127.428350, // 으능정이 스카이로드 메인
+    lat: 36.328450, lng: 127.428350,
     kakao: "https://map.kakao.com/link/search/으능정이문화의거리",
     naver: "https://m.map.naver.com/search2/search.naver?query=으능정이문화의거리"
   },
@@ -64,7 +64,7 @@ const placeDetails = {
     desc: "대전천을 건너는 은행교 교량 조형물 및 다리 위!",
     img: "./assets/place7_1.png",
     zone: "C",
-    lat: 36.328000, lng: 127.429950, // 은행교 다리 중앙
+    lat: 36.328000, lng: 127.429950,
     kakao: "https://map.kakao.com/link/search/은행교",
     naver: "https://m.map.naver.com/search2/search.naver?query=은행교"
   },
@@ -73,13 +73,13 @@ const placeDetails = {
     desc: "목척교 상징 나무 조형물 및 쉼터 배경!",
     img: "./assets/place8_1.png",
     zone: "C",
-    lat: 36.329450, lng: 127.429800, // 목척교 나무 조형물
+    lat: 36.330100, lng: 127.430400,
     kakao: "https://map.kakao.com/link/search/목척교",
     naver: "https://m.map.naver.com/search2/search.naver?query=목척교"
   }
 };
 
-// 34 Recommended Food, Cafe & Play Spots Coordinates for Map
+// 34 Food/Cafe Places
 const foodSpotsData = [
   { name: "성심당 본점", cat: "식당", addr: "은행동 145-1", lat: 36.32766, lng: 127.42728 },
   { name: "성심당 테라스키친", cat: "식당", addr: "은행동 145-1", lat: 36.32766, lng: 127.42728 },
@@ -119,26 +119,208 @@ const foodSpotsData = [
 
 const gatheringSpot = {
   name: "🚩 14:55 집결지 (중앙로역 4번출구)",
-  lat: 36.327600, lng: 127.425300 // 중앙로역 4번출구 정확 지점
+  lat: 36.327600, lng: 127.425300
 };
 
-// Tight bounding box enclosing Places 1 through 8 exactly
 const allPlacesBounds = [
-  [36.3248, 127.4198], // SW (South-West)
-  [36.3306, 127.4308]  // NE (North-East)
+  [36.3248, 127.4198],
+  [36.3306, 127.4308]
 ];
+
+let activeEngine = 'leaflet'; // 'naver' or 'leaflet'
+let naverMap = null;
+let naverMarkers = {};
+let naverPolygons = {};
+let naverUserGpsMarker = null;
 
 let leafletMap = null;
 let leafletMarkers = {};
-let userGpsMarker = null;
 let zonePolygons = {};
+let userGpsMarker = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   startGatheringTimer();
-  initLeafletMap();
+  initMapEngine();
 });
 
-// Initialize Leaflet Real GIS Map
+// Initialize Map Engine (Naver Map API v3 or Leaflet Fallback)
+function initMapEngine() {
+  const mapProviderBadge = document.getElementById("mapProviderBadge");
+
+  // Check if Naver Maps API v3 script loaded successfully
+  if (typeof naver !== 'undefined' && naver.maps && typeof naver.maps.Map === 'function') {
+    try {
+      activeEngine = 'naver';
+      if (mapProviderBadge) mapProviderBadge.textContent = "네이버지도 API v3";
+      initNaverMap();
+      return;
+    } catch (e) {
+      console.warn("Naver Map init fallback to Leaflet:", e);
+    }
+  }
+
+  // Fallback to Leaflet OpenStreetMap Engine
+  activeEngine = 'leaflet';
+  if (mapProviderBadge) mapProviderBadge.textContent = "실시간 GIS 지도";
+  initLeafletMap();
+}
+
+/* ================= NAVER MAP ENGINE IMPLEMENTATION ================= */
+function initNaverMap() {
+  const mapDiv = document.getElementById("realMap");
+  if (!mapDiv) return;
+
+  const centerLatLng = new naver.maps.LatLng(36.327600, 127.425300);
+  
+  naverMap = new naver.maps.Map('realMap', {
+    center: centerLatLng,
+    zoom: 16,
+    minZoom: 13,
+    maxZoom: 19,
+    zoomControl: true,
+    zoomControlOptions: {
+      position: naver.maps.Position.TOP_LEFT
+    }
+  });
+
+  naver.maps.Event.addListener(naverMap, 'click', () => {
+    closeBottomSheet();
+  });
+
+  // NAVER MAP ZONE POLYGONS
+  naverPolygons['A'] = new naver.maps.Polygon({
+    map: naverMap,
+    paths: [
+      new naver.maps.LatLng(36.3248, 127.4196),
+      new naver.maps.LatLng(36.3263, 127.4199),
+      new naver.maps.LatLng(36.3262, 127.4216),
+      new naver.maps.LatLng(36.3247, 127.4213)
+    ],
+    fillColor: '#ef4444',
+    fillOpacity: 0.22,
+    strokeColor: '#ef4444',
+    strokeWeight: 2.5
+  });
+  naver.maps.Event.addListener(naverPolygons['A'], 'click', () => zoomToZone('A'));
+
+  naverPolygons['B'] = new naver.maps.Polygon({
+    map: naverMap,
+    paths: [
+      new naver.maps.LatLng(36.3250, 127.4255),
+      new naver.maps.LatLng(36.3290, 127.4262),
+      new naver.maps.LatLng(36.3292, 127.4288),
+      new naver.maps.LatLng(36.3250, 127.4283)
+    ],
+    fillColor: '#8b5cf6',
+    fillOpacity: 0.20,
+    strokeColor: '#8b5cf6',
+    strokeWeight: 2.5
+  });
+  naver.maps.Event.addListener(naverPolygons['B'], 'click', () => zoomToZone('B'));
+
+  naverPolygons['C'] = new naver.maps.Polygon({
+    map: naverMap,
+    paths: [
+      new naver.maps.LatLng(36.3275, 127.4282),
+      new naver.maps.LatLng(36.3302, 127.4288),
+      new naver.maps.LatLng(36.3302, 127.4308),
+      new naver.maps.LatLng(36.3275, 127.4304)
+    ],
+    fillColor: '#f59e0b',
+    fillOpacity: 0.22,
+    strokeColor: '#f59e0b',
+    strokeWeight: 2.5
+  });
+  naver.maps.Event.addListener(naverPolygons['C'], 'click', () => zoomToZone('C'));
+
+  // 34 FOOD DOT MARKERS ON NAVER MAP
+  foodSpotsData.forEach(food => {
+    const marker = new naver.maps.Marker({
+      position: new naver.maps.LatLng(food.lat, food.lng),
+      map: naverMap,
+      icon: {
+        content: `<div class="food-red-dot" title="${food.name}"></div>`,
+        size: new naver.maps.Size(14, 14),
+        anchor: new naver.maps.Point(7, 7)
+      }
+    });
+
+    naver.maps.Event.addListener(marker, 'click', (e) => {
+      openBottomSheet({
+        title: `📍 ${food.name}`,
+        badge: food.cat,
+        badgeClass: 'zone-a',
+        desc: `주소: ${food.addr}`,
+        img: '',
+        kakao: `https://map.kakao.com/link/search/${encodeURIComponent(food.name)}`,
+        naver: `https://m.map.naver.com/search2/search.naver?query=${encodeURIComponent(food.name)}`
+      });
+      naverMap.panTo(new naver.maps.LatLng(food.lat, food.lng));
+    });
+  });
+
+  // GATHERING SPOT FLAG MARKER
+  const flagMarker = new naver.maps.Marker({
+    position: new naver.maps.LatLng(gatheringSpot.lat, gatheringSpot.lng),
+    map: naverMap,
+    icon: {
+      content: `<div class="custom-leaflet-pin target-spot">🚩</div>`,
+      size: new naver.maps.Size(34, 34),
+      anchor: new naver.maps.Point(17, 17)
+    }
+  });
+
+  naver.maps.Event.addListener(flagMarker, 'click', () => {
+    openBottomSheet({
+      title: "🚩 14:55 최종 집결 장소",
+      badge: "집결지",
+      badgeClass: "zone-a",
+      desc: "중앙로역 4번 출구 앞 (모든 조 14:55분까지 집결!)",
+      img: "",
+      kakao: "https://map.kakao.com/link/search/중앙로역4번출구",
+      naver: "https://m.map.naver.com/search2/search.naver?query=중앙로역4번출구"
+    });
+    naverMap.panTo(new naver.maps.LatLng(gatheringSpot.lat, gatheringSpot.lng));
+  });
+
+  // 8 MISSION PLACE MARKERS
+  Object.keys(placeDetails).forEach(id => {
+    const p = placeDetails[id];
+
+    let zoneClass = "zone-a";
+    let zoneBadgeText = "A";
+    if (p.zone === "B") { zoneClass = "zone-b"; zoneBadgeText = "B"; }
+    else if (p.zone === "C") { zoneClass = "zone-c"; zoneBadgeText = "C"; }
+    else if (p.zone === "BC") { zoneClass = "zone-bc"; zoneBadgeText = "B,C"; }
+
+    const marker = new naver.maps.Marker({
+      position: new naver.maps.LatLng(p.lat, p.lng),
+      map: naverMap,
+      icon: {
+        content: `<div class="custom-leaflet-pin ${zoneClass}">${id}</div>`,
+        size: new naver.maps.Size(34, 34),
+        anchor: new naver.maps.Point(17, 17)
+      }
+    });
+
+    naverMarkers[id] = marker;
+
+    naver.maps.Event.addListener(marker, 'click', () => {
+      openBottomSheet({
+        title: p.name,
+        badge: `구역 ${zoneBadgeText}`,
+        badgeClass: zoneClass,
+        desc: p.desc,
+        img: p.img,
+        kakao: p.kakao,
+        naver: p.naver
+      });
+      naverMap.panTo(new naver.maps.LatLng(p.lat, p.lng));
+    });
+  });
+}
+
+/* ================= LEAFLET GIS ENGINE IMPLEMENTATION (FALLBACK) ================= */
 function initLeafletMap() {
   const mapDiv = document.getElementById("realMap");
   if (!mapDiv || typeof L === 'undefined') return;
@@ -148,7 +330,6 @@ function initLeafletMap() {
     tap: true
   });
 
-  // Fit bounds tightly around places 1 to 8 on load
   leafletMap.fitBounds(allPlacesBounds, { padding: [16, 16] });
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -156,13 +337,10 @@ function initLeafletMap() {
     attribution: '&copy; OpenStreetMap contributors | 지구촌교회 중등부'
   }).addTo(leafletMap);
 
-  // Tap anywhere on map to close Bottom Sheet
   leafletMap.on('click', () => {
     closeBottomSheet();
   });
 
-  // DRAW 3 ACCURATE VISUAL ZONE POLYGONS
-  // Zone A Polygon (①, ② - 구 충남도청사 구역)
   const zoneAPoly = L.polygon([
     [36.3248, 127.4196],
     [36.3263, 127.4199],
@@ -178,7 +356,6 @@ function initLeafletMap() {
   zoneAPoly.on('click', () => zoomToZone('A'));
   zonePolygons['A'] = zoneAPoly;
 
-  // Zone B Polygon (③, ④, ⑤, ⑥ - 대흥동/은행동 상권 구역)
   const zoneBPoly = L.polygon([
     [36.3250, 127.4255],
     [36.3290, 127.4262],
@@ -194,7 +371,6 @@ function initLeafletMap() {
   zoneBPoly.on('click', () => zoomToZone('B'));
   zonePolygons['B'] = zoneBPoly;
 
-  // Zone C Polygon (⑥, ⑦, ⑧ - 대전천 변 구역)
   const zoneCPoly = L.polygon([
     [36.3275, 127.4282],
     [36.3302, 127.4288],
@@ -210,7 +386,6 @@ function initLeafletMap() {
   zoneCPoly.on('click', () => zoomToZone('C'));
   zonePolygons['C'] = zoneCPoly;
 
-  // 🔴 ADD 34 SMALL RED DOT MARKERS FOR FOOD / CAFES WITH PRECISE ANCHORING
   foodSpotsData.forEach(food => {
     const foodDotIcon = L.divIcon({
       className: 'custom-food-dot-wrapper',
@@ -236,7 +411,6 @@ function initLeafletMap() {
     });
   });
 
-  // Gathering Spot Marker (🚩) PRECISE ANCHOR
   const flagIcon = L.divIcon({
     className: 'custom-leaflet-pin-wrapper',
     html: `<div class="custom-leaflet-pin target-spot">🚩</div>`,
@@ -258,7 +432,6 @@ function initLeafletMap() {
     leafletMap.panTo([gatheringSpot.lat, gatheringSpot.lng]);
   });
 
-  // Place Markers 1 to 8 PRECISE ANCHORING AT EXACT GPS LOCATIONS
   Object.keys(placeDetails).forEach(id => {
     const p = placeDetails[id];
 
@@ -294,7 +467,7 @@ function initLeafletMap() {
   });
 }
 
-// Mobile Map Bottom Sheet Handler
+/* ================= MOBILE MAP BOTTOM SHEET HANDLER ================= */
 function openBottomSheet(data) {
   const sheet = document.getElementById("mapBottomSheet");
   const sTitle = document.getElementById("sheetTitle");
@@ -339,51 +512,60 @@ function closeBottomSheet() {
   }
 }
 
-// Zoom to Specific Zone (A, B, C)
+// Zoom to Zone
 function zoomToZone(zoneName) {
-  if (!leafletMap) return;
-
-  const poly = zonePolygons[zoneName];
-  if (poly) {
-    leafletMap.flyToBounds(poly.getBounds().pad(0.25), {
-      duration: 0.8,
-      maxZoom: 18
-    });
+  if (activeEngine === 'naver' && naverMap) {
+    const centerCoords = {
+      'A': new naver.maps.LatLng(36.3255, 127.4205),
+      'B': new naver.maps.LatLng(36.3270, 127.4270),
+      'C': new naver.maps.LatLng(36.3288, 127.4295)
+    };
+    if (centerCoords[zoneName]) {
+      naverMap.morph(centerCoords[zoneName], 17);
+    }
+  } else if (leafletMap) {
+    const poly = zonePolygons[zoneName];
+    if (poly) {
+      leafletMap.flyToBounds(poly.getBounds().pad(0.25), { duration: 0.8 });
+    }
   }
   closeBottomSheet();
 }
 
-// Focus Map on a specific Place (1..8)
+// Focus Map Place
 function focusMapPlace(placeId) {
   const p = placeDetails[placeId];
-  if (leafletMap && p) {
-    leafletMap.flyTo([p.lat, p.lng], 18, { duration: 0.8 });
-    
-    let zoneClass = "zone-a";
-    let zoneBadgeText = "A";
-    if (p.zone === "B") { zoneClass = "zone-b"; zoneBadgeText = "B"; }
-    else if (p.zone === "C") { zoneClass = "zone-c"; zoneBadgeText = "C"; }
-    else if (p.zone === "BC") { zoneClass = "zone-bc"; zoneBadgeText = "B,C"; }
+  if (!p) return;
 
-    openBottomSheet({
-      title: p.name,
-      badge: `구역 ${zoneBadgeText}`,
-      badgeClass: zoneClass,
-      desc: p.desc,
-      img: p.img,
-      kakao: p.kakao,
-      naver: p.naver
-    });
+  let zoneClass = "zone-a";
+  let zoneBadgeText = "A";
+  if (p.zone === "B") { zoneClass = "zone-b"; zoneBadgeText = "B"; }
+  else if (p.zone === "C") { zoneClass = "zone-c"; zoneBadgeText = "C"; }
+  else if (p.zone === "BC") { zoneClass = "zone-bc"; zoneBadgeText = "B,C"; }
+
+  if (activeEngine === 'naver' && naverMap) {
+    naverMap.morph(new naver.maps.LatLng(p.lat, p.lng), 18);
+  } else if (leafletMap) {
+    leafletMap.flyTo([p.lat, p.lng], 18, { duration: 0.8 });
   }
+
+  openBottomSheet({
+    title: p.name,
+    badge: `구역 ${zoneBadgeText}`,
+    badgeClass: zoneClass,
+    desc: p.desc,
+    img: p.img,
+    kakao: p.kakao,
+    naver: p.naver
+  });
 }
 
-// Reset Map to Center Tightly Enclosing Places 1 through 8
+// Reset Map
 function resetMapCenter() {
-  if (leafletMap) {
-    leafletMap.flyToBounds(allPlacesBounds, {
-      padding: [16, 16],
-      duration: 0.8
-    });
+  if (activeEngine === 'naver' && naverMap) {
+    naverMap.morph(new naver.maps.LatLng(36.327600, 127.425300), 16);
+  } else if (leafletMap) {
+    leafletMap.flyToBounds(allPlacesBounds, { padding: [16, 16], duration: 0.8 });
   }
   closeBottomSheet();
 }
@@ -400,28 +582,35 @@ function locateUserGPS() {
       const uLat = pos.coords.latitude;
       const uLng = pos.coords.longitude;
 
-      if (!userGpsMarker && leafletMap) {
-        const userIcon = L.divIcon({
-          className: 'custom-leaflet-pin-wrapper',
-          html: `<div class="custom-leaflet-pin user-spot">📍</div>`,
-          iconSize: [34, 34],
-          iconAnchor: [17, 17]
-        });
-        userGpsMarker = L.marker([uLat, uLng], { icon: userIcon }).addTo(leafletMap);
-        userGpsMarker.on('click', (e) => {
-          L.DomEvent.stopPropagation(e);
-          openBottomSheet({
-            title: "📍 내 현재 위치",
-            badge: "GPS",
-            badgeClass: "zone-a",
-            desc: `위도: ${uLat.toFixed(4)}, 경도: ${uLng.toFixed(4)}`,
-            img: "",
-            kakao: `https://map.kakao.com/link/map/내위치,${uLat},${uLng}`,
-            naver: `https://m.map.naver.com/search2/search.naver?query=${uLat},${uLng}`
+      if (activeEngine === 'naver' && naverMap) {
+        const uLatLng = new naver.maps.LatLng(uLat, uLng);
+        if (!naverUserGpsMarker) {
+          naverUserGpsMarker = new naver.maps.Marker({
+            position: uLatLng,
+            map: naverMap,
+            icon: {
+              content: `<div class="custom-leaflet-pin user-spot">📍</div>`,
+              size: new naver.maps.Size(34, 34),
+              anchor: new naver.maps.Point(17, 17)
+            }
           });
-        });
-      } else if (userGpsMarker) {
-        userGpsMarker.setLatLng([uLat, uLng]);
+        } else {
+          naverUserGpsMarker.setPosition(uLatLng);
+        }
+        naverMap.morph(uLatLng, 17);
+      } else if (leafletMap) {
+        if (!userGpsMarker) {
+          const userIcon = L.divIcon({
+            className: 'custom-leaflet-pin-wrapper',
+            html: `<div class="custom-leaflet-pin user-spot">📍</div>`,
+            iconSize: [34, 34],
+            iconAnchor: [17, 17]
+          });
+          userGpsMarker = L.marker([uLat, uLng], { icon: userIcon }).addTo(leafletMap);
+        } else {
+          userGpsMarker.setLatLng([uLat, uLng]);
+        }
+        leafletMap.flyTo([uLat, uLng], 17, { duration: 0.8 });
       }
 
       openBottomSheet({
@@ -433,10 +622,6 @@ function locateUserGPS() {
         kakao: `https://map.kakao.com/link/map/내위치,${uLat},${uLng}`,
         naver: `https://m.map.naver.com/search2/search.naver?query=${uLat},${uLng}`
       });
-
-      if (leafletMap) {
-        leafletMap.flyTo([uLat, uLng], 17, { duration: 0.8 });
-      }
     },
     (err) => {
       alert("위치 정보를 불러올 수 없습니다. GPS 설정 및 위치 권한을 확인해 주세요.");
@@ -461,8 +646,14 @@ function switchTab(tabId) {
     btns[indexMap[tabId]].classList.add("active");
   }
   
-  if (tabId === 'mapTab' && leafletMap) {
-    setTimeout(() => leafletMap.invalidateSize(), 150);
+  if (tabId === 'mapTab') {
+    setTimeout(() => {
+      if (activeEngine === 'naver' && naverMap) {
+        window.dispatchEvent(new Event('resize'));
+      } else if (leafletMap) {
+        leafletMap.invalidateSize();
+      }
+    }, 150);
   }
 
   window.scrollTo({ top: 0, behavior: 'smooth' });

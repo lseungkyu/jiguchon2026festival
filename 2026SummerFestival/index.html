@@ -15,7 +15,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap" rel="stylesheet">
   
-  <!-- Leaflet Interactive Real Map CSS & JS -->
+  <!-- 🗺️ NAVER MAP WEB API (v3) -->
+  <!-- Client ID를 네이버 클라우드 플랫폼에서 발급받은 키로 교체할 수 있습니다. -->
+  <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=YOUR_NAVER_CLIENT_ID"></script>
+  
+  <!-- Leaflet Fallback (네이버 지도 API 키 설정 전 기본 호환용) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -182,11 +186,14 @@
 
       </div>
 
-      <!-- Real Leaflet GIS Map Container -->
+      <!-- Real Map Container (Naver Map / Leaflet Map Container) -->
       <div class="content-box">
         
         <div class="box-header-block">
-          <h2 class="box-title">🗺️ 실시간 이동 지도</h2>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 class="box-title">🗺️ 실시간 이동 지도</h2>
+            <span class="map-provider-tag" id="mapProviderBadge">네이버지도 연동</span>
+          </div>
           <p class="box-subtitle">마커나 구역 버튼을 터치하면 상세 정보가 하단 시트에 나타납니다.</p>
         </div>
 

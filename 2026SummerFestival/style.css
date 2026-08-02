@@ -399,6 +399,17 @@ body {
 .content-box { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 16px; }
 .box-header-block { margin-bottom: 12px; }
 .box-title { font-size: 17.5px; font-weight: 900; color: #ffffff; margin-bottom: 2px; }
+
+.map-provider-tag {
+  font-size: 11px;
+  font-weight: 800;
+  color: #03cf5d;
+  background: rgba(3, 207, 93, 0.15);
+  border: 1px solid rgba(3, 207, 93, 0.4);
+  padding: 3px 8px;
+  border-radius: 12px;
+}
+
 .pulse-badge { font-size: 11px; font-weight: 800; color: #34d399; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); padding: 2px 8px; border-radius: 12px; display: inline-block; }
 .box-subtitle { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
 
@@ -431,7 +442,7 @@ body {
 .m-zone-btn.zc { background: rgba(245, 158, 11, 0.2); color: #fef08a; border-color: rgba(245, 158, 11, 0.4); }
 .m-zone-btn:active { transform: scale(0.95); }
 
-/* ================= Real GIS Leaflet Map Viewport & ULTRA COMPACT BOTTOM SHEET ================= */
+/* ================= Real GIS Map Viewport & ULTRA COMPACT BOTTOM SHEET ================= */
 .map-view-wrapper {
   position: relative;
   border-radius: var(--radius-md);
@@ -446,7 +457,7 @@ body {
   z-index: 1;
 }
 
-/* Hide Leaflet default popups completely */
+/* Hide default popups completely */
 .leaflet-popup-pane { display: none !important; }
 
 /* 📱 ULTRA SLIM COMPACT BOTTOM SHEET (ONLY ~110PX HIGH!) */
