@@ -187,14 +187,11 @@
         
         <div class="box-header-block">
           <h2 class="box-title">🗺️ 실시간 지도 & 길찾기</h2>
-          <p class="box-subtitle">API 키 없이 네이버지도/카카오맵을 바로 이용하실 수 있습니다.</p>
         </div>
 
-        <!-- Map Engine Switcher Buttons -->
-        <div class="map-engine-switcher">
+        <!-- Map Engine Switcher Buttons (Removed Naver/Kakao) -->
+        <div class="map-engine-switcher" style="display: none;">
           <button class="engine-btn active" id="btnPinMap" onclick="switchMapEngine('pin')">🎯 미션 핀 지도</button>
-          <button class="engine-btn naver" id="btnNaverIframe" onclick="switchMapEngine('naver')">🟢 네이버지도 내장 뷰</button>
-          <button class="engine-btn kakao" id="btnKakaoIframe" onclick="switchMapEngine('kakao')">🟡 카카오맵 내장 뷰</button>
         </div>
 
         <!-- Map Zone Selector Pills (Spacious 3 Column Grid) -->
