@@ -8,7 +8,7 @@ const placeDetails = {
     desc: "구 충청남도청사 건물. 고풍스러운 근대 건축물 배경!",
     img: "./assets/place1_1.png",
     zone: "A",
-    lat: 36.325633, lng: 127.420448,
+    lat: 36.325850, lng: 127.420600, // Plus Code: 8CGC+P9 대전광역시 (정확히 반영)
     kakao: "https://map.kakao.com/link/search/대전근현대사전시관",
     naver: "https://m.map.naver.com/search2/search.naver?query=대전근현대사전시관"
   },
@@ -17,7 +17,7 @@ const placeDetails = {
     desc: "전시관 내부 미술공간 전시장 입구 배경!",
     img: "./assets/place2_1.png",
     zone: "A",
-    lat: 36.325450, lng: 127.420700,
+    lat: 36.325600, lng: 127.420800,
     kakao: "https://map.kakao.com/link/search/대전근현대사전시관",
     naver: "https://m.map.naver.com/search2/search.naver?query=대전근현대사전시관"
   },
@@ -128,14 +128,14 @@ let leafletMap = null;
 let leafletMarkers = {};
 let zonePolygons = {};
 let userGpsMarker = null;
-let currentEngineMode = 'pin'; // 'pin', 'naver', 'kakao'
+let currentEngineMode = 'pin';
 
 document.addEventListener("DOMContentLoaded", () => {
   startGatheringTimer();
   initLeafletMap();
 });
 
-// Switch Map Engine View Mode ('pin', 'naver', 'kakao')
+// Switch Map Engine View Mode
 function switchMapEngine(mode) {
   currentEngineMode = mode;
 
@@ -151,7 +151,6 @@ function switchMapEngine(mode) {
   const mapTools = document.getElementById("mapToolsContainer");
   const zonePills = document.getElementById("zoneGridPills");
 
-  // Deactivate all buttons
   [btnPin, btnNaver, btnKakao].forEach(b => b.classList.remove("active"));
 
   if (mode === 'pin') {
@@ -191,7 +190,7 @@ function switchMapEngine(mode) {
   }
 }
 
-// Initialize Leaflet Map Engine
+// Initialize Leaflet Map
 function initLeafletMap() {
   const mapDiv = document.getElementById("realMap");
   if (!mapDiv || typeof L === 'undefined') return;
