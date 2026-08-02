@@ -35,7 +35,7 @@ const placeDetails = {
     desc: "웅장한 성당 외관 정면 전경 배경!",
     img: "./assets/place4_1.png",
     zone: "B",
-    lat: 36.325700, lng: 127.427800,
+    lat: 36.326812, lng: 127.426437, // Plus Code: 8CGG+PH 대전광역시
     kakao: "https://map.kakao.com/link/search/대흥동성당",
     naver: "https://m.map.naver.com/search2/search.naver?query=대흥동성당"
   },
@@ -62,7 +62,7 @@ const placeDetails = {
     desc: "대전천을 건너는 은행교 교량 조형물 및 다리 위!",
     img: "./assets/place7_1.png",
     zone: "C",
-    lat: 36.328000, lng: 127.429950,
+    lat: 36.328563, lng: 127.430188, // Plus Code: 8CHJ+C3 대전광역시
     kakao: "https://map.kakao.com/link/search/은행교",
     naver: "https://m.map.naver.com/search2/search.naver?query=은행교"
   },
@@ -71,7 +71,7 @@ const placeDetails = {
     desc: "목척교 상징 나무 조형물 및 쉼터 배경!",
     img: "./assets/place8_1.png",
     zone: "C",
-    lat: 36.330100, lng: 127.430400,
+    lat: 36.329938, lng: 127.429313, // Plus Code: 8CHH+XP 대전광역시
     kakao: "https://map.kakao.com/link/search/목척교",
     naver: "https://m.map.naver.com/search2/search.naver?query=목척교"
   }
