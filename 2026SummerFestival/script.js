@@ -10,7 +10,7 @@ const placeDetails = {
     zone: "A",
     lat: 36.326888, lng: 127.421188, // 구글맵 링크 8CGC+QF2 대전광역시 (대전근현대사전시관 정문 계단 전면)
     kakao: "https://map.kakao.com/link/search/대전근현대사전시관",
-    naver: "https://m.map.naver.com/search2/search.naver?query=대전근현대사전시관"
+    naver: "https://map.naver.com/p/search/대전근현대사전시관"
   },
   2: {
     name: "② 정영복 미술공간",
@@ -19,7 +19,7 @@ const placeDetails = {
     zone: "A",
     lat: 36.326188, lng: 127.423188, // Plus Code: 8CGF+F7 대전광역시
     kakao: "https://map.kakao.com/link/search/정영복미술공간",
-    naver: "https://m.map.naver.com/search2/search.naver?query=정영복미술공간"
+    naver: "https://map.naver.com/p/search/정영복미술공간"
   },
   3: {
     name: "③ 우리들 공원 + 문화거리",
@@ -28,7 +28,7 @@ const placeDetails = {
     zone: "B",
     lat: 36.327363, lng: 127.425641, // Plus Code: 8CGG+W7R 대전광역시
     kakao: "https://place.map.kakao.com/410607403",
-    naver: "https://m.map.naver.com/search2/search.naver?query=대전우리들공원"
+    naver: "https://map.naver.com/p/search/대전우리들공원"
   },
   4: {
     name: "④ 대흥동 성당",
@@ -37,7 +37,7 @@ const placeDetails = {
     zone: "B",
     lat: 36.326812, lng: 127.426437, // Plus Code: 8CGG+PH 대전광역시
     kakao: "https://map.kakao.com/link/search/대전 대흥동성당",
-    naver: "https://m.map.naver.com/search2/search.naver?query=대전 대흥동성당"
+    naver: "https://map.naver.com/p/search/대전 대흥동성당"
   },
   5: {
     name: "⑤ 성심당 본점",
@@ -46,7 +46,7 @@ const placeDetails = {
     zone: "B",
     lat: 36.327660, lng: 127.427280,
     kakao: "https://map.kakao.com/link/search/대전 성심당 본점",
-    naver: "https://m.map.naver.com/search2/search.naver?query=대전 성심당 본점"
+    naver: "https://map.naver.com/p/search/대전 성심당 본점"
   },
   6: {
     name: "⑥ 으능정이 문화의거리",
@@ -55,7 +55,7 @@ const placeDetails = {
     zone: "BC",
     lat: 36.328450, lng: 127.428350,
     kakao: "https://map.kakao.com/link/search/대전 으능정이문화의거리",
-    naver: "https://m.map.naver.com/search2/search.naver?query=대전 으능정이문화의거리"
+    naver: "https://map.naver.com/p/search/대전 으능정이문화의거리"
   },
   7: {
     name: "⑦ 은행교",
@@ -64,7 +64,7 @@ const placeDetails = {
     zone: "C",
     lat: 36.328563, lng: 127.430188, // Plus Code: 8CHJ+C3 대전광역시
     kakao: "https://map.kakao.com/link/search/대전 은행교",
-    naver: "https://m.map.naver.com/search2/search.naver?query=대전 은행교"
+    naver: "https://map.naver.com/p/search/대전 은행교"
   },
   8: {
     name: "⑧ 목척교",
@@ -73,7 +73,7 @@ const placeDetails = {
     zone: "C",
     lat: 36.329938, lng: 127.429313, // Plus Code: 8CHH+XP 대전광역시
     kakao: "https://map.kakao.com/link/search/대전 목척교",
-    naver: "https://m.map.naver.com/search2/search.naver?query=대전 목척교"
+    naver: "https://map.naver.com/p/search/대전 목척교"
   }
 };
 
@@ -171,7 +171,7 @@ function switchMapEngine(mode) {
     if (zonePills) zonePills.style.display = "none";
     closeBottomSheet();
 
-    const url = "https://m.map.naver.com/search2/search.naver?query=대전+중앙로역";
+    const url = "https://map.naver.com/p/search/대전+중앙로역";
     iframe.src = url;
     iframeTitle.textContent = "🟢 네이버지도 웹 내장 뷰";
     iframeLink.href = url;
@@ -277,7 +277,7 @@ function initLeafletMap() {
         desc: `주소: ${food.addr}`,
         img: '',
         kakao: `https://map.kakao.com/link/search/${encodeURIComponent(food.name)}`,
-        naver: `https://m.map.naver.com/search2/search.naver?query=${encodeURIComponent(food.name)}`
+        naver: `https://map.naver.com/p/search/${encodeURIComponent(food.name)}`
       });
       leafletMap.panTo([food.lat, food.lng]);
     });
@@ -300,7 +300,7 @@ function initLeafletMap() {
       desc: "중앙로역 4번 출구 앞 (모든 조 14:55분까지 집결!)",
       img: "",
       kakao: "https://map.kakao.com/link/search/중앙로역4번출구",
-      naver: "https://m.map.naver.com/search2/search.naver?query=중앙로역4번출구"
+      naver: "https://map.naver.com/p/search/중앙로역4번출구"
     });
     leafletMap.panTo([gatheringSpot.lat, gatheringSpot.lng]);
   });
@@ -469,7 +469,7 @@ function locateUserGPS() {
         desc: "실시간 GPS 내 현재 위치입니다.",
         img: "",
         kakao: `https://map.kakao.com/link/map/내위치,${uLat},${uLng}`,
-        naver: `https://m.map.naver.com/search2/search.naver?query=${uLat},${uLng}`
+        naver: `https://map.naver.com/p/search/${uLat},${uLng}`
       });
     },
     (err) => {
