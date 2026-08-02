@@ -33,32 +33,30 @@
     </div>
   </header>
 
-  <!-- Gathering Countdown Banner (Streamlined Layout) -->
+  <!-- Gathering Countdown Banner (Comfortable 2-Row Stack) -->
   <section class="timer-banner">
-    <div class="timer-inner">
-      <div class="timer-label">
-        <span class="pulse-dot"></span>
-        <span>🚩 14:55 중앙로역 4번출구 집결</span>
-      </div>
-      <div class="timer-display-box">
-        <span class="timer-txt">집결까지</span>
-        <span class="timer-display" id="countdownTimer">--:--:--</span>
-      </div>
+    <div class="timer-row-top">
+      <span class="pulse-dot"></span>
+      <span class="timer-spot-text">🚩 14:55 중앙로역 4번출구 최종 집결</span>
+    </div>
+    <div class="timer-row-bottom">
+      <span class="timer-label-sub">집결까지 남은시간</span>
+      <span class="timer-display" id="countdownTimer">--:--:--</span>
     </div>
   </section>
 
   <!-- Quick Floating Action Bar -->
   <div class="quick-action-bar">
-    <button class="quick-act-btn call-btn full-w" onclick="openEmergencyCall()">
-      📞 긴급 연락처 안내
+    <button class="quick-act-btn call-btn" onclick="openEmergencyCall()">
+      📞 긴급 상황 발생 시 교사팀 연락처 안내
     </button>
   </div>
 
-  <!-- Sticky Navigation Tabs -->
+  <!-- Sticky Navigation Tabs (Large Touch Friendly Buttons) -->
   <nav class="nav-tabs">
-    <button class="tab-btn active" onclick="switchTab('mapTab')">🎯 지도&수칙</button>
-    <button class="tab-btn" onclick="switchTab('routesTab')">🍱 맛집&동선</button>
-    <button class="tab-btn" onclick="switchTab('placesTab')">📍 장소&길찾기</button>
+    <button class="tab-btn active" onclick="switchTab('mapTab')">🎯 지도 & 수칙</button>
+    <button class="tab-btn" onclick="switchTab('routesTab')">🍱 맛집 & 동선</button>
+    <button class="tab-btn" onclick="switchTab('placesTab')">📍 장소 & 길찾기</button>
   </nav>
 
   <!-- Main Container -->
@@ -67,83 +65,106 @@
     <!-- ==================== TAB 1: 미션 안내 & 실시간 지도 (FIRST VIEW) ==================== -->
     <div id="mapTab" class="tab-pane active">
       
-      <!-- 📌 Highlighted First Screen Mission Guide Card -->
+      <!-- 📌 Highlighted First Screen Mission Guide Card (Spacious High Readability Layout) -->
       <div class="first-mission-guide-card">
+        
         <div class="f-guide-header">
-          <span class="f-badge">🎯 핵심 미션 수칙</span>
+          <h2 class="f-badge">🎯 대전 시티투어 핵심 미션</h2>
           <span class="f-sub-tag">인증샷 단톡방 업로드</span>
         </div>
         
-        <div class="f-guide-body">
-          <p class="f-main-rule">
-            📌 아래 8개 장소 중 <strong>2곳을 자유 선정</strong>하여 각 장소 미션을 수행하세요!
+        <div class="f-main-rule-box">
+          <p class="f-main-rule-text">
+            📌 아래 8개 장소 중 <strong>2곳을 자유 선정</strong>하여 미션을 수행하세요!
           </p>
-
-          <!-- Warning & Bonus Grid -->
-          <div class="f-rule-box">
-            <div class="f-rule-item warn">
-              <div class="f-rule-title">⚠️ 동일 구역 동시 선정 불가</div>
-              <div class="zone-breakdown">
-                <div class="z-tag">🔴 구역 A: <strong>①, ②</strong> (동시 선택 불가)</div>
-                <div class="z-tag">🟣 구역 B: <strong>③, ④, ⑤, ⑥</strong> (동시 선택 불가)</div>
-                <div class="z-tag">🟠 구역 C: <strong>⑥, ⑦, ⑧</strong> (동시 선택 불가)</div>
-              </div>
-            </div>
-
-            <div class="f-rule-item bonus">
-              <div class="f-rule-title">⭐ 특별 가산점 (+100점)</div>
-              <div class="bonus-desc"><strong>①+⑦ 장소</strong> 또는 <strong>②+⑧ 장소</strong> 선택 시 추가점!</div>
-            </div>
-          </div>
-
-          <!-- 3 Main Missions Summary List -->
-          <div class="f-missions-list">
-            
-            <div class="f-m-item">
-              <div class="f-m-top">
-                <span class="f-m-title">a. 미션 1 (+100점)</span>
-                <span class="f-m-tag">첫 번째 장소</span>
-              </div>
-              <p class="f-m-desc">선정 장소에서 조원 모두가 <strong>가장 크게 웃는</strong> 단체사진 찍기</p>
-            </div>
-
-            <div class="f-m-item">
-              <div class="f-m-top">
-                <span class="f-m-title">b. 미션 2 (+100점)</span>
-                <span class="f-m-tag">두 번째 장소</span>
-              </div>
-              <p class="f-m-desc">선정 장소에서 조원 모두가 <strong>같은 포즈로</strong> 단체사진 찍기</p>
-            </div>
-
-            <div class="f-m-item gold">
-              <div class="f-m-top">
-                <span class="f-m-title gold">c. 미션 3 (+300점)</span>
-                <span class="f-m-tag gold">3시간 동안</span>
-              </div>
-              <p class="f-m-desc">
-                <strong>숨은 글자 찾기</strong>: <em>“빌드업 하나님 나라를 세우는 세대”</em><br>
-                <small>📸 14:50분까지 글자 사진 모아서 한 번에 업로드</small>
-              </p>
-            </div>
-
-          </div>
         </div>
+
+        <!-- Warning & Bonus Grid -->
+        <div class="f-rule-box">
+          
+          <div class="f-rule-card warn">
+            <h3 class="f-rule-card-title">⚠️ 동일 구역 동시 선정 불가 수칙</h3>
+            <div class="zone-breakdown">
+              <div class="z-item">
+                <span class="z-badge za">구역 A</span>
+                <span class="z-text"><strong>①, ②</strong> (동시 선택 불가)</span>
+              </div>
+              <div class="z-item">
+                <span class="z-badge zb">구역 B</span>
+                <span class="z-text"><strong>③, ④, ⑤, ⑥</strong> (동시 선택 불가)</span>
+              </div>
+              <div class="z-item">
+                <span class="z-badge zc">구역 C</span>
+                <span class="z-text"><strong>⑥, ⑦, ⑧</strong> (동시 선택 불가)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="f-rule-card bonus">
+            <h3 class="f-rule-card-title">⭐ 특별 가산점 (+100점)</h3>
+            <p class="bonus-desc">
+              <strong>①+⑦ 장소</strong> 또는 <strong>②+⑧ 장소</strong> 조합 선택 시 가산점 지급!
+            </p>
+          </div>
+
+        </div>
+
+        <!-- 3 Main Missions Cards -->
+        <div class="f-missions-list">
+          
+          <div class="f-m-card">
+            <div class="f-m-card-top">
+              <span class="f-m-title">a. 미션 1 (+100점)</span>
+              <span class="f-m-tag">첫 번째 장소</span>
+            </div>
+            <p class="f-m-desc">선정 장소에서 조원 모두가 <strong>가장 크게 웃는 단체사진</strong> 촬영</p>
+          </div>
+
+          <div class="f-m-card">
+            <div class="f-m-card-top">
+              <span class="f-m-title">b. 미션 2 (+100점)</span>
+              <span class="f-m-tag">두 번째 장소</span>
+            </div>
+            <p class="f-m-desc">선정 장소에서 조원 모두가 <strong>같은 포즈로 단체사진</strong> 촬영</p>
+          </div>
+
+          <div class="f-m-card gold">
+            <div class="f-m-card-top">
+              <span class="f-m-title gold">c. 미션 3 (+300점)</span>
+              <span class="f-m-tag gold">3시간 동안 진행</span>
+            </div>
+            <p class="f-m-desc">
+              <strong>숨은 글자 찾기</strong>: <em>“빌드업 하나님 나라를 세우는 세대”</em><br>
+              <span class="sub-tip">📸 찾은 글자 사진들을 모아 <strong>14:50분까지 한 번에 업로드</strong></span>
+            </p>
+          </div>
+
+        </div>
+
       </div>
 
       <!-- Real Leaflet GIS Map Container -->
-      <div class="content-box text-center" style="margin-top: 12px;">
+      <div class="content-box">
         
-        <div class="box-header-flex">
+        <div class="box-header-block">
           <h2 class="box-title">🗺️ 실시간 이동 지도</h2>
-          <span class="pulse-badge">터치 시 구역 확대</span>
+          <p class="box-subtitle">지도 구역을 터치하면 해당 영역으로 바로 확대됩니다.</p>
         </div>
-        <p class="box-subtitle">구역 버튼이나 지도 위 색상 영역을 터치하면 해당 구역으로 확대됩니다.</p>
 
-        <!-- Map Zone Equal 3-Column Grid -->
+        <!-- Map Zone Selector Pills (Spacious 3 Column Grid) -->
         <div class="map-zone-grid">
-          <button class="m-zone-btn za" onclick="zoomToZone('A')">🔴 구역 A<small>(①,②)</small></button>
-          <button class="m-zone-btn zb" onclick="zoomToZone('B')">🟣 구역 B<small>(③,④,⑤,⑥)</small></button>
-          <button class="m-zone-btn zc" onclick="zoomToZone('C')">🟠 구역 C<small>(⑥,⑦,⑧)</small></button>
+          <button class="m-zone-btn za" onclick="zoomToZone('A')">
+            <span class="zb-title">🔴 구역 A</span>
+            <span class="zb-sub">①, ②</span>
+          </button>
+          <button class="m-zone-btn zb" onclick="zoomToZone('B')">
+            <span class="zb-title">🟣 구역 B</span>
+            <span class="zb-sub">③, ④, ⑤, ⑥</span>
+          </button>
+          <button class="m-zone-btn zc" onclick="zoomToZone('C')">
+            <span class="zb-title">🟠 구역 C</span>
+            <span class="zb-sub">⑥, ⑦, ⑧</span>
+          </button>
         </div>
 
         <div class="map-view-wrapper">
@@ -156,8 +177,8 @@
           </div>
         </div>
 
-        <!-- Quick Links Grid (Equal Height Fixed 2-Column Grid) -->
-        <div class="map-quick-grid" style="margin-top: 10px;">
+        <!-- Quick Links Grid (Spacious Touch Chips) -->
+        <div class="map-quick-grid">
           <button class="map-place-chip" onclick="focusMapPlace(1)"><span class="chip-num za">1</span> 근현대사전시관</button>
           <button class="map-place-chip" onclick="focusMapPlace(2)"><span class="chip-num za">2</span> 정영복미술공간</button>
           <button class="map-place-chip" onclick="focusMapPlace(3)"><span class="chip-num zb">3</span> 우리들공원</button>
@@ -178,7 +199,7 @@
       <!-- Recommended Walking Routes -->
       <div class="content-box">
         <h2 class="box-title">🚶 스마트 추천 이동 동선</h2>
-        <p class="box-subtitle">시간 단축 & +100점 가산점까지 챙기는 최고의 투어 코스!</p>
+        <p class="box-subtitle">시간 단축 & +100점 가산점까지 챙기는 최고 효율 코스!</p>
 
         <div class="routes-list">
           <!-- Route 1 -->
@@ -245,11 +266,10 @@
 
       <!-- 🍕 RECOMMENDED FOOD & CAFE DIRECTORY -->
       <div class="content-box">
-        <div class="box-header-flex">
+        <div class="box-header-block">
           <h2 class="box-title">🍕 맛집·카페·놀거리 주소록</h2>
-          <span class="pulse-badge">34곳 추천</span>
+          <p class="box-subtitle">터치 시 네이버지도 앱으로 즉시 길안내가 실행됩니다.</p>
         </div>
-        <p class="box-subtitle">점심 식사와 디저트를 즐길 목록입니다. (길찾기 터치 시 네이버지도 이동)</p>
 
         <!-- Category Filter Pills for Food -->
         <div class="food-filter-bar">
@@ -269,7 +289,7 @@
                 <span class="f-cat-badge meal">식당</span>
                 <h4 class="f-name">성심당 본점</h4>
               </div>
-              <span class="f-addr">📍 은행동 145-1</span>
+              <span class="f-addr">📍 대전 중구 은행동 145-1</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=성심당본점" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -280,7 +300,7 @@
                 <span class="f-cat-badge meal">식당</span>
                 <h4 class="f-name">성심당 테라스키친</h4>
               </div>
-              <span class="f-addr">📍 은행동 145-1</span>
+              <span class="f-addr">📍 대전 중구 은행동 145-1</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=성심당테라스키친" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -291,7 +311,7 @@
                 <span class="f-cat-badge meal">식당</span>
                 <h4 class="f-name">성심당 우동야</h4>
               </div>
-              <span class="f-addr">📍 지하상가 D가-2</span>
+              <span class="f-addr">📍 대전 지하상가 D가-2</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=성심당우동야" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -302,7 +322,7 @@
                 <span class="f-cat-badge meal">식당</span>
                 <h4 class="f-name">마라천하마라탕</h4>
               </div>
-              <span class="f-addr">📍 은행동 169-10</span>
+              <span class="f-addr">📍 대전 중구 은행동 169-10</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=마라천하마라탕" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -313,7 +333,7 @@
                 <span class="f-cat-badge meal">식당</span>
                 <h4 class="f-name">아저씨돈까스</h4>
               </div>
-              <span class="f-addr">📍 은행동 33-5</span>
+              <span class="f-addr">📍 대전 중구 은행동 33-5</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=아저씨돈까스" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -324,7 +344,7 @@
                 <span class="f-cat-badge meal">식당</span>
                 <h4 class="f-name">희락반점</h4>
               </div>
-              <span class="f-addr">📍 선화동 36</span>
+              <span class="f-addr">📍 대전 중구 선화동 36</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=희락반점" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -335,7 +355,7 @@
                 <span class="f-cat-badge meal">식당</span>
                 <h4 class="f-name">니뽕내뽕</h4>
               </div>
-              <span class="f-addr">📍 은행동 33-2</span>
+              <span class="f-addr">📍 대전 중구 은행동 33-2</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=니뽕내뽕대전은행점" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -346,7 +366,7 @@
                 <span class="f-cat-badge meal">식당</span>
                 <h4 class="f-name">멘야네코라멘 본점</h4>
               </div>
-              <span class="f-addr">📍 은행동 76-21</span>
+              <span class="f-addr">📍 대전 중구 은행동 76-21</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=멘야네코라멘본점" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -357,7 +377,7 @@
                 <span class="f-cat-badge meal">식당</span>
                 <h4 class="f-name">육첩반상</h4>
               </div>
-              <span class="f-addr">📍 은행동 33-1</span>
+              <span class="f-addr">📍 대전 중구 은행동 33-1</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=육첩반상대전은행점" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -368,7 +388,7 @@
                 <span class="f-cat-badge meal">식당</span>
                 <h4 class="f-name">바로그집</h4>
               </div>
-              <span class="f-addr">📍 지하상가 CL 61호</span>
+              <span class="f-addr">📍 대전 지하상가 CL 61호</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=바로그집" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -379,7 +399,7 @@
                 <span class="f-cat-badge meal">식당</span>
                 <h4 class="f-name">춘천집무한닭갈비</h4>
               </div>
-              <span class="f-addr">📍 은행동 76-10</span>
+              <span class="f-addr">📍 대전 중구 은행동 76-10</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=춘천집무한닭갈비" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -390,7 +410,7 @@
                 <span class="f-cat-badge meal">식당</span>
                 <h4 class="f-name">선화면옥</h4>
               </div>
-              <span class="f-addr">📍 선화동 16-3</span>
+              <span class="f-addr">📍 대전 중구 선화동 16-3</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=선화면옥" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -401,7 +421,7 @@
                 <span class="f-cat-badge meal">식당</span>
                 <h4 class="f-name">두끼떡볶이</h4>
               </div>
-              <span class="f-addr">📍 은행동 33-11</span>
+              <span class="f-addr">📍 대전 중구 은행동 33-11</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=두끼떡볶이대전은행점" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -412,7 +432,7 @@
                 <span class="f-cat-badge meal">식당</span>
                 <h4 class="f-name">미도리카레</h4>
               </div>
-              <span class="f-addr">📍 대흥동 205-2</span>
+              <span class="f-addr">📍 대전 중구 대흥동 205-2</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=미도리카레" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -423,7 +443,7 @@
                 <span class="f-cat-badge meal">식당</span>
                 <h4 class="f-name">동그라미즉석떡볶이</h4>
               </div>
-              <span class="f-addr">📍 은행동 138-2</span>
+              <span class="f-addr">📍 대전 중구 은행동 138-2</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=동그라미즉석떡볶이" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -434,7 +454,7 @@
                 <span class="f-cat-badge meal">식당</span>
                 <h4 class="f-name">롤링파스타</h4>
               </div>
-              <span class="f-addr">📍 은행동 48-8</span>
+              <span class="f-addr">📍 대전 중구 은행동 48-8</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=롤링파스타대전은행점" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -445,7 +465,7 @@
                 <span class="f-cat-badge meal">식당</span>
                 <h4 class="f-name">도쿄돈부리</h4>
               </div>
-              <span class="f-addr">📍 은행동 166-1</span>
+              <span class="f-addr">📍 대전 중구 은행동 166-1</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=도쿄돈부리" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -456,7 +476,7 @@
                 <span class="f-cat-badge meal">식당</span>
                 <h4 class="f-name">닭갈비제작소</h4>
               </div>
-              <span class="f-addr">📍 은행동 40-4</span>
+              <span class="f-addr">📍 대전 중구 은행동 40-4</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=닭갈비제작소대전은행점" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -468,7 +488,7 @@
                 <span class="f-cat-badge cafe">카페</span>
                 <h4 class="f-name">설빙</h4>
               </div>
-              <span class="f-addr">📍 은행동 48-9</span>
+              <span class="f-addr">📍 대전 중구 은행동 48-9</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=설빙대전은행점" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -479,7 +499,7 @@
                 <span class="f-cat-badge cafe">카페</span>
                 <h4 class="f-name">성심당 옛맛솜씨</h4>
               </div>
-              <span class="f-addr">📍 은행동 166-2</span>
+              <span class="f-addr">📍 대전 중구 은행동 166-2</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=성심당옛맛솜씨" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -490,7 +510,7 @@
                 <span class="f-cat-badge cafe">카페</span>
                 <h4 class="f-name">모도시</h4>
               </div>
-              <span class="f-addr">📍 선화동 236-3</span>
+              <span class="f-addr">📍 대전 중구 선화동 236-3</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=모도시" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -501,7 +521,7 @@
                 <span class="f-cat-badge cafe">카페</span>
                 <h4 class="f-name">커피전도사의 집</h4>
               </div>
-              <span class="f-addr">📍 대흥동 6-1</span>
+              <span class="f-addr">📍 대전 중구 대흥동 6-1</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=커피전도사의집" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -512,7 +532,7 @@
                 <span class="f-cat-badge cafe">카페</span>
                 <h4 class="f-name">카운트 커피</h4>
               </div>
-              <span class="f-addr">📍 선화동 99</span>
+              <span class="f-addr">📍 대전 중구 선화동 99</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=카운트커피" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -523,7 +543,7 @@
                 <span class="f-cat-badge cafe">카페</span>
                 <h4 class="f-name">알로하녹</h4>
               </div>
-              <span class="f-addr">📍 선화동 236-8</span>
+              <span class="f-addr">📍 대전 중구 선화동 236-8</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=알로하녹" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -534,7 +554,7 @@
                 <span class="f-cat-badge cafe">카페</span>
                 <h4 class="f-name">포우드</h4>
               </div>
-              <span class="f-addr">📍 선화동 45-2</span>
+              <span class="f-addr">📍 대전 중구 선화동 45-2</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=포우드" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -545,7 +565,7 @@
                 <span class="f-cat-badge cafe">카페</span>
                 <h4 class="f-name">오드눅</h4>
               </div>
-              <span class="f-addr">📍 은행동 33-10</span>
+              <span class="f-addr">📍 대전 중구 은행동 33-10</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=오드눅" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -556,7 +576,7 @@
                 <span class="f-cat-badge cafe">카페</span>
                 <h4 class="f-name">커닝</h4>
               </div>
-              <span class="f-addr">📍 대흥동 203-5</span>
+              <span class="f-addr">📍 대전 중구 대흥동 203-5</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=커닝카페" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -567,7 +587,7 @@
                 <span class="f-cat-badge cafe">카페</span>
                 <h4 class="f-name">단위</h4>
               </div>
-              <span class="f-addr">📍 대흥동 479-4</span>
+              <span class="f-addr">📍 대전 중구 대흥동 479-4</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=단위카페" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -578,7 +598,7 @@
                 <span class="f-cat-badge cafe">카페</span>
                 <h4 class="f-name">모디프커피</h4>
               </div>
-              <span class="f-addr">📍 은행동 165-1</span>
+              <span class="f-addr">📍 대전 중구 은행동 165-1</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=모디프커피" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -590,7 +610,7 @@
                 <span class="f-cat-badge play">놀거리</span>
                 <h4 class="f-name">라무킷도</h4>
               </div>
-              <span class="f-addr">📍 대흥동 225-5</span>
+              <span class="f-addr">📍 대전 중구 대흥동 225-5</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=라무킷도" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -601,7 +621,7 @@
                 <span class="f-cat-badge play">보드게임</span>
                 <h4 class="f-name">레드버튼</h4>
               </div>
-              <span class="f-addr">📍 은행동 45-5</span>
+              <span class="f-addr">📍 대전 중구 은행동 45-5</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=레드버튼대전은행점" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -612,7 +632,7 @@
                 <span class="f-cat-badge play">보드게임</span>
                 <h4 class="f-name">홈즈앤루팡</h4>
               </div>
-              <span class="f-addr">📍 은행동 142-4</span>
+              <span class="f-addr">📍 대전 중구 은행동 142-4</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=홈즈앤루팡대전은행점" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -623,7 +643,7 @@
                 <span class="f-cat-badge play">액티비티</span>
                 <h4 class="f-name">나사락볼링장</h4>
               </div>
-              <span class="f-addr">📍 대흥동 245-2</span>
+              <span class="f-addr">📍 대전 중구 대흥동 245-2</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=나사락볼링장" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
@@ -634,7 +654,7 @@
                 <span class="f-cat-badge play">액티비티</span>
                 <h4 class="f-name">점핑배틀</h4>
               </div>
-              <span class="f-addr">📍 은행동 40-3</span>
+              <span class="f-addr">📍 대전 중구 은행동 40-3</span>
             </div>
             <a href="https://m.map.naver.com/search2/search.naver?query=점핑배틀" target="_blank" class="f-map-link">🧭 길찾기</a>
           </div>
