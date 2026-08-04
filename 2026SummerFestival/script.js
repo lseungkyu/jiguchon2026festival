@@ -595,3 +595,18 @@ function closeLightbox() {
   const lb = document.getElementById("lightbox");
   if (lb) lb.classList.remove("active");
 }
+
+// Accordion Toggle function
+function toggleAccordion(button) {
+  const item = button.parentElement;
+  
+  // Optional: close other accordions (uncomment if you want only one open at a time)
+  /*
+  const siblings = item.parentElement.querySelectorAll('.accordion-item');
+  siblings.forEach(sibling => {
+    if (sibling !== item) sibling.classList.remove('active');
+  });
+  */
+  
+  item.classList.toggle('active');
+}
