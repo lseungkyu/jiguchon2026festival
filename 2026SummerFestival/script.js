@@ -116,7 +116,7 @@ const foodSpotsData = [
 
 const gatheringSpot = {
   name: "🚩 14:55 집결지 (중앙로역 4번출구)",
-  lat: 36.327600, lng: 127.425300
+  lat: 36.3278125, lng: 127.4240625
 };
 
 const allPlacesBounds = [
