@@ -352,6 +352,9 @@ html_template = """<!DOCTYPE html>
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px rgba(56, 189, 248, 0.1);
       position: relative;
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .cover-card::before {
@@ -413,9 +416,11 @@ html_template = """<!DOCTYPE html>
       cursor: pointer;
       box-shadow: 0 10px 25px rgba(2, 132, 199, 0.4);
       transition: all 0.25s ease;
-      display: flex;
+      display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 0.6rem;
+      margin: 0 auto;
     }
 
     .btn-primary:hover {
@@ -452,6 +457,10 @@ html_template = """<!DOCTYPE html>
       width: 100%;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
       position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
 
     .part-tag {
@@ -2131,4 +2140,4 @@ with open('ox_quiz.html', 'w', encoding='utf-8') as f:
 with open('2026SummerFestival/ox_quiz.html', 'w', encoding='utf-8') as f:
     f.write(final_html)
 
-print("Generated ox_quiz.html with Mobile Sleep & App-Switch Auto Reconnect Engine!")
+print("Regenerated ox_quiz.html with centered Part 1 and Part 2 buttons!")
