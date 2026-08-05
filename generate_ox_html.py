@@ -1422,8 +1422,11 @@ html_template = """<!DOCTYPE html>
         <div style="font-size: 0.75rem; color: var(--text-muted);">지구촌교회 중등부 OX퀴즈</div>
         <div style="font-weight: 800; font-size: 1.1rem;">📱 MC 무대 리모컨</div>
       </div>
-      <div class="status-badge connected" id="remoteConnectStatus">
-        🟢 연결됨
+      <div style="display: flex; gap: 0.4rem; align-items: center;">
+        <button class="btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;" onclick="checkAndReconnect()">🔄 수동 재연결</button>
+        <div class="status-badge connected" id="remoteConnectStatus">
+          🟢 연결됨
+        </div>
       </div>
     </div>
 
@@ -1850,7 +1853,7 @@ html_template = """<!DOCTYPE html>
       }
     }
 
-    /* WEBRTC / BROADCAST REMOTE CONTROL ENGINE */
+    /* WEBRTC / BROADCAST REMOTE CONTROL ENGINE WITH AUTO-RECONNECT */
     let peer = null;
     let remoteConn = null;
     let peerId = 'jiguchon-ox-' + Math.floor(1000 + Math.random() * 9000);
@@ -1860,6 +1863,60 @@ html_template = """<!DOCTYPE html>
     const isRemoteMode = (urlParams.get('mode') === 'remote');
     const targetPeerId = urlParams.get('peerId');
 
+    function checkAndReconnect() {
+      if (!isRemoteMode || !targetPeerId) return;
+      
+      if (!remoteConn || !remoteConn.open) {
+        const badge = document.getElementById('remoteConnectStatus');
+        if (badge) {
+          badge.innerText = '🟡 재연결 중...';
+          badge.className = 'status-badge waiting';
+        }
+        
+        try {
+          if (!peer || peer.destroyed) {
+            peer = new Peer();
+            peer.on('open', () => setupRemoteConnection());
+          } else {
+            setupRemoteConnection();
+          }
+        } catch(e) {}
+      }
+    }
+
+    function setupRemoteConnection() {
+      if (!targetPeerId) return;
+      try {
+        if (remoteConn) {
+          try { remoteConn.close(); } catch(e) {}
+        }
+        remoteConn = peer.connect(targetPeerId);
+        remoteConn.on('open', () => {
+          const badge = document.getElementById('remoteConnectStatus');
+          if (badge) {
+            badge.innerText = '🟢 연결됨';
+            badge.className = 'status-badge connected';
+          }
+          sendRemoteCmd('syncRequest');
+        });
+        remoteConn.on('data', (data) => handleHostStateUpdate(data));
+        remoteConn.on('close', () => {
+          const badge = document.getElementById('remoteConnectStatus');
+          if (badge) {
+            badge.innerText = '🔴 연결 끊김';
+            badge.className = 'status-badge waiting';
+          }
+        });
+        remoteConn.on('error', () => {
+          const badge = document.getElementById('remoteConnectStatus');
+          if (badge) {
+            badge.innerText = '🔴 오류발생';
+            badge.className = 'status-badge waiting';
+          }
+        });
+      } catch(e) {}
+    }
+
     function initRemoteSystem() {
       if (isRemoteMode) {
         document.getElementById('mainHostView').style.display = 'none';
@@ -1867,24 +1924,33 @@ html_template = """<!DOCTYPE html>
         document.querySelector('header').style.display = 'none';
         document.getElementById('remoteViewScreen').classList.add('active');
 
-        if (targetPeerId) {
-          try {
-            peer = new Peer();
-            peer.on('open', () => {
-              remoteConn = peer.connect(targetPeerId);
-              remoteConn.on('open', () => {
-                document.getElementById('remoteConnectStatus').innerText = '🟢 연결됨';
-                document.getElementById('remoteConnectStatus').className = 'status-badge connected';
-              });
-              remoteConn.on('data', (data) => handleHostStateUpdate(data));
-            });
-          } catch(e) {}
-        }
+        peer = new Peer();
+        peer.on('open', () => {
+          setupRemoteConnection();
+        });
+
+        // Mobile Sleep & App-Switch Auto Reconnect Listeners
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'visible') {
+            checkAndReconnect();
+          }
+        });
+        window.addEventListener('focus', () => {
+          checkAndReconnect();
+        });
+
+        // Heartbeat Keepalive check every 2 seconds
+        setInterval(() => {
+          if (!remoteConn || !remoteConn.open) {
+            checkAndReconnect();
+          }
+        }, 2000);
 
         broadcastChannel.onmessage = (e) => {
           if (e.data.type === 'stateUpdate') handleHostStateUpdate(e.data.state);
         };
       } else {
+        // Host Screen Engine
         generateQrCode(peerId);
         try {
           peer = new Peer(peerId);
@@ -1994,6 +2060,7 @@ html_template = """<!DOCTYPE html>
       else if (action === 'toggleTimer') toggleTimer();
       else if (action === 'resetTimer') resetTimer(10);
       else if (action === 'toggleSound') toggleSound();
+      else if (action === 'syncRequest') syncRemoteState();
     }
 
     function handleHostStateUpdate(state) {
@@ -2061,4 +2128,7 @@ final_html = html_template.replace("__QUIZ_JSON__", quiz_json_str)
 with open('ox_quiz.html', 'w', encoding='utf-8') as f:
     f.write(final_html)
 
-print("Generated ox_quiz.html with 1-second pulse tick flash effects!")
+with open('2026SummerFestival/ox_quiz.html', 'w', encoding='utf-8') as f:
+    f.write(final_html)
+
+print("Generated ox_quiz.html with Mobile Sleep & App-Switch Auto Reconnect Engine!")
