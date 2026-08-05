@@ -115,7 +115,7 @@ const foodSpotsData = [
 ];
 
 const gatheringSpot = {
-  name: "🚩 14:55 집결지 (중앙로역 4번출구)",
+  name: "🚩 14:25 집결지 (중앙로역 4번출구)",
   lat: 36.3283125, lng: 127.4250469
 };
 
@@ -294,10 +294,10 @@ function initLeafletMap() {
   flagMarker.on('click', (e) => {
     L.DomEvent.stopPropagation(e);
     openBottomSheet({
-      title: "🚩 14:55 최종 집결 장소",
+      title: "🚩 14:25 최종 집결 장소",
       badge: "집결지",
       badgeClass: "zone-a",
-      desc: "중앙로역 4번 출구 앞 (모든 조 14:55분까지 집결!)",
+      desc: "중앙로역 4번 출구 앞 (모든 조 14:25분까지 집결!)",
       img: "",
       kakao: "https://map.kakao.com/link/search/중앙로역4번출구",
       naver: "https://map.naver.com/p/search/중앙로역4번출구"
@@ -502,19 +502,19 @@ function switchTab(tabId) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Gathering Timer (14:55)
+// Gathering Timer (14:25)
 function startGatheringTimer() {
   const timerDisplay = document.getElementById("countdownTimer");
   
   function updateTimer() {
     const now = new Date();
     const target = new Date();
-    target.setHours(14, 55, 0, 0);
+    target.setHours(14, 25, 0, 0);
 
     let diff = target - now;
 
     if (diff <= 0) {
-      timerDisplay.textContent = "14:55 집결 완료!";
+      timerDisplay.textContent = "14:25 집결 완료!";
       timerDisplay.style.color = "#34d399";
       return;
     }
